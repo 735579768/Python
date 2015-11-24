@@ -2,15 +2,17 @@ import urllib.request
 import urllib.parse
 import http.cookiejar
 class klhttp:
-    headers = { 
-	'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
-	'Referer':'http://user.zhaokeli.com/'
-	}
-    opener=None
-    ckjar=None
+
+
     def __init__(self):
         #self.count = c;  
-        #self.__class__.count = self.__class__.count + 1; 
+        #self.__class__.count = self.__class__.count + 1;
+        self.headers = { 
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
+        'Referer':'http://user.zhaokeli.com/'
+        } 
+        self.opener=None
+        self.ckjar=None
         #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
         self.ckjar=http.cookiejar.MozillaCookieJar('cookies.txt')
         try:
