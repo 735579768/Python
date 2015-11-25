@@ -5,10 +5,10 @@ import kl_db
 
 if __name__ == '__main__':
     kl_db.mysql.conn({
-            'host':'localhost',
+            'host':'116.255.159.47',
             'user':'root',
             'passwd':'adminrootkl',
-            'db':'ainiku',
+            'db':'zhaokeli_db',
             'charset':'utf8'
         })
     da=kl_db.mysql.select('select * from kl_article')
