@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-class log:
+class kl_log:
     def __init__(self):
         pass
     
@@ -16,5 +16,5 @@ class log:
         
         return True
 if __name__ == '__main__':
-	log.write('./log/run.log','aaaaaa')
+	kl_log.write('./log/run.log','aaaaaa')
 	input('按任意键继续...')

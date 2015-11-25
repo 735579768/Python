@@ -1,5 +1,5 @@
 import re
-class reg(object):
+class kl_reg(object):
     def __init__(self, arg):
         super(ClassName, self).__init__()
         self.arg = arg
@@ -47,11 +47,12 @@ class reg(object):
         
 if __name__ == '__main__':
     a='abcde afgh ijkalmno pqrastuvwxyz'
-    print(reg.replace(r'a','',a))
-    print(reg.replacenum(r'a','',a))
-    print(reg.match(r'a.*?$',a))
-    print(reg.fullmatch(r'b[cd].*',a,1,3))
-    print(reg.search(r'b.*?',a))
-    print(reg.split(r'a',a))
-    print(reg.findall(r'a.*?',a))
-    print(reg.finditer(r'a.*?',a))
+    print(kl_reg.replace(r'a','',a))
+    print(kl_reg.replacenum(r'a','',a))
+    print(kl_reg.match(r'a.*?$',a))
+    print(kl_reg.fullmatch(r'b[cd].*',a,1,3))
+    print(kl_reg.search(r'b.*?',a))
+    print(kl_reg.split(r'a',a))
+    print(kl_reg.findall(r'a.*?',a))
+    print(kl_reg.finditer(r'a.*?',a))
+    input('按任意键继续...')
