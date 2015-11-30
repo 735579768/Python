@@ -35,7 +35,6 @@ def send_mail(to_list,sub,content,attachpath=''):
     msg['To'] = ";".join(to_list)
     #添加附件
     if attachpath != '' :
-        #attfile = 'kl_reg.rar'
         basename = os.path.basename(attachpath)
         part = MIMEBase('application', 'octet-stream')
         part.set_payload(open(attachpath,'rb').read())
@@ -53,7 +52,7 @@ def send_mail(to_list,sub,content,attachpath=''):
         print (str(e))  
         return False  
 if __name__ == '__main__':  
-    if send_mail(mailto_list,"这个是邮件主题","这里是邮件内容",'kl_reg.reg'):  
+    if send_mail(mailto_list,"这个是邮件主题","这里是邮件内容",'kl_reg.py'):  
         print ("发送成功")  
     else:  
         print ("发送失败")  
