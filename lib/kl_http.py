@@ -6,10 +6,10 @@ class kl_http:
         urls=urllib.parse.urlsplit(url)
         #print(urls)
         self.hostname=urls[1]
-        if os.path.exists('./cookies')==False :
-            os.makedirs('./cookies')
+        if os.path.exists('./data/cookies')==False :
+            os.makedirs('./data/cookies')
       #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
-        self.ckjar=http.cookiejar.MozillaCookieJar("./cookies/cookies-%s.txt"%(self.hostname))
+        self.ckjar=http.cookiejar.MozillaCookieJar("./data/cookies/cookies-%s.txt"%(self.hostname))
         try:
              """加载已存在的cookie，尝试此cookie是否还有效"""
              self.ckjar.load(ignore_discard=True, ignore_expires=True)

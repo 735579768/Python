@@ -4,7 +4,7 @@ import time
 def write(data='',model='a',filepath=''):
     if filepath =='':
         filename=time.strftime('%Y-%m-%d',time.localtime())
-        filepath='./log/'+filename+'.log'
+        filepath='./data/log/'+filename+'.log'
     if os.path.exists(os.path.dirname(filepath))==False :
         os.makedirs(os.path.dirname(filepath))
     ti=time.strftime('%Y-%m-%d %X',time.localtime())
