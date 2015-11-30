@@ -1,7 +1,7 @@
 import urllib.request
 import urllib.parse
 import http.cookiejar
-class http:
+class kl_http:
 
 
     def __init__(self):
@@ -58,6 +58,6 @@ class http:
 
             
 if __name__ == '__main__':
-	ht=http()
+	ht=kl_http()
 	print(ht.posturl(r'http://www.0yuanwang.com').read().decode())
 	input('按任意键继续...')
