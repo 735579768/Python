@@ -1,20 +1,15 @@
-import urllib.request
+import urllib.request,os
 import urllib.parse
 import http.cookiejar
 class kl_http:
-
-
-    def __init__(self):
-        #self.count = c;  
-        #self.__class__.count = self.__class__.count + 1;
-        self.headers = { 
-        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
-        'Referer':'http://user.zhaokeli.com/'
-        } 
-        self.opener=None
-        self.ckjar=None
-        #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
-        self.ckjar=http.cookiejar.MozillaCookieJar('cookies.txt')
+    def setcookies(self,url):
+        urls=urllib.parse.urlsplit(url)
+        #print(urls)
+        self.hostname=urls[1]
+        if os.path.exists('./cookies')==False :
+            os.makedirs('./cookies')
+      #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
+        self.ckjar=http.cookiejar.MozillaCookieJar("./cookies/cookies-%s.txt"%(self.hostname))
         try:
              """加载已存在的cookie，尝试此cookie是否还有效"""
              self.ckjar.load(ignore_discard=True, ignore_expires=True)
@@ -23,9 +18,17 @@ class kl_http:
              self.ckjar.save(ignore_discard=True, ignore_expires=True)
         ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
         self.opener=urllib.request.build_opener(ckproc)
-
+    def __init__(self):
+        self.hostname=''
+        self.headers = { 
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
+        'Referer':'http://user.zhaokeli.com/'
+        } 
+        self.opener=None
+        self.ckjar=None
     #get取网页数据
     def geturl(self,url,data={}):
+            self.setcookies(url)
             try:
                 params=urllib.parse.urlencode(data)#.encode(encoding='UTF8')
                 req=''
@@ -46,6 +49,7 @@ class kl_http:
             
     #get取网页数据
     def posturl(self,url,data={}):
+        self.setcookies(url)
         try:
             params=urllib.parse.urlencode(data).encode(encoding='UTF8')
             req=urllib.request.Request(url,params,self.headers)
