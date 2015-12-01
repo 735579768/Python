@@ -28,7 +28,7 @@ def bakmysql(db_name,sss):
         zip_dest = zip_src + ".zip"
 
         print("开始备份数据库:%s..."%db_name);  
-        os.system("mysqldump -h%s -u%s -p%s %s --default_character-set=%s > %s" %(db_host, db_user, db_passwd, db_name, db_charset, db_backup_name))  
+        os.system("mysqldump -h%s -u%s -p%s %s  --default_character-set=%s    > %s" %(db_host, db_user, db_passwd, db_name, db_charset, db_backup_name))  
         print("开始压缩数据库:%s..."%db_name)  
         #zip_files(zip_src,zip_dest)
         f = zipfile.ZipFile(zip_dest, 'w' ,zipfile.ZIP_DEFLATED)   
@@ -44,7 +44,7 @@ def bakmysql(db_name,sss):
 if __name__ == "__main__":
     baknum=0
     for i in db_name:
-        time.sleep(2)
+        time.sleep(1)
         threading.Thread(target=bakmysql,args=(i,'')).start()
     time.sleep(3)   
     while baknum != 0:
