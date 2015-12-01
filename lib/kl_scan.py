@@ -19,9 +19,9 @@ def main(ip,port):
     sk.close()
     xcnum=xcnum-1
 if __name__ == '__main__':
-    ip=input('请输入目标主机：(默认:116.255.214.72)')
+    ip=input('请输入目标主机：(默认:127.0.0.1)')
     if ip=='':
-        ip='116.255.214.72'
+        ip='127.0.0.1'
     s=input('请输入目标主机开始端口：(默认:20)')
     if s=='':
         startport=20
