@@ -1,10 +1,10 @@
 import sys
 import os
 import time
-def write(data='',model='a',filepath=''):
+def write(data='',prifix='',filepath='',model='a'):
     if filepath =='':
         filename=time.strftime('%Y-%m-%d',time.localtime())
-        filepath='./data/log/'+filename+'.log'
+        filepath='./data/log/%s%s.log'%(prifix,filename)
     if os.path.exists(os.path.dirname(filepath))==False :
         os.makedirs(os.path.dirname(filepath))
     ti=time.strftime('%Y-%m-%d %X',time.localtime())
