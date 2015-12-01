@@ -2,9 +2,9 @@
 # Name:        PortScan
 # Purpose:     扫描目标主机的端口开放情况
 #-------------------------------------------------------------------------------
-import socket,sys,threading
+import socket,sys,threading,os
 def main(ip,port):
-    global xcnum
+    global xcnum,f
     xcnum=xcnum+1
     sys.stdout.write('正在扫描端口：%d\r' % port)
     sys.stdout.flush()
@@ -13,16 +13,13 @@ def main(ip,port):
     try:
         result=sk.connect((ip,port))
         print('Server %s port %d OK!' % (ip,port))
+        f.write("%s : %s \r\n"%(ip,port))
     except Exception:      
         pass
     sk.close()
     xcnum=xcnum-1
-    #sys.stdout.write('扫描完毕')
-    #sys.stdout.flush()
-    #print('')
-    #input('输入任意键继续...')
-
-
+    if xcnum == 0 :
+        f.close()
 if __name__ == '__main__':
     ip=input('请输入目标主机：(默认:116.255.214.72)')
     if ip=='':
@@ -39,6 +36,10 @@ if __name__ == '__main__':
     else:
         endport=int(s)
     xcnum=0
+    filepath='./data/scan/%s-port.txt'%ip
+    if os.path.exists(os.path.dirname(filepath))==False :
+        os.makedirs(os.path.dirname(filepath))
+    f=open(filepath,'a')
     while startport<=endport :
         if xcnum<5000 :
             threading.Thread(target=main,args=(ip,startport)).start()
