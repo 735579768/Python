@@ -18,8 +18,6 @@ def main(ip,port):
         pass
     sk.close()
     xcnum=xcnum-1
-    if xcnum == 0 :
-        f.close()
 if __name__ == '__main__':
     ip=input('请输入目标主机：(默认:116.255.214.72)')
     if ip=='':
@@ -44,8 +42,8 @@ if __name__ == '__main__':
         if xcnum<5000 :
             threading.Thread(target=main,args=(ip,startport)).start()
             startport=startport+1
-    if startport==endport :
-        sys.stdout.write('扫描完毕')
-        sys.stdout.flush()
-        print('')
-        input('输入任意键继续...')
+    while xcnum != 0:
+        pass
+    f.close()
+    print('扫描完毕')
+    input('输入任意键继续...')
