@@ -26,9 +26,15 @@ def zip_files():
     f.write(zip_src)  
     f.close()   
       
-if __name__ == "__main__":  
+if __name__ == "__main__":
+    '''
+    #查询所有数据库
+    databaselist=''
+    databaselist=os.system("mysql -h%s -u%s -p%s --default_character-set=%s;show databases; >%s" %(db_host, db_user, db_passwd, db_charset,databaselist))
+    print(databaselist)
+    '''
     print("开始备份数据库:%s..."%db_name);  
     os.system("mysqldump -h%s -u%s -p%s %s --default_character-set=%s > %s" %(db_host, db_user, db_passwd, db_name, db_charset, db_backup_name))  
     print("开始压缩数据库文件...")  
-    zip_files()  
+    zip_files()
     input("数据库备份完成")  
