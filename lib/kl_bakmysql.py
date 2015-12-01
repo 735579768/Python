@@ -1,4 +1,4 @@
-import os,kl_log
+import os,sys,kl_log
 import time  
 import tarfile  
 import zipfile
@@ -44,9 +44,13 @@ def bakmysql(db_name,sss):
 if __name__ == "__main__":
     baknum=0
     for i in db_name:
+        time.sleep(2)
         threading.Thread(target=bakmysql,args=(i,'')).start()
-        
+    time.sleep(3)   
     while baknum != 0:
+        time.sleep(1)
+        sys.stdout.write('%s个进程备份中...\r' % baknum)
+        sys.stdout.flush()
         pass
     
     try:
