@@ -6,6 +6,10 @@ import sqlite3
 import urllib.request
 import http.cookiejar
 
+headers = { 
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
+        'Referer':'https://www.baidu.com/'
+        } 
 datafile='./data/cookiesAccess/da.db'
 datapath='./data/cookiesAccess'
 if os.path.exists(datapath)==False :
@@ -44,12 +48,29 @@ def build_opener_with_cookies(domain=None):
     opener=urllib.request.build_opener(ckproc)
     return opener
     conn.close()
-def geturl(url,domain):
+def geturl(url,data={},domain=''):
     opener=build_opener_with_cookies(domain)
-    return opener.open(url)
+    try:
+        params=urllib.parse.urlencode(data)#.encode(encoding='UTF8')
+        req=''
+        if params=='' :
+               req=urllib.request.Request(url)
+        else:
+               req=urllib.request.Request(url+'?%s'%(params)) 
+        
+        #设置headers
+        for i in headers:
+            req.add_header(i,headers[i])
+        r=opener.open(req)
+        return r
+    except urllib.error.HTTPError as e:
+        print(e.code)
+        print(e.read().decode("utf8"))
+        return opener.open(url)
 
 if __name__ == '__main__':
-    r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
+    #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
+    r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
     s=r.read().decode()
     print(s)
     conn.execute("insert into content(content) values(?)",(s,));
