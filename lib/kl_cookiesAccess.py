@@ -5,9 +5,12 @@ import os,sys
 import sqlite3
 import urllib.request
 import http.cookiejar
+
+datafile='./data/cookiesAccess/da.db'
 datapath='./data/cookiesAccess'
 if os.path.exists(datapath)==False :
     os.makedirs(datapath)
+conn = sqlite3.connect(datafile)
 def build_opener_with_cookies(domain=None):
     #读入cookies
     try:
@@ -47,5 +50,9 @@ def geturl(url,domain):
 
 if __name__ == '__main__':
     r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
-    print(r.read().decode())
+    s=r.read().decode()
+    print(s)
+    conn.execute("insert into content(content) values(?)",(s,));
+    conn.commit()
+    conn.close()
     input('按任意键继续')
