@@ -72,10 +72,13 @@ def geturl(url,data={},domain=''):
         return opener.open(url)
 
 if __name__ == '__main__':
+    import ssl 
+    ssl._create_default_https_context = ssl._create_unverified_context
     try:
         #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
-        r = geturl(url='http://user.nipic.com/',domain='nipic.com')
+        #r = geturl(url='http://user.nipic.com/',domain='nipic.com')
         #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
+        r = geturl(url='https://kyfw.12306.cn/otn/resources/js/framework/station_name.js',domain='kyfw.12306.cn')
         s=r.read().decode()
         print(s)
     except Exception as ex:

@@ -13,7 +13,6 @@ if __name__ == '__main__':
     dlg = QDialog()
     dlg.resize(400, 300)
     dlg.setWindowTitle("自定义按钮测试")
-    
     #定义按钮
     okbtn=Button('确定')
     modbtn=Button('增加')
