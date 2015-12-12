@@ -72,10 +72,14 @@ def geturl(url,data={},domain=''):
         return opener.open(url)
 
 if __name__ == '__main__':
-    r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
-    #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
-    s=r.read().decode()
-    print(s)
+    try:
+        #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
+        r = geturl(url='http://user.nipic.com/',domain='nipic.com')
+        #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
+        s=r.read().decode()
+        print(s)
+    except Exception as ex:
+        print (Exception,":",ex)
     #conn.execute("insert into content(content) values(?)",(s,));
     #conn.commit()
     #conn.close()
