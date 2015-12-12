@@ -10,7 +10,8 @@ if os.path.exists(outFile_path):
 
 
 db_file_path = os.path.join(os.environ['LOCALAPPDATA'],
-                            r'Google\Chrome\User Data\Default\Login Data')
+                            r'Google\Chrome\User Data\Default\Cookies')
+db_file_path =r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 1\Login Data'
 tmp_file = os.path.join(os.path.dirname(sys.executable), 'tmp_tmp_tmp')
 if os.path.exists(tmp_file):
     os.remove(tmp_file)
