@@ -79,7 +79,7 @@ class Dialog(QDialog):
     ticket=Ticket()
     def __init__(self):
         super().__init__()
-        self.resize(750,350)
+        self.resize(990,350)
         #布局管理器
         self.layout=[QVBoxLayout(self),QHBoxLayout()]
         self.layout[1].setContentsMargins(0,0,0,0)
@@ -88,13 +88,15 @@ class Dialog(QDialog):
         self.layout[0].setSpacing(0)
         self.layout[0].addLayout(self.layout[1])
         #按钮
-        btn=QPushButton("ok")
+        btn=QPushButton("查询")
         btn.clicked.connect(self.submit)
         #输入选项
         label=[QLabel("发站："),QLabel("到站："),QLabel("日期：")]
         self.line=[QLineEdit(),QLineEdit(),QComboBox()]
         self.line[0].setText('郑州')
         self.line[1].setText('汝州')
+        
+        #生成日期选择框
         y=int(time.strftime("%Y",time.localtime()))
         m=int(time.strftime("%m",time.localtime()))
         d=int(time.strftime("%d",time.localtime()))
