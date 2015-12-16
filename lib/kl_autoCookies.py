@@ -100,20 +100,30 @@ def geturlByChrome(url,data={},domain=''):
         params=urllib.parse.urlencode(data)#.encode(encoding='UTF8')
         req=''
         if params=='' :
-               req=urllib.request.Request(url)
+            req=urllib.request.Request(url)
         else:
-               req=urllib.request.Request(url+'?%s'%(params)) 
+            req=urllib.request.Request(url+'?%s'%(params)) 
         
         #设置headers
         for i in headers:
             req.add_header(i,headers[i])
         req.add_header('Referer',url)
-        r=opener.open(req)
-        return r
+        return opener.open(req)
+    except urllib.error.HTTPError as e:
+        print(e.code)
+        print(e.read().decode())
+        return False
+    #get取网页数据
+def posturlByChrome(url,data={},domain=''):
+    opener=build_opener_with_cookies(domain)
+    try:
+        params=urllib.parse.urlencode(data).encode(encoding='UTF8')
+        req=urllib.request.Request(url,params,headers)
+        return opener.open(req) 
     except urllib.error.HTTPError as e:
         print(e.code)
         print(e.read().decode("utf8"))
-        return opener.open(url)
+        return False;
 if __name__ == '__main__':
 #     cookies=getChromeCookies('',r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies')
 #     for row in cookies:
@@ -125,5 +135,10 @@ if __name__ == '__main__':
 # value: {3}
 #  	""".format(row['hostname'], row['name'], row['path'], row['value']));
     chromeCookiesPath=r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies'
-    print(geturlByChrome('http://user.nipic.com/',{},'nipic.com').read().decode('utf8'))
+    r=geturlByChrome('https://uemprod.alipay.com/user/ihome.htm?enctraceid=hUOmUrNCsjIIix9qdYFUmm18P0SmJma19x-9MXcIAPA',{},'alipay.com')
+    #r=geturlByChrome('http://user.zhaokeli.com',{},'zhaokeli.com')
+    if r != False:
+        print(r.read().decode('gb2312'))
+    else:
+        print('fail')
     input('输入任意键继续...')
