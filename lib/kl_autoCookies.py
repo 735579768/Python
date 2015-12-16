@@ -4,7 +4,7 @@
 
 from ctypes import *
 from ctypes.wintypes import DWORD
-import sqlite3,os
+import sqlite3,os, chardet
 import urllib.request
 import http.cookiejar
 LocalFree = windll.kernel32.LocalFree;
@@ -135,10 +135,13 @@ if __name__ == '__main__':
 # value: {3}
 #  	""".format(row['hostname'], row['name'], row['path'], row['value']));
     chromeCookiesPath=r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies'
-    r=geturlByChrome('https://uemprod.alipay.com/user/ihome.htm?enctraceid=hUOmUrNCsjIIix9qdYFUmm18P0SmJma19x-9MXcIAPA',{},'alipay.com')
-    #r=geturlByChrome('http://user.zhaokeli.com',{},'zhaokeli.com')
+    #r=geturlByChrome('https://uemprod.alipay.com/user/ihome.htm?enctraceid=hUOmUrNCsjIIix9qdYFUmm18P0SmJma19x-9MXcIAPA',{},'alipay.com')
+    r=geturlByChrome('http://user.zhaokeli.com',{},'zhaokeli.com')
     if r != False:
-        print(r.read().decode('gb2312'))
+        datatext=r.read()
+        charset=chardet.detect(datatext)
+        print(datatext.decode(charset['encoding']))
+        #print(r.read().decode('gb2312'))
     else:
         print('fail')
     input('输入任意键继续...')
