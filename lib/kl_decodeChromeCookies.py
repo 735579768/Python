@@ -5,8 +5,6 @@
 from ctypes import *
 from ctypes.wintypes import DWORD
 import sqlite3;
-cookieFile=r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies';
-hostKey="%zhaokeli.com%";
 LocalFree = windll.kernel32.LocalFree;
 memcpy = cdll.msvcrt.memcpy;
 CryptProtectData = windll.crypt32.CryptProtectData;
@@ -46,21 +44,35 @@ def decrypt(cipherText):
     else:
         raise Exception("Failed to decrypt data");
 
-
-conn = sqlite3.connect(cookieFile);
-c = conn.cursor();
-c.execute("SELECT  host_key, name, path,value,encrypted_value FROM cookies WHERE host_key like '%{0}%';".format(hostKey));
-cookies = c.fetchmany(10);
-c.close();
-for row in cookies:
-    dc = decrypt(row[4]);
-    print( \
-"""
-host_key: {0}
+#取指定域名的cookies
+def getCookies(hostname,filepath):
+	hostname="%zhaokeli.com%";
+	conn = sqlite3.connect(filepath);
+	c = conn.cursor();
+	c.execute("SELECT  host_key, name, path,value,encrypted_value FROM cookies WHERE host_key like '%{0}%';".format(hostname));
+	cookies = c.fetchall();
+	c.close();
+	rearr=[]
+	for row in cookies:
+	    dc = decrypt(row[4]);
+	    rearr.append({'name':row[1],'value':dc,'path':row[2],'hostname':row[0]})
+#	    print( \
+# 	"""
+# host_key: {0}
+# name: {1}
+# path: {2}
+# value: {3}
+# encrpyted_value: {4}
+# 	""".format(row[0], row[1], row[2], row[3], dc));
+	return rearr
+if __name__ == '__main__':
+    cookies=getCookies('zhaokeli.com',r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies')
+    for row in cookies:
+        print( \
+ 	"""
+hostname: {0}
 name: {1}
 path: {2}
 value: {3}
-encrpyted_value: {4}
-""".format(row[0], row[1], row[2], row[3], dc));
-
-input('输入任意键继续...')
+ 	""".format(row['hostname'], row['name'], row['path'], row['value']));
+    input('输入任意键继续...')
