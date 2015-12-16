@@ -1,3 +1,6 @@
+'''
+使用谷歌cookies发起请求
+'''
 from ctypes import *
 from ctypes.wintypes import DWORD
 import sqlite3,os,sys, chardet

@@ -1,4 +1,4 @@
-import ftplib, sys, os ,codecs,kl_log
+import ftplib, os ,codecs,kl_log
 local_root = 'E:/ftp' 
 host = '116.255.214.72' 
 username = 'wwwroot' 
@@ -16,7 +16,7 @@ def isDirectory(filename):
         createDir(local_root+filename) 
         return True 
     except Exception as e:
-        #print(e)
+        print(e)
         return False 
 def recursiveDownload(filelist, curpwd): 
     global local_root 
