@@ -45,8 +45,8 @@ def decrypt(cipherText):
         raise Exception("Failed to decrypt data");
 
 #取指定域名的cookies
-def getCookies(hostname,filepath):
-	hostname="%zhaokeli.com%";
+def getChromeCookies(hostname,filepath):
+	hostname="%{0}%".format(hostname);
 	conn = sqlite3.connect(filepath);
 	c = conn.cursor();
 	c.execute("SELECT  host_key, name, path,value,encrypted_value FROM cookies WHERE host_key like '%{0}%';".format(hostname));
@@ -66,7 +66,7 @@ def getCookies(hostname,filepath):
 # 	""".format(row[0], row[1], row[2], row[3], dc));
 	return rearr
 if __name__ == '__main__':
-    cookies=getCookies('zhaokeli.com',r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies')
+    cookies=getChromeCookies('',r'C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Profile 8\Cookies')
     for row in cookies:
         print( \
  	"""
