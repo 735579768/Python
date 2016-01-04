@@ -85,4 +85,4 @@ if __name__ == '__main__':
     else:
         print('fail')
     f.close()
-    input('输入任意键继续...')
+    input('chrome浏览器用户名密码导出完毕,输入任意键继续...')
