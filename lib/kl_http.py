@@ -21,8 +21,7 @@ class kl_http:
     def __init__(self):
         self.hostname=''
         self.headers = { 
-        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
-        'Referer':'http://user.zhaokeli.com/'
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36'
         } 
         self.opener=None
         self.ckjar=None
@@ -40,6 +39,7 @@ class kl_http:
                 #设置headers
                 for i in self.headers:
                     req.add_header(i,self.headers[i])
+                req.add_header('Referer',url)
                 r=self.opener.open(req)
                 self.ckjar.save(ignore_discard=True, ignore_expires=True)
                 return r
@@ -53,6 +53,7 @@ class kl_http:
         try:
             params=urllib.parse.urlencode(data).encode(encoding='UTF8')
             req=urllib.request.Request(url,params,self.headers)
+            req.add_header('Referer',url)
             r=self.opener.open(req)
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return r  
