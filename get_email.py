@@ -15,7 +15,7 @@ Message对象本身可能是一个MIMEMultipart对象，即包含嵌套的其他
 '''
 # indent用于缩进显示:
 def print_info(msg, indent=0):
-  restr=''
+  restr={}
   if indent == 0:
     # 邮件的From, To, Subject存在于根对象上:
     for header in ['From', 'To', 'Subject']:
@@ -30,7 +30,7 @@ def print_info(msg, indent=0):
           name = decode_str(hdr)
           value = u'%s <%s>' % (name, addr)
       print('%s%s: %s' % (' ' * indent, header, value))
-      restr+='%s%s: %s' % (' ' * indent, header, value)
+      restr=+'%s%s: %s' % (' ' * indent, header, value)
   if (msg.is_multipart()):
     # 如果邮件对象是一个MIMEMultipart,
     # get_payload()返回list，包含所有的子对象:
@@ -57,6 +57,7 @@ def print_info(msg, indent=0):
     else:
       # 不是文本,作为附件处理:
       print('%sAttachment: %s' % (' ' * indent, content_type))
+  return restr
 def guess_charset(msg):
   # 先从msg对象获取编码:
   charset = msg.get_charset()
