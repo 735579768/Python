@@ -15,6 +15,7 @@ Message对象本身可能是一个MIMEMultipart对象，即包含嵌套的其他
 '''
 # indent用于缩进显示:
 def print_info(msg, indent=0):
+  restr=''
   if indent == 0:
     # 邮件的From, To, Subject存在于根对象上:
     for header in ['From', 'To', 'Subject']:
@@ -29,6 +30,7 @@ def print_info(msg, indent=0):
           name = decode_str(hdr)
           value = u'%s <%s>' % (name, addr)
       print('%s%s: %s' % (' ' * indent, header, value))
+      restr+='%s%s: %s' % (' ' * indent, header, value)
   if (msg.is_multipart()):
     # 如果邮件对象是一个MIMEMultipart,
     # get_payload()返回list，包含所有的子对象:
@@ -48,7 +50,9 @@ def print_info(msg, indent=0):
       # 要检测文本编码:
       charset = guess_charset(msg)
       if charset:
-        content = content.decode(charset)
+            content = content.decode(charset)
+      else:
+            content = content.decode()
       print('%sText: %s' % (' ' * indent, content + '...'))
     else:
       # 不是文本,作为附件处理:
@@ -84,6 +88,7 @@ emailindex=0
 
 # 需要取出所有信件的头部，解析出发件人是谁,信件id是从1开始的。
 for i in range(1, ret[0]+1):
+    print('正在查询第%d条邮件信息...'%(i))
     # 取出信件头部。注意：top指定的行数是以信件头为基数的，也就是说当取0行，
     # 其实是返回头部信息，取1行其实是返回头部信息之外再多1行。,mlist[0]是状态 mlist[1]是信件头的内容
     mlist = pop_conn.top(i, 0)
