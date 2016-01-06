@@ -30,7 +30,6 @@ def print_info(msg, indent=0):
           name = decode_str(hdr)
           value = u'%s <%s>' % (name, addr)
       print('%s%s: %s' % (' ' * indent, header, value))
-      restr=+'%s%s: %s' % (' ' * indent, header, value)
   if (msg.is_multipart()):
     # 如果邮件对象是一个MIMEMultipart,
     # get_payload()返回list，包含所有的子对象:
@@ -105,6 +104,7 @@ for i in range(1, ret[0]+1):
     if addrfrom.find('service@ainiku.com')!=-1:
         emailindex=i
         print("找到邮件啦，索引为%d,发件主题为%s"%(i, subject))
+        break
 
 
 # 列出服务器上邮件信息，这个会对每一封邮件都输出id和大小。不象stat输出的是总的统计信息
