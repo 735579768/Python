@@ -19,7 +19,7 @@ Message对象本身可能是一个MIMEMultipart对象，即包含嵌套的其他
 
 
 def print_info(msg, indent=0):
-    restr = {"content":"","attach":""}
+    restr = {"content": "", "attach": ""}
     if indent == 0:
         # 邮件的From, To, Subject存在于根对象上:
         for header in ['From', 'To', 'Subject']:
@@ -34,7 +34,7 @@ def print_info(msg, indent=0):
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
             print('%s%s: %s' % (' ' * indent, header, value))
-            restr[header]=value
+            restr[header] = value
     if (msg.is_multipart()):
         # 如果邮件对象是一个MIMEMultipart,
         # get_payload()返回list，包含所有的子对象:
@@ -43,9 +43,9 @@ def print_info(msg, indent=0):
             print('%spart %s' % (' ' * indent, n))
             print('%s--------------------' % (' ' * indent))
             # 递归打印每一个子对象:
-            con=print_info(part, indent + 1)
-            restr['content']=restr['content']+ con['content']
-            restr['attach']=restr['attach']+ con['attach']
+            con = print_info(part, indent + 1)
+            restr['content'] = restr['content'] + con['content']
+            restr['attach'] = restr['attach'] + con['attach']
     else:
         # 邮件对象不是一个MIMEMultipart,
         # 就根据content_type判断:
@@ -60,11 +60,11 @@ def print_info(msg, indent=0):
             else:
                 content = content.decode()
             print('%sText: %s' % (' ' * indent, content + '...'))
-            restr['content']=restr['content']+ content
+            restr['content'] = restr['content'] + content
         else:
             # 不是文本,作为附件处理:
             print('%sAttachment: %s' % (' ' * indent, content_type))
-            restr['attach']=restr['attach']+content_type
+            restr['attach'] = restr['attach'] + content_type
     return restr
 
 
@@ -92,7 +92,7 @@ pop_conn.pass_(password)
 
 # 获取服务器上信件信息，返回是一个列表，第一项是一共有多上封邮件，第二项是共有多少字节
 ret = pop_conn.stat()
-print('Messages: %s. Size: %s' % ret)
+print('邮件总数为: %s. 邮件总大小: %s' % ret)
 
 # 要查找的邮件索引
 emailindex = 0
@@ -104,17 +104,26 @@ for i in range(1, ret[0] + 1):
     # 其实是返回头部信息，取1行其实是返回头部信息之外再多1行。,mlist[0]是状态 mlist[1]是信件头的内容
     mlist = pop_conn.top(i, 0)
     # 解析成email object
-    msgcon = b"\r\n".join(mlist[1]).decode()
+    msgcon = ''
+    try:
+        msgcon = b"\r\n".join(mlist[1]).decode()
+    except Exception as e:
+        msgcon = b"\r\n".join(mlist[1]).decode('GBK')
     msgheader = parser.Parser().parsestr(msgcon)
     # 取发件人是谁
     addrfrom = str(msgheader.get('from'))
+    # 需要解码Email地址:
+    hdr, addr = parseaddr(addrfrom)
+    name = decode_str(hdr)
+    addrfrom = u'%s <%s>' % (name, addr)
     # 邮件主题
     subject = decode_str(str(msgheader.get('subject')))
     # 接收方邮箱
     toemail = decode_str(str(msgheader.get('to')))
+    print("查询出的信息：发件人为:%s  邮件主题为:%s" % (addrfrom, subject))
     if addrfrom.find('service@ainiku.com') != -1:
         emailindex = i
-        print("找到邮件啦，索引为%d,发件主题为%s" % (i, subject))
+        print("找到邮件啦，索引为%d,发件主题为:%s" % (i, subject))
         break
 
 
@@ -139,3 +148,4 @@ emailinfo = print_info(message)
 print(emailinfo)
 # 过滤出想要的发件人信息
 pop_conn.quit()
+input('输入任意键继续...')
