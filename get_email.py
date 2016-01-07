@@ -80,7 +80,7 @@ def guess_charset(msg):
     return charset
 host = 'pop.qq.com'
 username = '735579768@qq.com'
-password = 'zkl735579768'
+password = ''
 
 # 连接到POP3服务器:
 pop_conn = poplib.POP3_SSL(host)
