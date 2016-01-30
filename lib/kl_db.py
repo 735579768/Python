@@ -15,11 +15,13 @@ class mysql(object):
 
     def __init__(self, arg):
         self.sql=''
+        self.lastsql=''
         self.sqlparam=[]
         self.prefix=''
         self.sqlconf={
             'action':'',
             'table':'',
+            'join':'',
             'where':'',
             'order':'',
             'limit':'',
@@ -40,10 +42,24 @@ class mysql(object):
     def __getcur(self):
         if self.sql=='':
             self.__zuhesqu()
-        self.cur.execute(self.sql)
-        self.con.commit()
-        return self.cur
-
+        try:
+            self.cur.execute(self.sql)
+            self.con.commit()
+            self.lastsql=self.sql
+            self.__init()
+            return self.cur
+        except pymysql.err.InternalError as e:
+            print(e)
+            print('SQL:[%s]'%self.sql)
+            self.lastsql=self.sql
+            self.__init()
+            return None
+        except pymysql.err.ProgrammingError as e:
+            print(e)
+            print('SQL:[%s]'%self.sql)
+            self.lastsql=self.sql
+            self.__init()
+            return None
     #返回执行结果记录数
     def __execute(self):
         if self.sql=='':
@@ -55,14 +71,20 @@ class mysql(object):
             else:
                 num=self.cur.execute(self.sql)
             self.con.commit()
+            self.lastsql=self.sql
+            self.__init()
             return num
         except pymysql.err.InternalError as e:
             print(e)
             print('SQL:[%s]'%self.sql)
+            self.lastsql=self.sql
+            self.__init()
             return 0
         except pymysql.err.ProgrammingError as e:
             print(e)
             print('SQL:[%s]'%self.sql)
+            self.lastsql=self.sql
+            self.__init()
             return 0
 
     #组合sql语句
@@ -73,13 +95,14 @@ class mysql(object):
         where=self.sqlconf['where'];
         order=self.sqlconf['order'];
         limit=self.sqlconf['limit'];
+        join=self.sqlconf['join'];
         field=self.sqlconf['field'];
         temsql='';
         if action=='':
             return None
-        if table=='':
+        if table=='' and join=='':
             return None
-        if field=='':
+        if field=='' and join=='':
             return None
 
         if action=='insert':
@@ -109,11 +132,23 @@ class mysql(object):
             temsql='update %s set %s %s %s'%(table, val, where,limit)
 
         elif action=='select':
-            temsql='select %s from %s %s %s %s'%(field,table,where,order,limit)
+            temsql='select %s from %s %s %s %s %s'%(field,table,join,where,order,limit)
         elif action=='delete':
             temsql='delete from %s %s'%(table,where)
         self.sql=temsql
-
+    #初始化查询条件
+    def __init(self):
+        self.sqlconf={
+            'action':'',
+            'table':'',
+            'join':'',
+            'where':'',
+            'order':'',
+            'limit':'',
+            'field':'*'
+        }
+        self.sql=''
+        self.sqlparam={}
     def table(self,data):
         if self.prefix!='':
             data=self.prefix+data
@@ -121,16 +156,16 @@ class mysql(object):
         return self
 
     def field(self,data):
-        self.sqlconf['field']=data;
+        self.sqlconf['field']=data
         return self
 
     def where(self,data):
-        temdata='where'
+        temdata='where '
         if type(data)==type({}):
             temdata+=self.__where(data)
         else:
             temdata+=data
-        self.sqlconf['where']=temdata;
+        self.sqlconf['where']=temdata
         return self
 
     #处理查询条件
@@ -177,7 +212,31 @@ class mysql(object):
         return temdata
     def order(self,data):
         data=' order by '+data
-        self.sqlconf['order']=data;
+        self.sqlconf['order']=data
+        return self
+
+    def join(self,data):
+        tem=''
+        first=''
+        field=''
+        for i in data:
+            tb=self.prefix+i
+            bas=data[i]['_as']
+            if ('_on') in data[i]:
+                bon=data[i]['_on']
+                tem+=" inner join %s as %s on %s"%(tb,bas,bon)
+            else:
+                first="%s as %s "%(tb,bas)
+            #给字段加上前缀
+            fie=data[i]['field']
+            arr=fie.split(',')
+            for fi in arr:
+                if field=='':
+                    field+="%s.%s"%(bas,fi)
+                else:
+                    field+=','+"%s.%s"%(bas,fi)
+        self.sqlconf['join']=first+tem
+        self.sqlconf['field']=field
         return self
 
     def limit(self,start=0,end=0):
@@ -187,10 +246,10 @@ class mysql(object):
             data='limit 0,%d'%(start)
         elif start==0 and end==0:
             data=''
-        self.sqlconf['limit']=data;
+        self.sqlconf['limit']=data
         return self
     def getlastsql(self):
-        return self.sql
+        return self.lastsql
 
     def query(self,data):
         self.sql=data
@@ -231,17 +290,29 @@ if __name__ == '__main__':
             'prefix':'kl_',
             'charset':'utf8'
         })
-    # da=db.table('article').limit(2).select()
-    # for a in da:
-    #     print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+    #查询数据列表
+    '''
+     da=db.table('article').limit(2).select()
+     for a in da:
+         print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+    
+    '''
+    #添加数据
+    ''''
     content="<html '>"
-    # num=db.table('article').add({
-    #     'title':'测试标题',
-    #     'content':content
-    #     })
-    #num=db.table('article').where('id=1').save({'content':'已经更新'})
-    # num=db.table('article').where('id=3').delete()
-    #print(num)
+    num=db.table('article').add({
+         'title':'测试标题',
+         'content':content
+         })
+    '''
+    #更新数据
+    '''
+    num=db.table('article').where('id=1').save({'content':'已经更新'})
+    num=db.table('article').where('id=3').delete()
+    print(num)
+    '''
+    #组合查询条件查询
+    '''
     map={
     'title':['like','%1%'],
     'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
@@ -252,5 +323,20 @@ if __name__ == '__main__':
         print(a['content'])
 
     print(db.getlastsql())
+    '''
+
+    #多表联合查询
+    '''
+    model={
+     'article':{'_as':'a','field':'title,id,content,category_id'},
+     'category':{'_as':'b','field':'category_id as cate_id','_on':'a.category_id=b.category_id'}
+    }
+    list=db.join(model).where("a.title like '%%'").select()
+    for a in list:
+        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+        print(a['content'])
+
+    print(db.getlastsql())
+    '''
     db.close()
     input('按任意键继续...')
