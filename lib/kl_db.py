@@ -125,12 +125,39 @@ class mysql(object):
         return self
 
     def where(self,data):
-        data=' where '+data
-        self.sqlconf['where']=data;
+        temdata='where'
+        if type(data)==type({}):
+            temdata+=self.__where(data)
+        else:
+            temdata+=data
+        self.sqlconf['where']=temdata;
         return self
 
+    #处理查询条件
+    def __where(self,data):
+        temdata=' 1=1 '
+        for a in data:
+            if type(data[a])==type([]):
+                key=data[a][0]
+                if key=='like':
+                    temdata+=" and (%s like '%s')"%(a,data[a][1])
+                elif key=='in':
+                    temdata+=" and (%s in(%s))"%(a,data[a][1])
+                elif key=='gt':
+                    temdata+=" and (%s > %s)"%(a,data[a][1])
+                elif key=='egt':
+                    temdata+=" and (%s >= %s)"%(a,data[a][1])
+                elif key=='lt':
+                    temdata+=" and (%s < %s)"%(a,data[a][1])
+                elif key=='elt':
+                    temdata+=" and (%s <= %s)"%(a,data[a][1])
+                elif key=='neq':
+                    temdata+=" and (%s <> %s)"%(a,data[a][1])
+            else:
+                temdata+=" and (%s='%s')"%(a,data[a])
+        return temdata
     def order(self,data):
-        data=' order '+data
+        data=' order by '+data
         self.sqlconf['order']=data;
         return self
 
@@ -143,6 +170,8 @@ class mysql(object):
             data=''
         self.sqlconf['limit']=data;
         return self
+    def getlastsql(self):
+        return self.sql
 
     def query(self,data):
         self.sql=data
@@ -194,11 +223,15 @@ if __name__ == '__main__':
     #num=db.table('article').where('id=1').save({'content':'已经更新'})
     # num=db.table('article').where('id=3').delete()
     #print(num)
-    list=db.table('article').select()
+    map={
+    'id':['gt',0],
+    'title':['like','%1%']
+    }
+    list=db.table('article').order('id desc').where(map).select()
     for a in list:
         print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
         print(a['content'])
 
-
+    print(db.getlastsql())
     db.close()
     input('按任意键继续...')
