@@ -72,7 +72,6 @@ class mysql(object):
             self.__init()
             return None
 
-
     #返回执行结果记录数
     def __execute(self):
         if self.sql=='':
@@ -84,7 +83,7 @@ class mysql(object):
                     num=self.cur.execute(self.sql,self.sqlparam)
                 else:
                     num=self.cur.execute(self.sql)
-                if self.sqlconf['action']='insert':
+                if self.sqlconf['action']=='insert':
                     #最新插入行的主键ID
                     num=int(self.con.insert_id())
                 self.con.commit()
@@ -210,6 +209,18 @@ class mysql(object):
         }
         self.sql=''
         self.sqlparam={}
+
+    #切换数据库
+    def selectdb(self,dbname):
+        self.con.select_db(dbname)
+
+    #返回主机信息
+    def gethostinfo(self):
+        return self.con.get_host_info()
+
+    #返回数据库版本
+    def getserverinfo(self):
+        return self.con.get_server_info()
 
     def table(self,data):
         if self.prefix!='':
@@ -376,5 +387,17 @@ if __name__ == '__main__':
     sql="DROP TABLE IF EXISTS EMPLOYEE"
     db.query(sql)
     '''
+
+    #切换数据库
+    '''
+    db.selectdb('ainiku')
+    list=db.table('article').select()
+    for a in list:
+        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+        print(a['content'])
+    '''
+
+    print("主机信息:%s"%db.gethostinfo())
+    print("数据库版本:%s"%db.getserverinfo())
     db.close()
     input('按任意键继续...')
