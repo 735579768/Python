@@ -6,14 +6,15 @@ import sqlite3
 import urllib.request
 import http.cookiejar
 
-headers = { 
+headers = {
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36'
-        } 
+        }
 datafile='./data/cookiesAccess/da.db'
 datapath='./data/cookiesAccess'
 if os.path.exists(datapath)==False :
     os.makedirs(datapath)
 #conn = sqlite3.connect(datafile)
+#创建一个会话对象
 def build_opener_with_cookies(domain=None):
     #读入cookies
     s=''
@@ -49,7 +50,8 @@ def build_opener_with_cookies(domain=None):
     ckproc=urllib.request.HTTPCookieProcessor(cookiejar)
     opener=urllib.request.build_opener(ckproc)
     return opener
-    conn.close()
+
+#请求一个页面
 def geturl(url,data={},domain=''):
     opener=build_opener_with_cookies(domain)
     try:
@@ -58,8 +60,8 @@ def geturl(url,data={},domain=''):
         if params=='' :
                req=urllib.request.Request(url)
         else:
-               req=urllib.request.Request(url+'?%s'%(params)) 
-        
+               req=urllib.request.Request(url+'?%s'%(params))
+
         #设置headers
         for i in headers:
             req.add_header(i,headers[i])
@@ -72,7 +74,7 @@ def geturl(url,data={},domain=''):
         return opener.open(url)
 
 if __name__ == '__main__':
-    import ssl 
+    import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
     try:
         #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')

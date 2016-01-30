@@ -28,7 +28,7 @@ class mysql(object):
     def execute():
         sta=mysql.cur.execute(sql);
         mysql.con.commit()
-        return sta       
+        return sta
     def close():#关闭所有连接
         mysql.cur.close();
         mysql.con.close();
