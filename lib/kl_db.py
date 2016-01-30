@@ -33,10 +33,19 @@ class mysql(object):
         self.cur=None
         self.arg = arg
         self.conn(arg)
+
     def conn(self,config):
         self.prefix=config['prefix'];
         if self.con == None :
-            self.con=pymysql.connect(host=config['host'],user=config['user'],passwd=config['passwd'],db=config['db'],charset=config['charset'])
+            self.con=pymysql.connect(
+                host=config['host'],
+                user=config['user'],
+                passwd=config['passwd'],
+                db=config['db'],
+                charset=config['charset'],
+                port=3306,
+                cursorclass=pymysql.cursors.DictCursor
+                )
         self.cur=self.con.cursor(pymysql.cursors.DictCursor);#获取操作游标
 
     #返回一个记录集
@@ -91,7 +100,6 @@ class mysql(object):
             self.lastsql=self.sql
             self.__init()
             return 0
-
 
     #组合sql语句
     def __zuhesqu(self):
@@ -347,6 +355,23 @@ if __name__ == '__main__':
         print(a['content'])
 
     print(db.getlastsql())
+    '''
+
+    #创建数据表
+    '''
+    sql = """CREATE TABLE EMPLOYEE (
+         FIRST_NAME  CHAR(20) NOT NULL,
+         LAST_NAME  CHAR(20),
+         AGE INT,
+         SEX CHAR(1),
+         INCOME FLOAT )"""
+    db.query(sql)
+    '''
+
+    #删除表
+    '''
+    sql="DROP TABLE IF EXISTS EMPLOYEE"
+    db.query(sql)
     '''
     db.close()
     input('按任意键继续...')
