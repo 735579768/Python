@@ -13,9 +13,9 @@ CryptUnprotectData = windll.crypt32.CryptUnprotectData;
 CRYPTPROTECT_UI_FORBIDDEN = 0x01;
 #谷歌cookies路径
 chromeCookiesPath=''
-headers = { 
+headers = {
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36'
-        } 
+        }
 class DATA_BLOB(Structure):
     _fields_ = [("cbData", DWORD), ("pbData", POINTER(c_char))];
 
@@ -29,7 +29,7 @@ def getData(blobOut):
 
 def encrypt(plainText):
     bufferIn = c_buffer(plainText, len(plainText));
-    blobIn = DATA_BLOB(len(plainText), bufferIn);   
+    blobIn = DATA_BLOB(len(plainText), bufferIn);
     blobOut = DATA_BLOB();
 
     if CryptProtectData(byref(blobIn), u"python_data", None,
@@ -80,7 +80,7 @@ def build_opener_with_cookies(domain=None):
     #读入cookies
     cookiejar = http.cookiejar.MozillaCookieJar()    # No cookies stored yet
     arr=getChromeCookies(domain)
-    
+
     for a in arr:
         cookie_item = http.cookiejar.Cookie(
             version=0, name=str(a['name']), value=str(a['value']),
@@ -107,8 +107,8 @@ def geturlByChrome(url,data={},domain=''):
         if params=='' :
             req=urllib.request.Request(url)
         else:
-            req=urllib.request.Request(url+'?%s'%(params)) 
-        
+            req=urllib.request.Request(url+'?%s'%(params))
+
         #设置headers
         for i in headers:
             req.add_header(i,headers[i])
@@ -124,7 +124,7 @@ def posturlByChrome(url,data={},domain=''):
     try:
         params=urllib.parse.urlencode(data).encode(encoding='UTF8')
         req=urllib.request.Request(url,params,headers)
-        return opener.open(req) 
+        return opener.open(req)
     except urllib.error.HTTPError as e:
         print(e.code)
         print(e.read().decode("utf8"))

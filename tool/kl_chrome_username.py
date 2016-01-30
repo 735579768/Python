@@ -13,9 +13,9 @@ CryptUnprotectData = windll.crypt32.CryptUnprotectData;
 CRYPTPROTECT_UI_FORBIDDEN = 0x01;
 #谷歌cookies路径
 chromeCookiesPath=''
-headers = { 
+headers = {
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36'
-        } 
+        }
 class DATA_BLOB(Structure):
     _fields_ = [("cbData", DWORD), ("pbData", POINTER(c_char))];
 
@@ -29,7 +29,7 @@ def getData(blobOut):
 
 def encrypt(plainText):
     bufferIn = c_buffer(plainText, len(plainText));
-    blobIn = DATA_BLOB(len(plainText), bufferIn);   
+    blobIn = DATA_BLOB(len(plainText), bufferIn);
     blobOut = DATA_BLOB();
 
     if CryptProtectData(byref(blobIn), u"python_data", None,
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         for i in r:
             dc = decrypt(i[5]).decode('utf-8');
             f.write("%s,%s,%s,%s,%s,%s \n"%(i[0],i[1],i[2],i[3],i[4],dc))
-            
+
     else:
         print('fail')
     f.close()

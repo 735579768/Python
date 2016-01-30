@@ -61,10 +61,27 @@ def geturl(url,data={},domain=''):
                req=urllib.request.Request(url)
         else:
                req=urllib.request.Request(url+'?%s'%(params))
-
+        s=''
+        try:
+            f=open(datapath+'/'+domain+'-headerAccess.txt','r');
+            s=f.read()
+            f.close()
+        except:
+            f=open(datapath+'/'+domain+'-headerAccess.txt','w');
+            f.close();
+            print (datapath+'/'+domain+'-headerAccess.txt is empty!')
+        
+        if(s!=''):
+            arr=s.split('\n')
+            for i in arr:
+                if i!='':
+                    a=i.split(':')
+                    req.add_header(a[0],a[1])
+        else:
+            for i in headers:
+                req.add_header(i,headers[i])
         #设置headers
-        for i in headers:
-            req.add_header(i,headers[i])
+
         req.add_header('Referer',url)
         r=opener.open(req)
         return r
@@ -76,11 +93,16 @@ def geturl(url,data={},domain=''):
 if __name__ == '__main__':
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
+    headers = {
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36'
+        }
     try:
         #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
         #r = geturl(url='http://user.nipic.com/',domain='nipic.com')
+        r = geturl(url='http://user.qzone.qq.com/p/r/cgi-bin/tfriend/friend_hat_get.cgi?hat_seed=1&uin=735579768&fupdate=1&g_tk=1722440021',domain='qzone.qq.com')
+        
         #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
-        r = geturl(url='https://kyfw.12306.cn/otn/resources/js/framework/station_name.js',domain='kyfw.12306.cn')
+        #r = geturl(url='https://kyfw.12306.cn/otn/resources/js/framework/station_name.js',domain='kyfw.12306.cn')
         s=r.read().decode()
         print(s)
     except Exception as ex:
