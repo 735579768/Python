@@ -70,9 +70,9 @@ def geturl(url,data={},domain=''):
             f=open(datapath+'/'+domain+'-headerAccess.txt','w');
             f.close();
             print (datapath+'/'+domain+'-headerAccess.txt is empty!')
-        
+
         if(s!=''):
-            arr=s.split('\n')
+            arr=s.splitlines()
             for i in arr:
                 if i!='':
                     a=i.split(':')
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         #r = geturl(url='http://user.nipic.com/',domain='nipic.com')
         #查看空间访客
         r = geturl(url='http://m.qzone.com/mqz_get_visitor?g_tk=1170550145&res_mode=0&res_uin=735579768&offset=0&count=10&page=1&format=json',domain='qzone.qq.com')
-        
+
         #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
         #r = geturl(url='https://kyfw.12306.cn/otn/resources/js/framework/station_name.js',domain='kyfw.12306.cn')
         s=r.read().decode()
