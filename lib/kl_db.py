@@ -139,22 +139,33 @@ class mysql(object):
         for a in data:
             if type(data[a])==type([]):
                 key=data[a][0]
-                if key=='like':
-                    temdata+=" and (%s like '%s')"%(a,data[a][1])
-                elif key=='in':
-                    temdata+=" and (%s in(%s))"%(a,data[a][1])
-                elif key=='gt':
-                    temdata+=" and (%s > %s)"%(a,data[a][1])
-                elif key=='egt':
-                    temdata+=" and (%s >= %s)"%(a,data[a][1])
-                elif key=='lt':
-                    temdata+=" and (%s < %s)"%(a,data[a][1])
-                elif key=='elt':
-                    temdata+=" and (%s <= %s)"%(a,data[a][1])
-                elif key=='neq':
-                    temdata+=" and (%s <> %s)"%(a,data[a][1])
+                #or组合查询
+                if type(key)==type([]):
+                    pass
+                else:
+                    temdata+=self.__tjzh(a,data[a],'and')
             else:
                 temdata+=" and (%s='%s')"%(a,data[a])
+        return temdata
+
+    #对数组进行条件组合
+    def __tjzh(self,a,data,zuhe='and'):
+        temdata=''
+        key=data[0]
+        if key=='like':
+            temdata+=" %s (%s like '%s')"%(zuhe,a,data[1])
+        elif key=='in':
+            temdata+=" %s (%s in(%s))"%(zuhe,a,data[1])
+        elif key=='gt':
+            temdata+=" %s (%s > %s)"%(zuhe,a,data[1])
+        elif key=='egt':
+            temdata+=" %s (%s >= %s)"%(zuhe,a,data[1])
+        elif key=='lt':
+            temdata+=" %s (%s < %s)"%(zuhe,a,data[1])
+        elif key=='elt':
+            temdata+=" %s (%s <= %s)"%(zuhe,a,data[1])
+        elif key=='neq':
+            temdata+=" %s (%s <> %s)"%(zuhe,a,data[1])
         return temdata
     def order(self,data):
         data=' order by '+data
