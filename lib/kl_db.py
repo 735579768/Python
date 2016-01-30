@@ -38,54 +38,60 @@ class mysql(object):
         if self.con == None :
             self.con=pymysql.connect(host=config['host'],user=config['user'],passwd=config['passwd'],db=config['db'],charset=config['charset'])
         self.cur=self.con.cursor(pymysql.cursors.DictCursor);#获取操作游标
+
     #返回一个记录集
     def __getcur(self):
         if self.sql=='':
             self.__zuhesqu()
         try:
-            self.cur.execute(self.sql)
-            self.con.commit()
-            self.lastsql=self.sql
-            self.__init()
-            return self.cur
+            try:
+                self.cur.execute(self.sql)
+                self.con.commit()
+                self.lastsql=self.sql
+                self.__init()
+                return self.cur
+            except pymysql.err.ProgrammingError as e:
+                print(e)
+                print('SQL:[%s]'%self.sql)
+                self.lastsql=self.sql
+                self.__init()
+                return None
         except pymysql.err.InternalError as e:
             print(e)
             print('SQL:[%s]'%self.sql)
             self.lastsql=self.sql
             self.__init()
             return None
-        except pymysql.err.ProgrammingError as e:
-            print(e)
-            print('SQL:[%s]'%self.sql)
-            self.lastsql=self.sql
-            self.__init()
-            return None
+
+
     #返回执行结果记录数
     def __execute(self):
         if self.sql=='':
             self.__zuhesqu()
         try:
-            num=0
-            if len(self.sqlparam):
-                num=self.cur.execute(self.sql,self.sqlparam)
-            else:
-                num=self.cur.execute(self.sql)
-            self.con.commit()
-            self.lastsql=self.sql
-            self.__init()
-            return num
+            try:
+                num=0
+                if len(self.sqlparam):
+                    num=self.cur.execute(self.sql,self.sqlparam)
+                else:
+                    num=self.cur.execute(self.sql)
+                self.con.commit()
+                self.lastsql=self.sql
+                self.__init()
+                return num
+            except pymysql.err.ProgrammingError as e:
+                print(e)
+                print('SQL:[%s]'%self.sql)
+                self.lastsql=self.sql
+                self.__init()
+                return 0
         except pymysql.err.InternalError as e:
             print(e)
             print('SQL:[%s]'%self.sql)
             self.lastsql=self.sql
             self.__init()
             return 0
-        except pymysql.err.ProgrammingError as e:
-            print(e)
-            print('SQL:[%s]'%self.sql)
-            self.lastsql=self.sql
-            self.__init()
-            return 0
+
 
     #组合sql语句
     def __zuhesqu(self):
@@ -136,37 +142,26 @@ class mysql(object):
         elif action=='delete':
             temsql='delete from %s %s'%(table,where)
         self.sql=temsql
-    #初始化查询条件
-    def __init(self):
-        self.sqlconf={
-            'action':'',
-            'table':'',
-            'join':'',
-            'where':'',
-            'order':'',
-            'limit':'',
-            'field':'*'
-        }
-        self.sql=''
-        self.sqlparam={}
-    def table(self,data):
-        if self.prefix!='':
-            data=self.prefix+data
-        self.sqlconf['table']=data
-        return self
 
-    def field(self,data):
-        self.sqlconf['field']=data
-        return self
-
-    def where(self,data):
-        temdata='where '
-        if type(data)==type({}):
-            temdata+=self.__where(data)
-        else:
-            temdata+=data
-        self.sqlconf['where']=temdata
-        return self
+    #对数组进行条件组合
+    def __tjzh(self,field,data):
+        temdata=''
+        tj=data[0]
+        if tj=='like':
+            temdata=" (%s like '%s')"%(field,data[1])
+        elif tj=='in':
+            temdata=" (%s in(%s))"%(field,data[1])
+        elif tj=='gt':
+            temdata=" (%s > %s)"%(field,data[1])
+        elif tj=='egt':
+            temdata=" (%s >= %s)"%(field,data[1])
+        elif tj=='lt':
+            temdata=" (%s < %s)"%(field,data[1])
+        elif tj=='elt':
+            temdata=" (%s <= %s)"%(field,data[1])
+        elif tj=='neq':
+            temdata=" (%s <> %s)"%(field,data[1])
+        return temdata
 
     #处理查询条件
     def __where(self,data):
@@ -191,25 +186,39 @@ class mysql(object):
         temdata=temdata.replace('1=1 and','')
         return temdata
 
-    #对数组进行条件组合
-    def __tjzh(self,field,data):
-        temdata=''
-        tj=data[0]
-        if tj=='like':
-            temdata=" (%s like '%s')"%(field,data[1])
-        elif tj=='in':
-            temdata=" (%s in(%s))"%(field,data[1])
-        elif tj=='gt':
-            temdata=" (%s > %s)"%(field,data[1])
-        elif tj=='egt':
-            temdata=" (%s >= %s)"%(field,data[1])
-        elif tj=='lt':
-            temdata=" (%s < %s)"%(field,data[1])
-        elif tj=='elt':
-            temdata=" (%s <= %s)"%(field,data[1])
-        elif tj=='neq':
-            temdata=" (%s <> %s)"%(field,data[1])
-        return temdata
+    #初始化查询条件
+    def __init(self):
+        self.sqlconf={
+            'action':'',
+            'table':'',
+            'join':'',
+            'where':'',
+            'order':'',
+            'limit':'',
+            'field':'*'
+        }
+        self.sql=''
+        self.sqlparam={}
+
+    def table(self,data):
+        if self.prefix!='':
+            data=self.prefix+data
+        self.sqlconf['table']=data
+        return self
+
+    def field(self,data):
+        self.sqlconf['field']=data
+        return self
+
+    def where(self,data):
+        temdata='where '
+        if type(data)==type({}):
+            temdata+=self.__where(data)
+        else:
+            temdata+=data
+        self.sqlconf['where']=temdata
+        return self
+
     def order(self,data):
         data=' order by '+data
         self.sqlconf['order']=data
@@ -248,6 +257,7 @@ class mysql(object):
             data=''
         self.sqlconf['limit']=data
         return self
+
     def getlastsql(self):
         return self.lastsql
 
@@ -295,7 +305,7 @@ if __name__ == '__main__':
      da=db.table('article').limit(2).select()
      for a in da:
          print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-    
+
     '''
     #添加数据
     ''''
