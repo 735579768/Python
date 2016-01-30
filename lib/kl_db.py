@@ -135,37 +135,45 @@ class mysql(object):
 
     #处理查询条件
     def __where(self,data):
-        temdata=' 1=1 '
-        for a in data:
-            if type(data[a])==type([]):
-                key=data[a][0]
-                #or组合查询
-                if type(key)==type([]):
-                    pass
+        temdata='1=1'
+        for field in data:
+            temf=data[field]
+            if type(temf)==type([]):
+                le=len(temf)
+                if le>2:
+                    zuhe=temf[le-1]
+                    t='1=1'
+                    for i in temf:
+                        if i!=zuhe:
+                            t+=' %s %s'%(zuhe,self.__tjzh(field,i))
+                    t=t.replace('1=1 %s'%zuhe,'')
+                    temdata+=' and (%s)'%(t)
                 else:
-                    temdata+=self.__tjzh(a,data[a],'and')
+                    te0=self.__tjzh(field,temf)
+                    temdata+=' and %s'%(te0)
             else:
-                temdata+=" and (%s='%s')"%(a,data[a])
+                temdata+=" and (%s='%s')"%(field,temf)
+        temdata=temdata.replace('1=1 and','')
         return temdata
 
     #对数组进行条件组合
-    def __tjzh(self,a,data,zuhe='and'):
+    def __tjzh(self,field,data):
         temdata=''
-        key=data[0]
-        if key=='like':
-            temdata+=" %s (%s like '%s')"%(zuhe,a,data[1])
-        elif key=='in':
-            temdata+=" %s (%s in(%s))"%(zuhe,a,data[1])
-        elif key=='gt':
-            temdata+=" %s (%s > %s)"%(zuhe,a,data[1])
-        elif key=='egt':
-            temdata+=" %s (%s >= %s)"%(zuhe,a,data[1])
-        elif key=='lt':
-            temdata+=" %s (%s < %s)"%(zuhe,a,data[1])
-        elif key=='elt':
-            temdata+=" %s (%s <= %s)"%(zuhe,a,data[1])
-        elif key=='neq':
-            temdata+=" %s (%s <> %s)"%(zuhe,a,data[1])
+        tj=data[0]
+        if tj=='like':
+            temdata=" (%s like '%s')"%(field,data[1])
+        elif tj=='in':
+            temdata=" (%s in(%s))"%(field,data[1])
+        elif tj=='gt':
+            temdata=" (%s > %s)"%(field,data[1])
+        elif tj=='egt':
+            temdata=" (%s >= %s)"%(field,data[1])
+        elif tj=='lt':
+            temdata=" (%s < %s)"%(field,data[1])
+        elif tj=='elt':
+            temdata=" (%s <= %s)"%(field,data[1])
+        elif tj=='neq':
+            temdata=" (%s <> %s)"%(field,data[1])
         return temdata
     def order(self,data):
         data=' order by '+data
@@ -235,8 +243,8 @@ if __name__ == '__main__':
     # num=db.table('article').where('id=3').delete()
     #print(num)
     map={
-    'id':['gt',0],
-    'title':['like','%1%']
+    'title':['like','%1%'],
+    'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
     }
     list=db.table('article').order('id desc').where(map).select()
     for a in list:
