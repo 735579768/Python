@@ -99,7 +99,8 @@ if __name__ == '__main__':
     try:
         #r = geturl(url='http://user.zhaokeli.com',domain='zhaokeli.com')
         #r = geturl(url='http://user.nipic.com/',domain='nipic.com')
-        r = geturl(url='http://user.qzone.qq.com/p/r/cgi-bin/tfriend/friend_hat_get.cgi?hat_seed=1&uin=735579768&fupdate=1&g_tk=1722440021',domain='qzone.qq.com')
+        #查看空间访客
+        r = geturl(url='http://m.qzone.com/mqz_get_visitor?g_tk=1170550145&res_mode=0&res_uin=735579768&offset=0&count=10&page=1&format=json',domain='qzone.qq.com')
         
         #r = geturl(url='https://www.baidu.com/?tn=63090008_1_hao_pg',domain='baidu.com')
         #r = geturl(url='https://kyfw.12306.cn/otn/resources/js/framework/station_name.js',domain='kyfw.12306.cn')
