@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : conn
-Source Server Version : 50160
+Source Server         : localhost
+Source Server Version : 50540
 Source Host           : localhost:3306
 Source Database       : test
 
 Target Server Type    : MYSQL
-Target Server Version : 50160
+Target Server Version : 50540
 File Encoding         : 65001
 
-Date: 2016-01-30 17:33:41
+Date: 2016-01-31 21:41:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,6 +21,7 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `kl_article`;
 CREATE TABLE `kl_article` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `content` text,
   `create_time` int(11) DEFAULT NULL,
@@ -30,5 +31,21 @@ CREATE TABLE `kl_article` (
 -- ----------------------------
 -- Records of kl_article
 -- ----------------------------
-INSERT INTO `kl_article` VALUES ('1', '测试标题', '已经更新', null);
-INSERT INTO `kl_article` VALUES ('2', '测试标题', '<html \'\'\'\'\'>', null);
+INSERT INTO `kl_article` VALUES ('1', '1', '测试标题', '已经更新', null);
+INSERT INTO `kl_article` VALUES ('2', '1', '测试标题', '<html \'\'\'\'\'>', null);
+
+-- ----------------------------
+-- Table structure for kl_category
+-- ----------------------------
+DROP TABLE IF EXISTS `kl_category`;
+CREATE TABLE `kl_category` (
+  `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`category_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=gbk;
+
+-- ----------------------------
+-- Records of kl_category
+-- ----------------------------
+INSERT INTO `kl_category` VALUES ('1', '新闻', null);
