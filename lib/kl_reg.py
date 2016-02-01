@@ -25,12 +25,12 @@ def search(pattern,subject,pos=0,endpos=0):
     p = re.compile(pattern)
     return p.search(subject,pos,endpos)
 
-#按照能够匹配的子串将subject分割后返回列表。 
+#按照能够匹配的子串将subject分割后返回列表。
 def split(pattern,subject):
     p = re.compile(pattern)
     return p.split(subject)
 
-#搜索string，以列表形式返回全部能匹配的子串。 
+#搜索string，以列表形式返回全部能匹配的子串。
 def findall(pattern,subject):
     p =re.compile(pattern)
     return p.findall(subject)
@@ -39,7 +39,7 @@ def findall(pattern,subject):
 def finditer(pattern,subject):
     p =re.compile(pattern)
     return p.findall(subject)
-        
+
 if __name__ == '__main__':
     a='abcde afgh ijkalmno pqrastuvwxyz'
     print(replace(r'a','',a))
