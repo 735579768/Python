@@ -43,10 +43,12 @@ class kl_ftp:
                     continue
                 fol=getcwd(curpwd) + file
                 try:
-                    #(self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrlines('RETR '+fol, writeFile(local_root + fol)))
-                    (self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrbinary('RETR '+fol, writeFile(local_root + fol),self.ftp.maxline))
-
-                    #(isDirectory(fol) and [recursiveDownload(self.ftpnlst(), self.ftppwd())]) or ( print('downloading...%s'%fol),self.ftpstorbinary('RETR '+fol, writeFile(local_root + fol)))
+                    #(self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrbinary('RETR '+fol, writeFile(local_root + fol),self.ftp.maxline))
+                    if self.isDirectory(fol):
+                        self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())
+                    else:
+                        print('downloading...%s'%fol)
+                        self.ftp.retrbinary('RETR '+fol, writeFile(local_root + fol),self.ftp.maxline)
                 except Exception as e:
                     print(e)
                     self.faillist.append(fol)
@@ -83,7 +85,7 @@ if __name__ == '__main__':
     username = 'wwwroot'
     passewd = 'adminrootkl'
     ftp=kl_ftp(host,2016,'wwwroot','adminrootkl')
-    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
+    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','dflz.zip']
     ftp.downloadfolder('test','E:/ftp/')
     ftp.close()
     input('请输入任意键结束...')
