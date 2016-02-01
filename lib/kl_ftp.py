@@ -50,6 +50,8 @@ class kl_ftp:
         try:
             if self.ftptype=='ftp':
                 self.ftp.cwd(filename)
+            else:
+                stdin, stdout, stderr = self.ssh.exec_command(filename)
             createDir(self.localroot+filename)
             return True
         except ftplib.error_perm as e:
@@ -101,11 +103,14 @@ class kl_ftp:
     def s_downloadfolder(self,folder,localroot):
         self.localroot=localroot
         createDir(self.localroot)
-        self.sftp.get(folder,localroot+'i.php')
+        self.sftp.get(folder,localroot+'zhaokeli.com.zip')
 
     def ssh_command(self,command):
         stdin, stdout, stderr = self.ssh.exec_command(command)
-        print stdout.readlines()
+        relist=[]
+        for i in stdout.readlines():
+            relist.append(i.strip('\n'))
+        print(relist)
 
     def close(self):
         if self.ftp!=None:
@@ -127,5 +132,6 @@ if __name__ == '__main__':
 
     #连接ssh服务器
     sftp=kl_ftp('116.255.159.47', 25,'root', 'adminrootkl','sftp')
-    sftp.s_downloadfolder('/var/www/zhaokeli.com/index.php', 'E:/sftp/')
+    #sftp.s_downloadfolder('/var/www/zhaokeli.com.zip', 'E:/sftp/')
+    sftp.ssh_command('cd /var/www ; ls -A')
     input('请输入任意键结束...')
