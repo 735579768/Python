@@ -50,6 +50,11 @@ class kl_ftp:
                     self.log.write("Error:%s"%e)
                     self.log.write("%s"%e)
 
+    #从远程下载单个文件到本地
+    def downloadfile(self,filepath,localpath):
+        pass
+
+    #下载远程文件夹到本地
     def downloadfolder(self,folder,localroot):
         if self.ftp:
             self.localroot=localroot
@@ -57,6 +62,14 @@ class kl_ftp:
             createDir(self.localroot+folder)
             self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd());
         return True
+
+    #从本地上传文件到远程
+    def uploadfile(self,localpath,filepath):
+        pass
+
+    #上传本地文件夹到远程
+    def uploadfolder(self,localroot,folder):
+        pass
 
     def close(self):
         self.ftp.quit()
