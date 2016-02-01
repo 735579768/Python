@@ -1,17 +1,18 @@
 '''
 +----------------------------------------------------------------------
 // | Author: 赵克立 <735579768@qq.com> <http://www.zhaokeli.com>
+// |mysql数据库操作类
 +----------------------------------------------------------------------
-#返回单行数据
-result = cursor.fetchone()
-#返回所有数据
-result = cursor.fetchall()
-
-获得游标
-cursor = conn.cursor(cursorclass=MySQLdb.cursors.Cursor)
-cursorclass参数:
-MySQLdb.cursors.Cursor， 默认值，执行SQL语句返回List，每行数据为tuple
-MySQLdb.cursors.DictCursor， 执行SQL语句返回List，每行数据为Dict
+// |#返回单行数据
+// |result = cursor.fetchone()
+// |#返回所有数据
+// |result = cursor.fetchall()
+// |
+// |获得游标
+// |cursor = conn.cursor(cursorclass=MySQLdb.cursors.Cursor)
+// |cursorclass参数:
+// |MySQLdb.cursors.Cursor， 默认值，执行SQL语句返回List，每行数据为tuple
+// |MySQLdb.cursors.DictCursor， 执行SQL语句返回List，每行数据为Dict
 '''
 import pymysql
 class mysql(object):
