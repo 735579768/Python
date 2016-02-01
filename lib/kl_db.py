@@ -316,6 +316,7 @@ class mysql(object):
         self.cur.close();
         self.con.close();
 
+#使用示例
 if __name__ == '__main__':
     db=mysql({
             'host':'localhost',
