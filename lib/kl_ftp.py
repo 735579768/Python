@@ -23,9 +23,6 @@ class kl_ftp:
         #初始化日志
         self.log=kl_log.kl_log('kl_ftp')
 
-    def appendignorefolder(self,floder):
-        self.ignorefolder.append(floder)
-
     #判断是否是目录
     def isDirectory(self,filename):
         try:
