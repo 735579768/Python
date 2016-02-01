@@ -1,17 +1,29 @@
-import sys
 import os
 import time
-def write(data='',prifix='',filepath='',model='a'):
-    if filepath =='':
-        filename=time.strftime('%Y-%m-%d',time.localtime())
-        filepath='./data/log/%s%s.log'%(prifix,filename)
-    if os.path.exists(os.path.dirname(filepath))==False :
-        os.makedirs(os.path.dirname(filepath))
-    ti=time.strftime('%Y-%m-%d %X',time.localtime())
-    f=open(filepath,model)
-    f.write("%s: %s\r\n"%(ti,data))
-    f.close()
-    return True
+class kl_log:
+    def __init__(self,filename):
+        self.filename=filename+'-'
+        self.filepath='./data/log/'
+
+    def setpath(self,filepath):
+        self.filepath=filepath
+
+    def setfilename(self,filename):
+        self.filename=filename+'-'
+
+    def write(self,data='',model='a'):
+        fname=time.strftime('%Y-%m-%d',time.localtime())
+        fpath='%s%s%s.log'%(self.filepath,self.filename,fname)
+        if os.path.exists(os.path.dirname(fpath))==False :
+            os.makedirs(os.path.dirname(fpath))
+
+        ti=time.strftime('%Y-%m-%d %X',time.localtime())
+        f=open(fpath,model)
+        f.write("%s: %s\r\n"%(ti,data))
+        f.close()
+        return True
+
 if __name__ == '__main__':
-	write('aaaaaa')
-	input('按任意键继续...')
+    log=kl_log('app')
+    log.write('aaaaaa')
+    input('按任意键继续...')
