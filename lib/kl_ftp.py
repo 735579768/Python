@@ -2,7 +2,7 @@ import ftplib, os ,codecs,kl_log
 
 #定义匿名函数
 #打开一个文件句柄
-writeFile = lambda filename: codecs.open(filename, 'wb','utf-8').write
+writeFile = lambda filename: codecs.open(filename, 'w', 'UTF-8').write
 #返回当前目录路径
 getcwd = lambda curwd: curwd == '/' and '/' or (curwd)
 #创建目录
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     username = 'wwwroot'
     passewd = 'adminrootkl'
     ftp=kl_ftp(host,2016,'wwwroot','adminrootkl')
-    ftp.ignorefolder=['Data', 'Public']
+    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins']
     ftp.downloadfolder('test','E:/ftp/')
     ftp.close()
     input('请输入任意键结束...')
