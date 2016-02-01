@@ -1,8 +1,8 @@
-import ftplib, os ,codecs,kl_log
+import ftplib, os , kl_log
 
 #定义匿名函数
 #打开一个文件句柄
-writeFile = lambda filename: codecs.open(filename, 'w', 'UTF-8').write
+writeFile = lambda filename:open(filename, 'wb').write
 #返回当前目录路径
 getcwd = lambda curwd: curwd == '/' and '/' or (curwd)
 #创建目录
@@ -14,6 +14,7 @@ class kl_ftp:
         self.ignorefolder=[]
         self.faillist=[]
         self.localroot='./'
+        #最大1G文件
         self.ftp.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
         self.ftp.connect(host,port)
@@ -42,7 +43,9 @@ class kl_ftp:
                     continue
                 fol=getcwd(curpwd) + file
                 try:
-                    (self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrlines('RETR '+fol, writeFile(local_root + fol)))
+                    #(self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrlines('RETR '+fol, writeFile(local_root + fol)))
+                    (self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrbinary('RETR '+fol, writeFile(local_root + fol),self.ftp.maxline))
+
                     #(isDirectory(fol) and [recursiveDownload(self.ftpnlst(), self.ftppwd())]) or ( print('downloading...%s'%fol),self.ftpstorbinary('RETR '+fol, writeFile(local_root + fol)))
                 except Exception as e:
                     print(e)
@@ -80,7 +83,7 @@ if __name__ == '__main__':
     username = 'wwwroot'
     passewd = 'adminrootkl'
     ftp=kl_ftp(host,2016,'wwwroot','adminrootkl')
-    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins']
+    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
     ftp.downloadfolder('test','E:/ftp/')
     ftp.close()
     input('请输入任意键结束...')
