@@ -18,6 +18,8 @@ class kl_ftp:
         self.port=port
         self.username=username
         self.password=password
+        self.downloading=0
+        self.bigfile=[]
         self.ftp = None
         self.ignorefolder=[]
         self.faillist=[]
@@ -68,6 +70,7 @@ class kl_ftp:
                         fsize = int(ret.split(' ')[1])
                         #大于10M的文件用多线程分块下载
                         if fsize>1024*1024*10:
+                            self.bigfile.append(fol)
                             print('downloading...%s ----> %s'%(fol, localpath))
                             print('start treading download file: size %d M'%(fsize/(1024*1024)))
                             #self.download_by_thread(fol,fsize,10)
@@ -95,6 +98,10 @@ class kl_ftp:
         self.log.write("下载错误的文件:%s"%self.faillist)
         print('下载错误的文件:')
         print(self.faillist)
+        while self.downloading!=0:
+            print('大文件正在下载...%s'%self.bigfile)
+            time.sleep(1)
+        print('下载完成!')
         return True
 
     #从本地上传文件到远程
@@ -110,6 +117,7 @@ class kl_ftp:
             self.ftp.quit()
 
     def download_by_thread(self, filename,fsize, threadnum=1, blocksize=8192):
+        self.downloading=self.downloading+1
         print ('file', filename, 'size:', fsize)
         rest = None
         bsize = math.ceil(fsize / threadnum)
@@ -159,6 +167,8 @@ class kl_ftp:
          os.remove(fname)
         fw.close()
         print ('all ok')
+        self.bigfile.remove(filename)
+        self.downloading=self.downloading-1
 
     def download_file(self, inx, filename, begin=0, size=0, blocksize=8192, rest=None):
         onlydir = os.path.dirname(filename)
