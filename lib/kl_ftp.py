@@ -6,8 +6,6 @@
 // |远程和本地目录以不要 "/" 结尾
 '''
 import ftplib, os , kl_log, paramiko
-from Queue import Queue
-queue = Queue()
 #定义匿名函数
 #打开一个文件句柄
 writeFile = lambda filename:open(filename, 'wb').write
