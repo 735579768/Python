@@ -6,12 +6,11 @@
 // |远程和本地目录以不要 "/" 结尾
 '''
 import ftplib, os , kl_log, paramiko
-
+from Queue import Queue
+queue = Queue()
 #定义匿名函数
 #打开一个文件句柄
 writeFile = lambda filename:open(filename, 'wb').write
-#返回当前目录路径
-#getcwd = lambda curwd: curwd == '/' and '/' or (curwd)
 #创建目录
 createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
@@ -54,7 +53,6 @@ class kl_ftp:
                     continue
                 fol=curpwd + file
                 try:
-                    #(self.isDirectory(fol) and [self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())]) or ( print('downloading...%s'%fol),self.ftp.retrbinary('RETR '+fol, writeFile(local_root + fol),self.ftp.maxline))
                     if self.isDirectory(fol):
                         self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())
                     else:
@@ -67,6 +65,7 @@ class kl_ftp:
                     self.log.write("Error:%s"%e)
                     self.log.write("%s"%e)
 
+
     #从远程下载单个文件到本地
     def downloadfile(self,filepath,localpath):
         pass
@@ -78,6 +77,9 @@ class kl_ftp:
             self.ftp.cwd(folder)
             createDir(self.localroot+folder)
             self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd());
+        self.log.write("下载错误的文件:%s"%self.faillist)
+        print('下载错误的文件:')
+        print(self.faillist)
         return True
 
     #从本地上传文件到远程
@@ -101,7 +103,7 @@ class kl_sftp:
         self.localroot='./'
         self.__sftpconn(host,username,password)
         #初始化日志
-        self.log=kl_log.kl_log('kl_ftp')
+        self.log=kl_log.kl_log('kl_sftp')
 
     #定义 ssh 连接函数
     def __sftpconn(self,_host,_username='',_password=''):
@@ -157,12 +159,16 @@ class kl_sftp:
                     self.log.write("Error:%s"%e)
                     self.log.write("%s"%e)
 
+
     def downloadfolder(self,folder,localroot):
         if self.sftp:
             self.localroot=localroot
             self.sftp.chdir(folder)
             createDir(self.localroot+folder)
             self.__downfilelist(self.sftp.listdir(), self.sftp.getcwd());
+        self.log.write("下载错误的文件:%s"%self.faillist)
+        print('下载错误的文件:')
+        print(self.faillist)
         return True
 
     def ssh_command(self,command):
@@ -180,14 +186,18 @@ class kl_sftp:
 
 
 if __name__ == '__main__':
+    print('请输入用户名:')
+    username=input()
+    print('请输入密码:')
+    password=input()
     #连接ftp服务器
-    ftp=kl_ftp('116.255.214.72',2016,'wwwroot','adminrootkl')
+    ftp=kl_ftp('116.255.214.72',2016,username,password)
     ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','dflz.zip']
     ftp.downloadfolder('test','E:/ftp')
     ftp.close()
 
     #连接ssh服务器
-    sftp=kl_sftp('116.255.159.47', 22,'root', 'adminrootkl')
+    sftp=kl_sftp('116.255.159.47', 22,'root', password)
     sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
     sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
     sftp.close()
