@@ -164,7 +164,6 @@ class kl_ftp:
         onlydir = os.path.dirname(filename)
         onlyname = os.path.basename(filename)
         tname = threading.currentThread().getName()+': '
-        #inx = string.split(tname, '-')[-1]
         # 新建一个连接来下载，每个线程一个连接，注意这里没有考虑有些ftp服务器限制一个ip只能有多少连接的情况。
         myftp=None
         try:
@@ -223,7 +222,7 @@ class kl_ftp:
             pass
             #print ('%s %s'%(tname,e))
         myftp.quit()
-        print('返回值是:%s'%ret)
+        #print('返回值是:%s'%ret)
         return ret
 
 class kl_sftp:
