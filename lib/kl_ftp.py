@@ -116,8 +116,24 @@ class kl_ftp:
         print('下载完成!')
 
     #从本地上传文件到远程
-    def uploadfile(self,localpath,filepath):
-        pass
+    def uploadfile(self,localpath,remotepath):
+        onlydir=os.path.dirname(remotepath)
+        self.__mkdremote(onlydir)
+        if not os.path.isfile(localpath):
+            return
+        print ('+++ upload %s to %s:%s'%(localpath, self.host, remotepath))
+        self.ftp.storbinary('STOR ' + remotepath, open(localpath, 'rb'))
+
+    #创建远程目录路径
+    def __mkdremote(self,dirpath):
+        arr=dirpath.split('/')
+        for i in arr:
+            if i!='':
+                try:
+                    self.ftp.mkd(i)
+                except Exception as e:
+                    pass
+                self.ftp.cwd(i)
 
     #上传本地文件夹到远程
     def uploadfolder(self,localroot,folder):
@@ -296,7 +312,7 @@ class kl_sftp:
         return True
 
     #从本地上传文件到远程
-    def uploadfile(self,localpath,filepath):
+    def uploadfile(self,localpath,remotepath):
         pass
 
     #上传本地文件夹到远程
@@ -348,16 +364,19 @@ class kl_sftp:
 
 
 if __name__ == '__main__':
-    print('请输入用户名:')
-    username=input()
-    print('请输入密码:')
-    password=input()
+    # print('请输入用户名:')
+    # username=input()
+    # print('请输入密码:')
+    # password=input()
 
     #连接ftp服务器
-    ftp=kl_ftp('116.255.214.72',2016,username,password)
+    ftp=kl_ftp('192.168.198.131',2016,'wwwroot','123456')
     ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
-    ftp.downloadfile('test/dflz.zip','E:/ftp')
+    #ftp.downloadfile('test/dflz.zip','E:/ftp')
     #ftp.downloadfolder('test','E:/ftp')
+
+    #上传文件
+    ftp.uploadfile('E:/ftp/test/dflz.zip', '/new/dflz.org/dflz.zip')
     ftp.close()
 
     #连接ssh服务器
