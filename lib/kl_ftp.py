@@ -5,7 +5,7 @@
 +----------------------------------------------------------------------
 // |远程和本地目录以不要 "/" 结尾
 '''
-import ftplib, os , kl_log, paramiko
+import ftplib, os , kl_log, paramiko, threading, math, time
 #定义匿名函数
 #打开一个文件句柄
 writeFile = lambda filename:open(filename, 'wb').write
@@ -14,23 +14,28 @@ createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
 class kl_ftp:
     def __init__(self,host,port,username,password):
+        self.host=host
+        self.port=port
+        self.username=username
+        self.password=password
         self.ftp = None
         self.ignorefolder=[]
         self.faillist=[]
         self.localroot='./'
-        self.__ftpconn(host,port,username,password)
+        self.ftp=self.__ftpconn()
         #初始化日志
         self.log=kl_log.kl_log('kl_ftp')
 
-    def __ftpconn(self,host,port,username,password):
-        self.ftp=ftplib.FTP()
+    def __ftpconn(self):
+        ftp=ftplib.FTP()
         #最大1G文件
-        self.ftp.maxline=1024*1024*1024
+        ftp.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
-        self.ftp.connect(host,port)
-        resp = self.ftp.login(username, password)
+        ftp.connect(self.host,self.port)
+        resp = ftp.login(self.username, self.password)
         #输出欢迎信息
         print(resp)
+        return ftp
 
     #判断是否是目录
     def isDirectory(self,filename):
@@ -56,7 +61,19 @@ class kl_ftp:
                     else:
                         localpath=self.localroot + fol
                         print('downloading...%s ----> %s'%(fol, localpath))
-                        self.ftp.retrbinary('RETR '+fol, writeFile(localpath),self.ftp.maxline)
+
+                        #取文件的大小
+                        cmd = "SIZE "+fol
+                        ret = self.ftp.sendcmd(cmd)
+                        fsize = int(ret.split(' ')[1])
+                        #大于10M的文件用多线程分块下载
+                        if fsize>1024*1024*10:
+                            print('downloading...%s ----> %s'%(fol, localpath))
+                            print('start treading download file: size %d M'%(fsize/(1024*1024)))
+                            #self.download_by_thread(fol,fsize,10)
+                            threading.Thread(target=self.download_by_thread, args=(fol,fsize, 5,)).start()
+                        else:
+                            self.ftp.retrbinary('RETR '+fol, writeFile(localpath),self.ftp.maxline)
                 except Exception as e:
                     print(e)
                     self.faillist.append(fol)
@@ -73,7 +90,7 @@ class kl_ftp:
         if self.ftp:
             self.localroot=localroot
             self.ftp.cwd(folder)
-            createDir(self.localroot+folder)
+            createDir(self.localroot+'/'+folder)
             self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd());
         self.log.write("下载错误的文件:%s"%self.faillist)
         print('下载错误的文件:')
@@ -91,6 +108,123 @@ class kl_ftp:
     def close(self):
         if self.ftp!=None:
             self.ftp.quit()
+
+    def download_by_thread(self, filename,fsize, threadnum=1, blocksize=8192):
+        print ('file', filename, 'size:', fsize)
+        rest = None
+        bsize = math.ceil(fsize / threadnum)
+
+        # 创建线程
+        threads= []
+        for i in range(0, threadnum-1):
+            begin = bsize * i
+            print (i, begin, bsize)
+            tp = threading.Thread(target=self.download_file, args=(i, filename,begin,bsize,blocksize,rest,))
+            threads.append(tp)
+
+        #计算最后一个线程下载剩下的全部大小
+        have1 = bsize * threadnum
+        have2 = fsize - have1
+        lastsize = bsize + have2
+        begin = bsize * (threadnum-1)
+        print (threadnum-1, begin, lastsize)
+        tp = threading.Thread(target=self.download_file, args=(threadnum-1, filename, begin,lastsize,blocksize,rest,))
+        threads.append(tp)
+
+        print ('threads:', len(threads))
+
+        #启动下载线程
+        for t in threads:
+            t.start()
+            time.sleep(1)
+        #阻塞线程下载,直到结束
+        for t in threads:
+            t.join()
+
+        # 每个线程都下载完成了，合并临时文件为一个文件
+        fw = open(self.localroot+filename, "wb")
+        for i in range(0, threadnum):
+         fname =self.localroot+ filename+'.part.'+str(i)
+         print (fname)
+         if not os.path.isfile(fname):
+            print ('not found', fname)
+            continue
+         f1 = open(fname, 'rb')
+         while 1:
+            data = f1.read(8192)
+            if not len(data):
+                   break
+            fw.write(data)
+         f1.close()
+         os.remove(fname)
+        fw.close()
+        print ('all ok')
+
+    def download_file(self, inx, filename, begin=0, size=0, blocksize=8192, rest=None):
+        onlydir = os.path.dirname(filename)
+        onlyname = os.path.basename(filename)
+        tname = threading.currentThread().getName()+': '
+        #inx = string.split(tname, '-')[-1]
+        # 新建一个连接来下载，每个线程一个连接，注意这里没有考虑有些ftp服务器限制一个ip只能有多少连接的情况。
+        myftp=None
+        try:
+            myftp =self.__ftpconn()
+        except Exception as e:
+            return False
+        myftp.cwd(onlydir)
+        print('进入文件夹:%s'%onlydir)
+        # 创建临时文件
+        fp = open(self.localroot+filename+'.part.'+str(inx), 'wb')
+        #fp.seek(begin)
+
+        callback = fp.write
+
+        haveread = 0
+        myftp.voidcmd('TYPE I')
+        # 告诉服务器要从文件的哪个位置开始下载
+        cmd1 = "REST "+str(begin)
+        print ('%s : 下载文件位置--> %s'%(tname, cmd1))
+        ret = myftp.sendcmd(cmd1)
+        # 开始下载
+        cmd = "RETR "+onlyname
+        conn = myftp.transfercmd(cmd, rest)
+        readsize = blocksize
+        while 1:
+         if size > 0:
+            last = size - haveread
+            if last > blocksize:
+                   readsize = blocksize
+            else:
+                   readsize = last
+         data = conn.recv(readsize)
+         if not data:
+            break
+
+         # 已经下载的数据长度
+         haveread = haveread + len(data)
+         # 只能下载指定长度的数据，下载到就退出
+         if haveread > size:
+            print (tname, 'haveread:', haveread, 'size:', size)
+            hs = haveread - size
+            callback(data[:hs])
+            break
+         elif haveread == size:
+            callback(data)
+            print (tname, 'haveread:', haveread)
+            break
+
+         callback(data)
+
+        conn.close()
+        fp.close()
+        try:
+            ret = myftp.getresp()
+        except Exception as e:
+            pass
+            #print ('%s %s'%(tname,e))
+        myftp.quit()
+        print('返回值是:%s'%ret)
+        return ret
 
 class kl_sftp:
     def __init__(self,host,port,username,password):
@@ -184,20 +318,21 @@ class kl_sftp:
 
 
 if __name__ == '__main__':
-    print('请输入用户名:')
-    username=input()
-    print('请输入密码:')
-    password=input()
-
+    # print('请输入用户名:')
+    # username=input()
+    # print('请输入密码:')
+    # password=input()
+    username='wwwroot'
+    password='adminrootkl'
     #连接ftp服务器
     ftp=kl_ftp('116.255.214.72',2016,username,password)
-    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','dflz.zip']
+    ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
     ftp.downloadfolder('test','E:/ftp')
     ftp.close()
 
     #连接ssh服务器
-    sftp=kl_sftp('116.255.159.47', 22,'root', password)
-    sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
-    sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
-    sftp.close()
+    # sftp=kl_sftp('116.255.159.47', 22,'root', password)
+    # sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
+    # sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
+    # sftp.close()
     input('请输入任意键结束...')
