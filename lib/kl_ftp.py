@@ -36,7 +36,7 @@ class kl_ftp:
         ftp.connect(self.host,self.port)
         resp = ftp.login(self.username, self.password)
         #输出欢迎信息
-        print(resp)
+        #print(resp)
         return ftp
 
     #判断是否是目录
@@ -86,7 +86,14 @@ class kl_ftp:
 
     #从远程下载单个文件到本地
     def downloadfile(self,filepath,localpath):
-        pass
+        self.localroot=localpath
+        onlydir = os.path.dirname(filepath)
+        onlyname = os.path.basename(filepath)
+        self.ftp.cwd(onlydir)
+        createDir(self.localroot+'/'+onlydir)
+        self.__recursiveDownload([onlyname], self.ftp.pwd());
+        self.__isdownloadover()
+        return True
 
     #下载远程文件夹到本地
     def downloadfolder(self,folder,localroot):
@@ -98,11 +105,15 @@ class kl_ftp:
         self.log.write("下载错误的文件:%s"%self.faillist)
         print('下载错误的文件:')
         print(self.faillist)
+        self.__isdownloadover()
+        return True
+
+    #判断是否下载完成
+    def __isdownloadover(self):
+        print('大文件正在下载...%s'%self.bigfile)
         while self.downloading!=0:
-            print('大文件正在下载...%s'%self.bigfile)
             time.sleep(1)
         print('下载完成!')
-        return True
 
     #从本地上传文件到远程
     def uploadfile(self,localpath,filepath):
@@ -181,7 +192,7 @@ class kl_ftp:
         except Exception as e:
             return False
         myftp.cwd(onlydir)
-        print('进入文件夹:%s'%onlydir)
+        #print('进入文件夹:%s'%onlydir)
         # 创建临时文件
         fp = open(self.localroot+filename+'.part.'+str(inx), 'wb')
         #fp.seek(begin)
@@ -272,7 +283,17 @@ class kl_sftp:
 
     #从远程下载单个文件到本地
     def downloadfile(self,filepath,localpath):
-        pass
+        onlydir = os.path.dirname(filepath)
+        onlyname = os.path.basename(filepath)
+        if self.sftp:
+            self.localroot=localpath
+            self.sftp.chdir(onlydir)
+            createDir(self.localroot+onlydir)
+            self.__downfilelist([onlyname], self.sftp.getcwd());
+        self.log.write("下载错误的文件:%s"%self.faillist)
+        print('下载错误的文件:')
+        print(self.faillist)
+        return True
 
     #从本地上传文件到远程
     def uploadfile(self,localpath,filepath):
@@ -336,7 +357,8 @@ if __name__ == '__main__':
     #连接ftp服务器
     ftp=kl_ftp('116.255.214.72',2016,username,password)
     ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
-    ftp.downloadfolder('test','E:/ftp')
+    ftp.downloadfile('test/dflz.zip','E:/ftp')
+    #ftp.downloadfolder('test','E:/ftp')
     ftp.close()
 
     #连接ssh服务器
