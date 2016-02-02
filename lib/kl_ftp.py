@@ -58,8 +58,9 @@ class kl_ftp:
                     if self.isDirectory(fol):
                         self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())
                     else:
-                        print('downloading...%s'%fol)
-                        self.ftp.retrbinary('RETR '+fol, writeFile(self.localroot + fol),self.ftp.maxline)
+                        localpath=self.localroot + fol
+                        print('downloading...%s ----> %s'%(fol, localpath))
+                        self.ftp.retrbinary('RETR '+fol, writeFile(localpath),self.ftp.maxline)
                 except Exception as e:
                     print(e)
                     self.faillist.append(fol)
@@ -147,8 +148,9 @@ class kl_sftp:
                     if self.isDirectory(fol):
                         self.__downfilelist(self.sftp.listdir(), self.sftp.getcwd())
                     else:
-                        print('downloading...%s'%fol)
-                        self.sftp.get(fol,self.localroot+fol)
+                        localpath=self.localroot+fol
+                        print('downloading...%s ----> %s'%(fol, localpath))
+                        self.sftp.get(fol,localpath)
                 except Exception as e:
                     print(e)
                     self.faillist.append(fol)
@@ -185,8 +187,8 @@ if __name__ == '__main__':
     ftp.close()
 
     #连接ssh服务器
-    # sftp=kl_sftp('116.255.159.47', 22,'root', 'adminrootkl')
-    # sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
-    # sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
-    # sftp.close()
+    sftp=kl_sftp('116.255.159.47', 22,'root', 'adminrootkl')
+    sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
+    sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
+    sftp.close()
     input('请输入任意键结束...')
