@@ -178,6 +178,7 @@ class kl_sftp:
 
 
 if __name__ == '__main__':
+    #连接ftp服务器
     ftp=kl_ftp('116.255.214.72',2016,'wwwroot','adminrootkl')
     ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','dflz.zip']
     ftp.downloadfolder('test','E:/ftp')
@@ -185,7 +186,7 @@ if __name__ == '__main__':
 
     #连接ssh服务器
     # sftp=kl_sftp('116.255.159.47', 22,'root', 'adminrootkl')
-    # sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','dflz.zip']
-    # sftp.downloadfolder('/var/www', 'E:/sftp')
+    # sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
+    # sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
     # sftp.close()
     input('请输入任意键结束...')
