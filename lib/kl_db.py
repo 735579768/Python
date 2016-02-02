@@ -129,25 +129,28 @@ class mysql(object):
             fie=''
             val=''
             for a in self.data:
-                if fie!='':
-                    fie+=',`%s`'%a
-                else:
-                    fie+='`%s`'%a
+                fie+=(',`%s`'%a) if fie!='' else  ('`%s`'%a)
+                val+=(',%s') if val!='' else ('%s')
+                # if fie!='':
+                #     fie+=',`%s`'%a
+                # else:
+                #     fie+='`%s`'%a
 
-                if val!='':
-                    val+=',%s'
-                else:
-                    val+='%s'
+                # if val!='':
+                #     val+=',%s'
+                # else:
+                #     val+='%s'
                 self.sqlparam.append(self.data[a])
             temsql='insert %s (%s) values(%s)'%(table, fie, val)
 
         elif action=='update':
             val=''
             for a in self.data:
-                if val!='':
-                    val+=',`'+a+'`=%s'
-                else:
-                    val+='`'+a+'`=%s'
+                val+=(',`'+a+'`=%s') if val!='' else ('`'+a+'`=%s')
+                # if val!='':
+                #     val+=',`'+a+'`=%s'
+                # else:
+                #     val+='`'+a+'`=%s'
                 self.sqlparam.append(self.data[a])
             temsql='update %s set %s %s %s'%(table, val, where,limit)
 
