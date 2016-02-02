@@ -348,12 +348,11 @@ class kl_sftp:
 
 
 if __name__ == '__main__':
-    # print('请输入用户名:')
-    # username=input()
-    # print('请输入密码:')
-    # password=input()
-    username='wwwroot'
-    password='adminrootkl'
+    print('请输入用户名:')
+    username=input()
+    print('请输入密码:')
+    password=input()
+
     #连接ftp服务器
     ftp=kl_ftp('116.255.214.72',2016,username,password)
     ftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP']
