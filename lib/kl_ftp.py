@@ -127,18 +127,29 @@ class kl_ftp:
 
     #创建远程目录路径
     def __mkdremote(self,dirpath):
-        arr=dirpath.split('/')
+        arr=dirpath[1:].split('/')
+        mdir=''
         for i in arr:
             if i!='':
                 try:
-                    self.ftp.mkd(i)
-                except Exception as e:
+                    mdir+='/'+i
+                    self.ftp.mkd(mdir)
+                except:
                     pass
-                self.ftp.cwd(i)
+                #self.ftp.cwd(i)
 
     #上传本地文件夹到远程
-    def uploadfolder(self,localroot,folder):
-        pass
+    def uploadfolder(self,localdir,remotedir):
+        if not os.path.isdir(localdir):
+            return
+        #self.__mkdremote(remotedir)
+        #self.ftp.cwd(remotedir)
+        for file in os.listdir(localdir):
+            src=localdir+'/'+file
+            if os.path.isfile(src):
+                self.uploadfile(src, remotedir+'/'+file)
+            elif os.path.isdir(src):
+                self.uploadfolder(src, remotedir+'/'+file)
 
     def close(self):
         if self.ftp!=None:
@@ -377,7 +388,9 @@ if __name__ == '__main__':
     #ftp.downloadfolder('test','E:/ftp')
 
     #上传文件
-    ftp.uploadfile('E:/ftp/test/dflz.zip', '/new/dflz.org/dflz.zip')
+    #ftp.uploadfile('E:/ftp/test/dflz.zip', '/new/dflz.org/dflz.zip')
+    #上传文件夹
+    ftp.uploadfolder('E:/ftp/test', '/news')
     ftp.close()
 
     #连接ssh服务器
