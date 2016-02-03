@@ -122,7 +122,7 @@ class kl_ftp:
         self.__mkdremote(onlydir)
         if not os.path.isfile(localpath):
             return
-        print ('+++ upload %s to %s:%s'%(localpath, self.host, remotepath))
+        print ('uploading... %s ----> %s'%(localpath,remotepath))
         self.ftp.storbinary('STOR ' + remotepath, open(localpath, 'rb'))
 
     #创建远程目录路径
