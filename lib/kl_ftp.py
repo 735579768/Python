@@ -142,9 +142,9 @@ class kl_ftp:
     def uploadfolder(self,localdir,remotedir):
         if not os.path.isdir(localdir):
             return
-        #self.__mkdremote(remotedir)
-        #self.ftp.cwd(remotedir)
         for file in os.listdir(localdir):
+            if file in self.ignorefolder:
+                    continue
             src=localdir+'/'+file
             if os.path.isfile(src):
                 self.uploadfile(src, remotedir+'/'+file)
