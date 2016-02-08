@@ -95,6 +95,7 @@ class kl_http:
                     self.headers[tem[0]]=tem[1]
         elif type(data)==type({}):
             self.headers=data
+        self.resetsession()
 
     def setcookies(self,data):
         if type(data)==type(''):
@@ -105,6 +106,7 @@ class kl_http:
                     self.cookies[tem[0]]=tem[1]
         elif type(data)==type({}):
             self.cookies=data
+        self.resetsession()
 
     #get取网页数据
     def geturl(self,url,data={}):
