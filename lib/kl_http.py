@@ -20,6 +20,10 @@ class kl_http:
         self.opener=None
         self.ckjar=None
 
+    def resetsession(self):
+        ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
+        self.opener=urllib.request.build_opener(ckproc)
+
     def __setcookies(self,url):
         urls=urllib.parse.urlsplit(url)
         self.hostname=urls[1]
