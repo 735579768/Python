@@ -26,10 +26,12 @@ class kl_http:
         self.opener=None
         self.ckjar=None
 
+    #重置会话
     def resetsession(self):
-        ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
-        self.opener=urllib.request.build_opener(ckproc)
+        self.opener=None
+        self.__setcookies()
 
+    #设置cookies并创建会话
     def __setcookies(self,url):
         if   self.opener!=None:
             return None
