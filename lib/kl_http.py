@@ -14,6 +14,12 @@ import urllib.parse
 import http.cookiejar
 class kl_http:
     def __init__(self):
+        self.isproxy=False
+        self.proxy={
+            'username':'',
+            'password':'',
+            'proxyserver':''
+        }
         self.hostname=''
         self.headers = {}
         self.cookies = {}
@@ -25,6 +31,8 @@ class kl_http:
         self.opener=urllib.request.build_opener(ckproc)
 
     def __setcookies(self,url):
+        if   self.opener!=None:
+            return None
         urls=urllib.parse.urlsplit(url)
         self.hostname=urls[1]
         if os.path.exists('./data/cookies')==False :
@@ -40,6 +48,14 @@ class kl_http:
              self.ckjar.save(ignore_discard=True, ignore_expires=True)
         self.__addcookies()
         ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
+
+        #代理
+        if self.proxy['proxyserver']!='':
+            proxy='http://%s:%s@%s' %(self.proxy['username'],self.proxy['password'],self.proxy['proxyserver'])
+            proxy_handler=urllib.request.ProxyHandler({'http':proxy})
+            self.opener=urllib.request.build_opener(ckproc,proxy_handler)
+            return None
+
         self.opener=urllib.request.build_opener(ckproc)
 
     #添加自定义的cookies
@@ -59,6 +75,13 @@ class kl_http:
                          rfc2109=False,
                 )
             self.ckjar.set_cookie(cookie_item)    # Apply each cookie_item to cookiejar
+
+    #设置代理服务器
+    def setproxy(self,username,password,proxyserver):
+        self.opener=None
+        self.proxy['username']=username
+        self.proxy['password']=password
+        self.proxy['proxyserver']=proxyserver
 
     #设置请求的header头
     def setheaders(self,data):
@@ -84,6 +107,7 @@ class kl_http:
     #get取网页数据
     def geturl(self,url,data={}):
             self.__setcookies(url)
+            r=None
             try:
                 params=urllib.parse.urlencode(data)#.encode(encoding='UTF8')
                 req=''
@@ -101,11 +125,13 @@ class kl_http:
                 return r
             except urllib.error.HTTPError as e:
                 print(e.code)
-                print(e.read().decode("utf8"))
+                #print(e.read().decode())
+                return r
 
     #get取网页数据
     def posturl(self,url,data={}):
         self.__setcookies(url)
+        r=None
         try:
             params=urllib.parse.urlencode(data).encode(encoding='UTF8')
             req=urllib.request.Request(url,params,self.headers)
@@ -115,7 +141,8 @@ class kl_http:
             return r
         except urllib.error.HTTPError as e:
             print(e.code)
-            print(e.read().decode("utf8"))
+            #print(e.read().decode())
+            return r
 
 
 if __name__ == '__main__':
@@ -123,12 +150,11 @@ if __name__ == '__main__':
     ht.setheaders('''\
 Accept:*/*
 Accept-Language:en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
-Connection:keep-alive
-Host:user.zhaokeli.com
-Referer:http://user.zhaokeli.com/
-User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36
-X-Requested-With:XMLHttpRequest\
+User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36\
     ''');
     ht.setcookies('ankc_admin__uid__=ainiku%3A%7B%22u%22%3A%22MDAwMDAwMDAwMLyQiNbHupWh%22%2C%22p%22%3A%22MDAwMDAwMDAwMLyQiNbHupbdxGRqlcaUqHU%22%7D;')
-    print(ht.posturl(r'http://user.zhaokeli.com').read().decode())
+    #ht.setproxy('','','127.0.0.1:8087')
+    #r=ht.posturl(r'http://127.0.0.1/')
+    r=ht.posturl(r'http://1212.ip138.com/ic.asp').read().decode('gb2312')
+    print(r)
     input('按任意键继续...')
