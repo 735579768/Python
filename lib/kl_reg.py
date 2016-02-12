@@ -26,7 +26,7 @@ def search(pattern,subject,pos=0,endpos=0,flags=0):
     return p.search(subject,pos,endpos)
 
 #按照能够匹配的子串将subject分割后返回列表。
-def split(pattern,subject):
+def split(pattern,subject,flags=0):
     p = re.compile(pattern)
     return p.split(subject)
 
