@@ -89,7 +89,9 @@ class mysql(object):
                     num=self.cur.execute(self.sql)
                 if self.sqlconf['action']=='insert':
                     #最新插入行的主键ID
-                    num=int(self.con.insert_id())
+                    zhuid=int(self.cur.lastrowid)
+                    if num>0 and zhuid>0:
+                        num=zhuid
                 self.con.commit()
                 self.lastsql=self.sql
                 self.__init()

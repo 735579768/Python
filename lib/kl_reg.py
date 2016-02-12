@@ -1,4 +1,11 @@
 import re
+A=re.A
+DEBUG=re.DEBUG
+I=re.I
+L=re.L
+M=re.M
+S=re.S
+X=re.X
 def replace(pattern,replacement,subject,flags=0):
     p = re.compile(pattern,flags)
     return p.sub(replacement,subject)
