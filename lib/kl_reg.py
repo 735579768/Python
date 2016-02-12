@@ -19,7 +19,7 @@ def fullmatch(pattern,subject,pos=0,endpos=0,flags=0):
     p = re.compile(pattern)
     return p.fullmatch(subject,pos,endpos)
 
-#搜索失败返回None
+#搜索失败返回None,成功返回一个match对象,可以使用match.group([num])取分组信息
 def search(pattern,subject,pos=0,endpos=0,flags=0):
     endpos=len(subject)
     p = re.compile(pattern)
