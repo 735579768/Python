@@ -91,21 +91,21 @@ maxnum=30
 curnum=0
 def testProxy(i):
     global curnum
-    curnum+=1
-    print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
+
+    #print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     ht=kl_http.kl_http()
     ht.setproxy('','','%s:%s'%(i['ip'],i['port']))
     r=ht.geturl('http://1212.ip138.com/ic.asp')
     if r!=None:
         data=filterhtml(r.read().decode('gb2312'))
-        print(data)
+        #print(data)
         if data.find('您的IP地址')!=-1:
             db.table('proxy').where({'id':i['id']}).save({'status':'1','update_time':int(time.time())})
             print('代理:%s:%s %s %s it is ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     else:
         db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
-        print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
-    curnum=curnum-1
+        #print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
+    curnum-=1
 
 proxylist=db.table('proxy').order('id asc').select()
 proxylist=proxylist.fetchall()
@@ -115,10 +115,10 @@ for i in proxylist:
     t=threading.Thread(target=testProxy,args=(i,))
     threads.append(t)
 
-
 while len(threads)>0:
     #print('当前线程数:%s \r'%curnum)
     if curnum<maxnum:
+        curnum+=1
         threads.pop().start()
     #time.sleep(1)
 
