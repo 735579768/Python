@@ -19,6 +19,20 @@ db=kl_db.mysql({
             'prefix':'kl_',
             'charset':'utf8'
         })
+db.query('''\
+DROP TABLE IF EXISTS `kl_proxy`;
+CREATE TABLE `kl_proxy` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(255) DEFAULT NULL,
+  `port` varchar(255) DEFAULT NULL,
+  `proxy_type` varchar(255) DEFAULT NULL,
+  `proxy_area` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0',
+  `response_time` float(11,5) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
+    ''')
 #代理采集地址
 proxy=[
     #360免费代理
@@ -76,7 +90,8 @@ for i in proxy:
             'ip':filterhtml(ip1),
             'port':filterhtml(port1),
             'proxy_type':filterhtml(proxy_type1),
-            'proxy_area':filterhtml(proxy_area1)
+            'proxy_area':filterhtml(proxy_area1),
+            'update_time':time.time()
             }
         result=db.table('proxy').where(ma).count()
         if result<=0:
@@ -85,7 +100,7 @@ for i in proxy:
 
 
 #测试代理是否可用
-print('测试代理是否可用...')
+print('正在测试可用的代理...')
 #测试线程函数
 maxnum=30
 curnum=0
@@ -101,9 +116,10 @@ def testProxy(i):
         #print(data)
         if data.find('您的IP地址')!=-1:
             db.table('proxy').where({'id':i['id']}).save({'status':'1','response_time':ht.responsetime,'update_time':int(time.time())})
-            print('代理:%s:%s %s %s it is ok! responsetime: %d'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area'],ht.responsetime))
+            print('代理:%s:%s %s it\'s ok! responsetime: %f  S'%(i['ip'],i['port'],i['proxy_type'],ht.responsetime))
     else:
-        db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
+        #db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
+        db.table('proxy').where({'id':i['id']}).delete()
         #print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     curnum-=1
 
