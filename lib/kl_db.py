@@ -169,6 +169,8 @@ class mysql(object):
             temdata=" (%s <= %s)"%(field,data[1])
         elif tj=='neq':
             temdata=" (%s <> %s)"%(field,data[1])
+        elif tj=='eq':
+            temdata=" (%s = '%s')"%(field,data[1])
         return temdata
 
     #处理查询条件
