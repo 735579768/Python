@@ -39,7 +39,7 @@ class mysql(object):
         self.conn(arg)
 
     def conn(self,config):
-        self.prefix=config['prefix'];
+        self.prefix=config['prefix']
         if self.con == None :
             self.con=pymysql.connect(
                 host=config['host'],
@@ -50,7 +50,7 @@ class mysql(object):
                 port=3306,
                 cursorclass=pymysql.cursors.DictCursor
                 )
-        self.cur=self.con.cursor(pymysql.cursors.DictCursor);#获取操作游标
+        self.cur=self.con.cursor(pymysql.cursors.DictCursor)#获取操作游标
 
     #返回一个记录集
     def __getcur(self):
@@ -119,14 +119,14 @@ class mysql(object):
     #组合sql语句
     def __zuhesqu(self):
         self.sqlparam=[]
-        action=self.sqlconf['action'];
-        table=self.sqlconf['table'];
-        where=self.sqlconf['where'];
-        order=self.sqlconf['order'];
-        limit=self.sqlconf['limit'];
-        join=self.sqlconf['join'];
-        field=self.sqlconf['field'];
-        temsql='';
+        action=self.sqlconf['action']
+        table=self.sqlconf['table']
+        where=self.sqlconf['where']
+        order=self.sqlconf['order']
+        limit=self.sqlconf['limit']
+        join=self.sqlconf['join']
+        field=self.sqlconf['field']
+        temsql=''
         if action=='':
             return None
         if table=='' and join=='':
@@ -317,8 +317,8 @@ class mysql(object):
         return self.__execute()
 
     def close(self):#关闭所有连接
-        self.cur.close();
-        self.con.close();
+        self.cur.close()
+        self.con.close()
 
 #使用示例
 if __name__ == '__main__':
