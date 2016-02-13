@@ -14,7 +14,7 @@ import urllib.parse
 import http.cookiejar
 class kl_http:
     def __init__(self):
-        self.isproxy=False
+        self.lasterror=None
         self.proxy={
             'username':'',
             'password':'',
@@ -128,6 +128,7 @@ class kl_http:
                 return r
             except urllib.error.HTTPError as e:
                 print(e.code)
+                self.lasterror=e
                 #print(e.read().decode())
                 return r
 
@@ -144,6 +145,7 @@ class kl_http:
             return r
         except urllib.error.HTTPError as e:
             print(e.code)
+            self.lasterror=e
             #print(e.read().decode())
             return r
 
