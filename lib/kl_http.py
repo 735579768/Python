@@ -9,9 +9,11 @@
 // |
 // |
 '''
-import urllib.request,os, random
+import urllib.request,os, random,time
 import urllib.parse
 import http.cookiejar
+import socket
+socket.setdefaulttimeout(10)           #10秒内没有打开web页面，就算超时
 useragent=[
 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
@@ -41,6 +43,7 @@ class kl_http:
             'password':'',
             'proxyserver':''
         }
+        self.responsetime=0
         self.hostname=''
         self.headers = {}
         self.cookies = {}
@@ -129,6 +132,10 @@ class kl_http:
             self.cookies=data
         self.resetsession()
 
+    #设置超时
+    def settimeout(self,timeout=10):
+        socket.setdefaulttimeout(timeout)
+
     #get取网页数据
     def geturl(self,url,data={}):
             global useragent
@@ -149,7 +156,9 @@ class kl_http:
                 if self.autoUserAgent:
                     usag=random.randint(0,18)
                     req.add_header('User-Agent',useragent[usag]);
+                starttime=time.time()
                 r=self.opener.open(req)
+                self.responsetime=time.time()-starttime
                 self.ckjar.save(ignore_discard=True, ignore_expires=True)
                 return r
             except urllib.error.HTTPError as e:
@@ -176,7 +185,9 @@ class kl_http:
             if self.autoUserAgent:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
+            starttime=time.time()
             r=self.opener.open(req)
+            self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return r
         except urllib.error.HTTPError as e:

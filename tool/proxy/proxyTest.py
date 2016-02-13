@@ -100,8 +100,8 @@ def testProxy(i):
         data=filterhtml(r.read().decode('gb2312'))
         #print(data)
         if data.find('您的IP地址')!=-1:
-            db.table('proxy').where({'id':i['id']}).save({'status':'1','update_time':int(time.time())})
-            print('代理:%s:%s %s %s it is ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
+            db.table('proxy').where({'id':i['id']}).save({'status':'1','response_time':ht.responsetime,'update_time':int(time.time())})
+            print('代理:%s:%s %s %s it is ok! responsetime: %d'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area'],ht.responsetime))
     else:
         db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
         #print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
