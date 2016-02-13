@@ -19,7 +19,7 @@ class mysql(object):
 
     def __init__(self, arg):
         self.sql=''
-        self.lastsql=''
+        self.lasterror=None
         self.sqlparam=[]
         self.prefix=''
         self.sqlconf={
@@ -57,23 +57,23 @@ class mysql(object):
         if self.sql=='':
             self.__zuhesqu()
         try:
-            try:
-                self.cur.execute(self.sql)
-                self.con.commit()
-                self.lastsql=self.sql
-                self.__init()
-                return self.cur
-            except pymysql.err.ProgrammingError as e:
-                print(e)
-                print('SQL:[%s]'%self.sql)
-                self.lastsql=self.sql
-                self.__init()
-                return None
+            self.cur.execute(self.sql)
+            self.con.commit()
+            self.__init()
+            return self.cur
+        except pymysql.err.ProgrammingError as e:
+            print(e)
+            print(self.getlastsql())
+            self.lasterror=e
+            self.__init()
+            return None
         except pymysql.err.InternalError as e:
             print(e)
-            print('SQL:[%s]'%self.sql)
-            self.lastsql=self.sql
+            print(self.getlastsql())
+            self.lasterror=e
             self.__init()
+            return None
+        except:
             return None
 
     #返回执行结果记录数
@@ -81,36 +81,40 @@ class mysql(object):
         if self.sql=='':
             self.__zuhesqu()
         try:
-            try:
-                num=0
-                if len(self.sqlparam):
-                    num=self.cur.execute(self.sql,self.sqlparam)
-                else:
-                    num=self.cur.execute(self.sql)
-                if self.sqlconf['action']=='insert':
-                    #最新插入行的主键ID
-                    zhuid=int(self.cur.lastrowid)
-                    if num>0 and zhuid>0:
-                        num=zhuid
-                elif self.sqlconf['action']=='select count(*)':
-                    da=self.cur.fetchone()
-                    num=da['num']
-                self.con.commit()
-                self.lastsql=self.sql
-                self.__init()
-                return num
-            except pymysql.err.ProgrammingError as e:
-                print(e)
-                print('SQL:[%s]'%self.sql)
-                self.lastsql=self.sql
-                self.__init()
-                return 0
-        except pymysql.err.InternalError as e:
+            num=0
+            if len(self.sqlparam):
+                num=self.cur.execute(self.sql,self.sqlparam)
+            else:
+                num=self.cur.execute(self.sql)
+            if self.sqlconf['action']=='insert':
+                #最新插入行的主键ID
+                zhuid=int(self.cur.lastrowid)
+                if num>0 and zhuid>0:
+                    num=zhuid
+            elif self.sqlconf['action']=='select count(*)':
+                da=self.cur.fetchone()
+                num=da['num']
+            self.con.commit()
+            self.__init()
+            return num
+        except pymysql.err.ProgrammingError as e:
             print(e)
-            print('SQL:[%s]'%self.sql)
-            self.lastsql=self.sql
+            print(self.getlastsql())
+            self.lasterror=e
             self.__init()
             return 0
+        except pymysql.err.InternalError as e:
+            print(e)
+            print(self.getlastsql())
+            self.lasterror=e
+            self.__init()
+            return 0
+        except:
+            return 0
+
+    #取最后执行的sql
+    def getlastsql(self):
+        return self.cur._executed
 
     #组合sql语句
     def __zuhesqu(self):
@@ -280,9 +284,6 @@ class mysql(object):
             data=''
         self.sqlconf['limit']=data
         return self
-
-    def getlastsql(self):
-        return self.lastsql
 
     def query(self,data):
         self.sql=data
