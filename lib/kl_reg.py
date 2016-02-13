@@ -45,7 +45,7 @@ def findall(pattern,subject,flags=0):
 #搜索string，返回一个顺序访问每一个匹配结果（Match对象）的迭代器。
 def finditer(pattern,subject,flags=0):
     p =re.compile(pattern,flags)
-    return p.findall(subject)
+    return p.finditer(subject)
 
 if __name__ == '__main__':
     a='abcde afgh ijkalmno pqrastuvwxyz'

@@ -62,14 +62,10 @@ class mysql(object):
             self.__init()
             return self.cur
         except pymysql.err.ProgrammingError as e:
-            print(e)
-            print(self.getlastsql())
             self.lasterror=e
             self.__init()
             return None
         except pymysql.err.InternalError as e:
-            print(e)
-            print(self.getlastsql())
             self.lasterror=e
             self.__init()
             return None
@@ -77,6 +73,7 @@ class mysql(object):
             return None
 
     #返回执行结果记录数
+    @property
     def __execute(self):
         if self.sql=='':
             self.__zuhesqu()
@@ -98,14 +95,10 @@ class mysql(object):
             self.__init()
             return num
         except pymysql.err.ProgrammingError as e:
-            print(e)
-            print(self.getlastsql())
             self.lasterror=e
             self.__init()
             return 0
         except pymysql.err.InternalError as e:
-            print(e)
-            print(self.getlastsql())
             self.lasterror=e
             self.__init()
             return 0
@@ -287,24 +280,24 @@ class mysql(object):
 
     def query(self,data):
         self.sql=data
-        return self.__execute()
+        return self.__execute
 
     def save(self,data):
         self.sql=''
         self.data=data
         self.sqlconf['action']='update'
-        return self.__execute()
+        return self.__execute
 
     def add(self,data):
         self.sql=''
         self.data=data
         self.sqlconf['action']='insert'
-        return self.__execute()
+        return self.__execute
 
     def delete(self):
         self.sql=''
         self.sqlconf['action']='delete'
-        return self.__execute()
+        return self.__execute
 
     def select(self):
         self.sql=''
@@ -314,7 +307,7 @@ class mysql(object):
     def count(self):
         self.sql=''
         self.sqlconf['action']='select count(*)'
-        return self.__execute()
+        return self.__execute
 
     def close(self):#关闭所有连接
         self.cur.close()
