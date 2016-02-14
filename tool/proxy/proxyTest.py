@@ -38,37 +38,51 @@ proxy=[
     #360免费代理
     {
     'proxyurl':'http://www.proxy360.cn/Region/China',
-    'proxyitem':'proxylistitem.*?<span.*?>(?P<ip>.*?)</span>.*?<span.*?>(?P<port>.*?)</span>.*?<span.*?>(?P<proxy_type>.*?)</span>.*?<span.*?>(?P<proxy_area>.*?)</span>.*?ratingStar'
+    'proxyitem':'proxylistitem.*?<span.*?>(?P<ip>.*?)</span>.*?<span.*?>(?P<port>.*?)</span>.*?<span.*?>(?P<proxy_type>.*?)</span>.*?<span.*?>(?P<proxy_area>.*?)</span>.*?ratingStar',
+    'charset':'utf-8'
     },
     #西刺免费代理IP
     {
     'proxyurl':'http://www.xicidaili.com/nn/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>',
+    'charset':'utf-8'
     },
     {
     'proxyurl':'http://www.xicidaili.com/nt/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>',
+    'charset':'utf-8'
     },
     #快代理
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/1/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
+    'charset':'utf-8'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/2/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
+    'charset':'utf-8'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/3/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
+    'charset':'utf-8'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/4/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
+    'charset':'utf-8'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/5/',
-    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>'
+    'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
+    'charset':'utf-8'
+    },
+    #IPCN 国家地区免费代理
+    {
+    'proxyurl':'http://proxy.ipcn.org/country/',
+    'proxyitem':'<td>.*?(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}):(?P<port>\d{1,5}).*?(?P<proxy_type>.*?)(?P<proxy_area>.*?)</td>',
+    'charset':'gb2312'
     }
 ]
 for i in proxy:
@@ -78,7 +92,7 @@ for i in proxy:
         print('[%s ERROR CODE]:%s'%(i['proxyurl'], http.lasterror.code))
         print(http.lasterror)
         continue
-    con=r.read().decode()
+    con=r.read().decode(i['charset'])
 
     proxyitem=regex.finditer(i['proxyitem'], con, regex.I|regex.S)
     for a in proxyitem:
@@ -110,11 +124,11 @@ def testProxy(i):
     #print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     ht=kl_http.kl_http()
     ht.setproxy('','','%s:%s'%(i['ip'],i['port']))
-    r=ht.geturl('http://1212.ip138.com/ic.asp')
+    r=ht.geturl('http://proxy.59vip.cn')
     if r!=None:
-        data=filterhtml(r.read().decode('gb2312'))
+        data=filterhtml(r.read().decode())
         #print(data)
-        if data.find('您的IP地址')!=-1:
+        if data.find('ok')!=-1:
             db.table('proxy').where({'id':i['id']}).save({'status':'1','response_time':ht.responsetime,'update_time':int(time.time())})
             print('代理:%s:%s %s it\'s ok! responsetime: %f  S'%(i['ip'],i['port'],i['proxy_type'],ht.responsetime))
     else:
