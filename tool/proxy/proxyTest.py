@@ -141,5 +141,6 @@ while len(threads)>0:
 while curnum>0:
     time.sleep(1)
 
+db.table('proxy').where({'status':'0'}).delete()
 
 input('测试完毕...')

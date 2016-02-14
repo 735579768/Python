@@ -11,7 +11,7 @@ db=kl_db.mysql({
             'charset':'utf8'
         })
 
-proxylist=db.table('proxy').where({'status':'1'}).order('id asc').select()
+proxylist=db.table('proxy').where({'status':'1','response_time':['lt','5']}).order('response_time asc').select()
 proxylist=proxylist.fetchall()
 f=open('export.txt','w')
 for i in proxylist:
