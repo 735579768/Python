@@ -112,15 +112,12 @@ for i in proxy:
             print('添加新代理:%s:%s %s %s'%(ma['ip'],ma['port'],ma['proxy_type'],ma['proxy_area']))
             db.table('proxy').add(ma)
 
+input('按任意键开始测试代理是否可用...')
 
 #测试代理是否可用
 print('正在测试可用的代理...')
 #测试线程函数
-maxnum=30
-curnum=0
 def testProxy(i):
-    global curnum
-
     #print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     sys.stdout.write('正在测试代理:%s:%s ...'%(i['ip'],i['port'])+"\r")
     sys.stdout.flush()
@@ -137,25 +134,23 @@ def testProxy(i):
         #db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
         db.table('proxy').where({'id':i['id']}).delete()
         #print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
-    curnum-=1
 
-proxylist=db.table('proxy').order('id asc').select()
-proxylist=proxylist.fetchall()
 
-threads=[]
-for i in proxylist:
-    t=threading.Thread(target=testProxy,args=(i,))
-    threads.append(t)
+while True:
+    proxylist=db.table('proxy').where({'status':'0'}).limit(30).order('id asc').select()
+    proxylist=proxylist.fetchall()
+    if len(proxylist)<=0:
+        break
+    threads=[]
+    for i in proxylist:
+        t=threading.Thread(target=testProxy,args=(i,))
+        threads.append(t)
 
-while len(threads)>0:
-    #print('当前线程数:%s \r'%curnum)
-    if curnum<maxnum:
-        curnum+=1
-        threads.pop().start()
-    #time.sleep(1)
+    for i in threads:
+        i.start()
 
-while curnum>0:
-    time.sleep(1)
+    for i in threads:
+        i.join()
 
 db.table('proxy').where({'status':'0'}).delete()
 
