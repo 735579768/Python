@@ -122,6 +122,8 @@ def testProxy(i):
     global curnum
 
     #print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
+    sys.stdout.write('正在测试代理:%s:%s ...'%(i['ip'],i['port'])+"\r")
+    sys.stdout.flush()
     ht=kl_http.kl_http()
     ht.setproxy('','','%s:%s'%(i['ip'],i['port']))
     r=ht.geturl('http://proxy.59vip.cn')
