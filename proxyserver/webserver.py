@@ -7,7 +7,7 @@ define('port',default=8088,help='run this port',type=int)
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('./a.html')
-
+print("listening 127.0.0.1:8088")
 parse_command_line()
 app=tornado.web.Application(
         [
