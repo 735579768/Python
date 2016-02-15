@@ -13,7 +13,7 @@ import urllib.request,os, random,time
 import urllib.parse
 import http.cookiejar
 import socket
-socket.setdefaulttimeout(10)           #10秒内没有打开web页面，就算超时
+socket.setdefaulttimeout(60)           #10秒内没有打开web页面，就算超时
 useragent=[
 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
