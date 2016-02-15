@@ -154,6 +154,8 @@ for i in proxylist:
 while True:
     if curnum==0:
         break
+    sys.stdout.write('马上测试完毕,请稍等...')
+    sys.stdout.flush()
     time.sleep(1)
 
 db.table('proxy').where({'status':'0'}).delete()
