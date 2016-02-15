@@ -8,7 +8,7 @@ class kl_progress(threading.Thread): #The timer class is derived from the class 
         self.interval = interval
         self.text_show = True
         self.thread_stop=False
-        self.len=10
+        self.total_len=10
         self.cur_len=0
 
     def show(self):
@@ -17,15 +17,18 @@ class kl_progress(threading.Thread): #The timer class is derived from the class 
     def hide(self):
         self.text_show=False
 
+    def setwidth(self,w=10):
+        self.total_len=w
+
     def run(self): #Overwrite run() method, put what you want the thread do here
         while True:
             self.cur_text=self.text
             for i in range(0,self.cur_len):
                 self.cur_text+='.'
-            for i in range(0,self.len-self.cur_len):
+            for i in range(0,self.total_len-self.cur_len):
                 self.cur_text+=' '
 
-            if self.cur_len==self.len:
+            if self.cur_len==self.total_len:
                 self.cur_len=0
 
             self.cur_len+=1
