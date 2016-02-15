@@ -116,7 +116,7 @@ CREATE TABLE `kl_proxy` (
   `status` tinyint(1) DEFAULT '0',
   `response_time` float(11,5) DEFAULT NULL,
   `proxy_ip` varchar(255) DEFAULT NULL,
-  `ip` varchar(255) DEFAULT NULL,
+  `zhenshi_ip` varchar(255) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
@@ -175,7 +175,7 @@ def testProxy(i):
                 'response_time':ht.responsetime,
                 'proxy_type':jso['niming'],
                 'proxy_ip':jso['proxy_ip'],
-                'ip':jso['ip'],
+                'zhenshi_ip':jso['ip'],
                 'update_time':int(time.time())
                 })
             print('代理:%s:%s %s it\'s ok! responsetime: %f  S'%(i['ip'],i['port'],i['proxy_type'],ht.responsetime))
