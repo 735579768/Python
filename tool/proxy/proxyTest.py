@@ -115,6 +115,8 @@ CREATE TABLE `kl_proxy` (
   `proxy_area` varchar(255) DEFAULT NULL,
   `status` tinyint(1) DEFAULT '0',
   `response_time` float(11,5) DEFAULT NULL,
+  `proxy_ip` varchar(255) DEFAULT NULL,
+  `ip` varchar(255) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
@@ -167,12 +169,13 @@ def testProxy(i):
     if r!=None:
         data=filterhtml(r.read().decode())
         if data.find('#ok#')!=-1:
-            niming=['透明','匿名','高匿']
-            jso=data.split('|')
+            jso=json.loads(data)
             db.table('proxy').where({'id':i['id']}).save({
                 'status':'1',
                 'response_time':ht.responsetime,
-                'proxy_type':niming[int(jso[1])],
+                'proxy_type':jso['niming'],
+                'proxy_ip':jso['proxy_ip'],
+                'ip':jso['ip'],
                 'update_time':int(time.time())
                 })
             print('代理:%s:%s %s it\'s ok! responsetime: %f  S'%(i['ip'],i['port'],i['proxy_type'],ht.responsetime))
