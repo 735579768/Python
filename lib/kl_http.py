@@ -169,7 +169,7 @@ class kl_http:
                 #print(e.reason)
                 self.lasterror=e
                 return r
-            except:
+            except Exception as e:
                 return r
 
     #get取网页数据
@@ -198,7 +198,7 @@ class kl_http:
             #print(e.reason)
             self.lasterror=e
             return r
-        except:
+        except Exception as e:
             return r
 
 if __name__ == '__main__':

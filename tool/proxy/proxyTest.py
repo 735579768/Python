@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys,threading,_thread, time,msvcrt
 sys.path.append('../../lib/')
 import kl_http,kl_db, kl_reg,kl_progress
@@ -5,23 +6,28 @@ import kl_http,kl_db, kl_reg,kl_progress
 regex=kl_reg
 http=kl_http.kl_http()
 http.autoUserAgent=True
-def readInput(caption, default, timeout=5):
+def readInput(caption, default, timeout=10):
     start_time = time.time()
     sys.stdout.write('%s(%d秒自动跳过):' % (caption,timeout))
     sys.stdout.flush()
     input = ''
+
     while True:
-        if msvcrt.kbhit():
-            chr = msvcrt.getche()
-            if ord(chr) == 13:  # enter_key
-                break
-            elif ord(chr) >= 32:
-                input += chr
+        ini=msvcrt.kbhit()
+        try:
+            if ini:
+                chr = msvcrt.getche()
+                if ord(chr) == 13:  # enter_key
+                    break
+                elif ord(chr) >= 32:
+                    input += chr.decode()
+        except Exception as e:
+            pass
         if len(input) == 0 and time.time() - start_time > timeout:
             break
     print ('')  # needed to move to next line
     if len(input) > 0:
-        return input
+        return input+''
     else:
         return default
 
@@ -38,20 +44,6 @@ db=kl_db.mysql({
             'prefix':'kl_',
             'charset':'utf8'
         })
-db.query('''\
-DROP TABLE IF EXISTS `kl_proxy`;
-CREATE TABLE `kl_proxy` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(255) DEFAULT NULL,
-  `port` varchar(255) DEFAULT NULL,
-  `proxy_type` varchar(255) DEFAULT NULL,
-  `proxy_area` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT '0',
-  `response_time` float(11,5) DEFAULT NULL,
-  `update_time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
-    ''')
 #代理采集地址
 proxy=[
     #360免费代理
@@ -106,11 +98,27 @@ proxy=[
 ]
 
 iscaiji=readInput('是否采集代理(yes/no)','no')
+
 if iscaiji=='':
     iscaiji='no'
 iscaiji=iscaiji.lower()
 
+
 if iscaiji=='yes':
+    db.query('''\
+DROP TABLE IF EXISTS `kl_proxy`;
+CREATE TABLE `kl_proxy` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(255) DEFAULT NULL,
+  `port` varchar(255) DEFAULT NULL,
+  `proxy_type` varchar(255) DEFAULT NULL,
+  `proxy_area` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0',
+  `response_time` float(11,5) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
+        ''')
     for i in proxy:
         print('正在采集: %s'%i['proxyurl'])
         r=http.geturl(i['proxyurl'])
@@ -140,16 +148,18 @@ if iscaiji=='yes':
 
 
 
-
-
+progress=kl_progress.kl_progress('')
+progress.start()
+progress.hide()
 #测试代理是否可用
 mylock = _thread.allocate_lock()  #线程锁
 #测试线程函数
 def testProxy(i):
     global curnum
     #print('正在测试代理:%s:%s %s %s'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
-    sys.stdout.write('正在测试代理:%s:%s ...'%(i['ip'],i['port'])+"\r")
-    sys.stdout.flush()
+    # sys.stdout.write('正在测试代理:%s:%s ...'%(i['ip'],i['port'])+"\r")
+    # sys.stdout.flush()
+    progress.settext('正在测试代理:%s:%s'%(i['ip'],i['port']))
     ht=kl_http.kl_http()
     ht.setproxy('','','%s:%s'%(i['ip'],i['port']))
     r=ht.geturl('http://proxy.59vip.cn')
@@ -180,6 +190,8 @@ maxnum=30
 curnum=0
 if istest=='yes':
     input('按任意键开始测试代理是否可用...')
+    progress.settext('正在测试代理')
+    progress.show()
     proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
     proxylist=proxylist.fetchall()
     threads=[]
@@ -192,17 +204,16 @@ if istest=='yes':
                 break
         time.sleep(0.1)
 
-    progress=kl_progress.kl_progress('马上测试完毕,请稍等')
-    progress.start()
+    progress.settext('马上测试完毕,请稍等')
     time.sleep(2)
     while True:
         if curnum==0:
-            progress.stop()
             break
         time.sleep(1)
 
     db.table('proxy').where({'status':'0'}).delete()
-    time.time(2)
+    progress.stop()
+    time.sleep(2)
     input('测试完毕...')
 else:
     input('按任意键结束...')
