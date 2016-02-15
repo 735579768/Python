@@ -116,6 +116,7 @@ input('按任意键开始测试代理是否可用...')
 
 #测试代理是否可用
 print('正在测试可用的代理...')
+mylock = thread.allocate_lock()  #线程锁
 #测试线程函数
 def testProxy(i):
     global curnum
@@ -125,6 +126,7 @@ def testProxy(i):
     ht=kl_http.kl_http()
     ht.setproxy('','','%s:%s'%(i['ip'],i['port']))
     r=ht.geturl('http://proxy.59vip.cn')
+    mylock.acquire() #Get the lock
     if r!=None:
         data=filterhtml(r.read().decode())
         #print(data)
@@ -136,6 +138,9 @@ def testProxy(i):
         db.table('proxy').where({'id':i['id']}).delete()
         #print('代理:%s:%s %s %s it is not ok!'%(i['ip'],i['port'],i['proxy_type'],i['proxy_area']))
     curnum-=1
+    mylock.release()  #Release the lock.
+
+
 maxnum=30
 curnum=0
 proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
