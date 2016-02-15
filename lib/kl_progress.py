@@ -1,14 +1,13 @@
-import threading,sys
-import time
+import threading,sys,time
 class kl_progress(threading.Thread): #The timer class is derived from the class threading.Thread
-    def __init__(self, text='', interval=0.1):
+    def __init__(self, text='', interval=0.2,total_len=6):
         threading.Thread.__init__(self)
         self.text = text
         self.cur_text = text+'   '
         self.interval = interval
         self.text_show = True
         self.thread_stop=False
-        self.total_len=10
+        self.total_len=total_len
         self.cur_len=0
 
     def show(self):
@@ -17,8 +16,11 @@ class kl_progress(threading.Thread): #The timer class is derived from the class 
     def hide(self):
         self.text_show=False
 
-    def setwidth(self,w=10):
+    def setwidth(self,w=6):
         self.total_len=w
+
+    def settext(self,text):
+        self.text=text
 
     def run(self): #Overwrite run() method, put what you want the thread do here
         while True:

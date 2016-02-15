@@ -1,10 +1,29 @@
-import sys,threading, time
+import sys,threading,_thread, time,msvcrt
 sys.path.append('../../lib/')
-import kl_http,kl_db, kl_reg
+import kl_http,kl_db, kl_reg,kl_progress
 #from queue import Queue
 regex=kl_reg
 http=kl_http.kl_http()
 http.autoUserAgent=True
+def readInput(caption, default, timeout=5):
+    start_time = time.time()
+    sys.stdout.write('%s(%d秒自动跳过):' % (caption,timeout))
+    sys.stdout.flush()
+    input = ''
+    while True:
+        if msvcrt.kbhit():
+            chr = msvcrt.getche()
+            if ord(chr) == 13:  # enter_key
+                break
+            elif ord(chr) >= 32:
+                input += chr
+        if len(input) == 0 and time.time() - start_time > timeout:
+            break
+    print ('')  # needed to move to next line
+    if len(input) > 0:
+        return input
+    else:
+        return default
 
 def filterhtml(s):
     s=regex.replace(r'<.*?>','',s, regex.I|regex.S)
@@ -85,38 +104,46 @@ proxy=[
     'charset':'gb2312'
     }
 ]
-for i in proxy:
-    print('正在采集: %s'%i['proxyurl'])
-    r=http.geturl(i['proxyurl'])
-    if not r:
-        print('[%s ERROR CODE]:%s'%(i['proxyurl'], http.lasterror.code))
-        print(http.lasterror)
-        continue
-    con=r.read().decode(i['charset'])
 
-    proxyitem=regex.finditer(i['proxyitem'], con, regex.I|regex.S)
-    for a in proxyitem:
-        ip1=a.group('ip')
-        port1=a.group('port')
-        proxy_type1=a.group('proxy_type')
-        proxy_area1=a.group('proxy_area')
-        ma={
-            'ip':filterhtml(ip1),
-            'port':filterhtml(port1),
-            'proxy_type':filterhtml(proxy_type1),
-            'proxy_area':filterhtml(proxy_area1),
-            'update_time':time.time()
-            }
-        result=db.table('proxy').where(ma).count()
-        if result<=0:
-            print('添加新代理:%s:%s %s %s'%(ma['ip'],ma['port'],ma['proxy_type'],ma['proxy_area']))
-            db.table('proxy').add(ma)
+iscaiji=readInput('是否采集代理(yes/no)','no')
+if iscaiji=='':
+    iscaiji='no'
+iscaiji=iscaiji.lower()
 
-input('按任意键开始测试代理是否可用...')
+if iscaiji=='yes':
+    for i in proxy:
+        print('正在采集: %s'%i['proxyurl'])
+        r=http.geturl(i['proxyurl'])
+        if not r:
+            print('[%s ERROR CODE]:%s'%(i['proxyurl'], http.lasterror.code))
+            print(http.lasterror)
+            continue
+        con=r.read().decode(i['charset'])
+
+        proxyitem=regex.finditer(i['proxyitem'], con, regex.I|regex.S)
+        for a in proxyitem:
+            ip1=a.group('ip')
+            port1=a.group('port')
+            proxy_type1=a.group('proxy_type')
+            proxy_area1=a.group('proxy_area')
+            ma={
+                'ip':filterhtml(ip1),
+                'port':filterhtml(port1),
+                'proxy_type':filterhtml(proxy_type1),
+                'proxy_area':filterhtml(proxy_area1),
+                'update_time':time.time()
+                }
+            result=db.table('proxy').where(ma).count()
+            if result<=0:
+                print('添加新代理:%s:%s %s %s'%(ma['ip'],ma['port'],ma['proxy_type'],ma['proxy_area']))
+                db.table('proxy').add(ma)
+
+
+
+
 
 #测试代理是否可用
-print('正在测试可用的代理...')
-mylock = thread.allocate_lock()  #线程锁
+mylock = _thread.allocate_lock()  #线程锁
 #测试线程函数
 def testProxy(i):
     global curnum
@@ -141,28 +168,41 @@ def testProxy(i):
     mylock.release()  #Release the lock.
 
 
+istest=readInput('是否测试数据库的代理是否可用(yes/no)','no')
+if istest=='':
+    istest='no'
+istest=istest.lower()
+
+
+
+
 maxnum=30
 curnum=0
-proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
-proxylist=proxylist.fetchall()
-threads=[]
-for i in proxylist:
+if istest=='yes':
+    input('按任意键开始测试代理是否可用...')
+    proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
+    proxylist=proxylist.fetchall()
+    threads=[]
+    for i in proxylist:
+        while True:
+            if curnum<=maxnum:
+                t=threading.Thread(target=testProxy,args=(i,))
+                t.start()
+                curnum+=1
+                break
+        time.sleep(0.1)
+
+    progress=kl_progress.kl_progress('马上测试完毕,请稍等')
+    progress.start()
+    time.sleep(2)
     while True:
-        if curnum<=maxnum:
-            t=threading.Thread(target=testProxy,args=(i,))
-            t.start()
-            curnum+=1
+        if curnum==0:
+            progress.stop()
             break
-    time.sleep(0.1)
+        time.sleep(1)
 
-
-while True:
-    if curnum==0:
-        break
-    sys.stdout.write('马上测试完毕,请稍等...')
-    sys.stdout.flush()
-    time.sleep(1)
-
-db.table('proxy').where({'status':'0'}).delete()
-
-input('测试完毕...')
+    db.table('proxy').where({'status':'0'}).delete()
+    time.time(2)
+    input('测试完毕...')
+else:
+    input('按任意键结束...')
