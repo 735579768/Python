@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys,threading,_thread, time,msvcrt
+import sys,threading,_thread, time,msvcrt,json
 sys.path.append('../../lib/')
 import kl_http,kl_db, kl_reg,kl_progress
 #from queue import Queue
@@ -166,9 +166,15 @@ def testProxy(i):
     mylock.acquire() #Get the lock
     if r!=None:
         data=filterhtml(r.read().decode())
-        #print(data)
-        if data.find('ok')!=-1:
-            db.table('proxy').where({'id':i['id']}).save({'status':'1','response_time':ht.responsetime,'update_time':int(time.time())})
+        if data.find('#ok#')!=-1:
+            niming=['透明','匿名','高匿']
+            jso=data.split('|')
+            db.table('proxy').where({'id':i['id']}).save({
+                'status':'1',
+                'response_time':ht.responsetime,
+                'proxy_type':niming[int(jso[1])],
+                'update_time':int(time.time())
+                })
             print('代理:%s:%s %s it\'s ok! responsetime: %f  S'%(i['ip'],i['port'],i['proxy_type'],ht.responsetime))
     else:
         #db.table('proxy').where({'id':i['id']}).save({'status':'0','update_time':int(time.time())})
