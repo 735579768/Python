@@ -6,13 +6,14 @@ f=open('proxy.txt','r')
 s=f.read()
 f.close()
 proxylist=s.splitlines()
-
 class Proxy(object):
     def __init__(self,conn,addr):
         self.source=conn
         self.request=""
         self.headers={}
         self.destnation=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.proxy_ip=''
+        self.proxy_port=80
         self.run()
 
     #取协议头
@@ -54,14 +55,18 @@ class Proxy(object):
 
         #循环使用代理连接
         while True:
-            ipport=self.get_proxy()
-            print('正在连接代理服务器:%s:%s'%(ipport[0],ipport[1]))
+            ipport=[]
+            if self.proxy_ip=='':
+                ipport=self.get_proxy()
+            self.proxy_ip=ipport[0]
+            self.proxy_port=ipport[1]
+            print('正在连接代理服务器:%s:%s'%(self.proxy_ip,self.proxy_port))
             try:
-                self.destnation.connect(ipport)
+                self.destnation.connect((self.proxy_ip,self.proxy_port))
                 print('连接成功.\r\n')
                 break
             except:
-                print('连接代理服务器:%s:%s失败!\r\n准备重试连接...'%(ipport[0],ipport[1]))
+                print('连接代理服务器:%s:%s失败!\r\n准备重试连接...'%(self.proxy_ip,self.proxy_port))
                 pass
         data="%s %s %s\r\n" %(self.headers['method'],self.headers['path'],self.headers['protocol'])
         self.destnation.send(bytes(data+self.request,encoding = "utf8"))
@@ -85,6 +90,8 @@ class Proxy(object):
                         break
             except:
                 pass
+        #self.proxy_ip=''
+        #self.proxy_port=80
         readsocket[0].close();
 
     def run(self):
