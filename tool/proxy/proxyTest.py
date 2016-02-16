@@ -201,6 +201,7 @@ if istest=='yes':
     input('按任意键开始测试代理是否可用...')
     progress.settext('正在测试代理')
     progress.show()
+    db.table('proxy').where({'status':'1'}).save({'status':0})
     proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
     proxylist=proxylist.fetchall()
     threads=[]

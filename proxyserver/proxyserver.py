@@ -1,7 +1,7 @@
 import socket
 import _thread
 from urllib.parse import urlparse
-import select
+import select,time
 
 BUFLEN=8192
 
@@ -75,9 +75,10 @@ class Server(object):
         self.handler=handler
 
     def start(self):
+        print('listening %s:%s'%(self.host,self.port))
         while True:
+            time.sleep(0.1)
             try:
-                print('listening %s:%s'%(self.host,self.port))
                 conn,addr=self.server.accept()
                 _thread.start_new_thread(self.handler,(conn,addr))
             except Exception as e:
