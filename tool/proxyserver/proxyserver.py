@@ -15,9 +15,11 @@ class Proxy(object):
         self.destnation=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.run()
 
+    #取协议头
     def get_headers(self):
         header=''
         while True:
+            time.sleep(0.1)
             header+=self.source.recv(BUFLEN).decode('utf-8')
             index=header.find('\n')
             if index >0:
@@ -27,6 +29,7 @@ class Proxy(object):
         self.request=header[index+1:]
         self.headers['method'],self.headers['path'],self.headers['protocol']=firstLine.split()
 
+    #随机取一个代理
     def get_proxy(self):
         proxylen=len(proxylist)
         if proxylen<=0:
@@ -35,7 +38,9 @@ class Proxy(object):
         pro=proxylist[random.randint(0,proxylen-1)].split(':')
         return (pro[0],int(pro[1]))
 
+    #使用socket去请求网页
     def conn_destnation(self):
+        #取请求的ip,端口等信息
         url=urlparse(self.headers['path'])
         hostname=url[1]
         port="80"
@@ -45,26 +50,42 @@ class Proxy(object):
             addr=hostname
         port=int(port)
         ip=socket.gethostbyname(addr)
-        print (ip,port)
         #self.destnation.connect(('121.69.36.122',8118))
-        self.destnation.connect(self.get_proxy())
+
+        #循环使用代理连接
+        while True:
+            ipport=self.get_proxy()
+            print('正在连接代理服务器:%s:%s'%(ipport[0],ipport[1]))
+            try:
+                self.destnation.connect(ipport)
+                print('连接成功.\r\n')
+                break
+            except:
+                print('连接代理服务器:%s:%s失败!\r\n准备重试连接...'%(ipport[0],ipport[1]))
+                pass
         data="%s %s %s\r\n" %(self.headers['method'],self.headers['path'],self.headers['protocol'])
         self.destnation.send(bytes(data+self.request,encoding = "utf8"))
-        print (data+self.request)
 
+        print ("请求目标主机 %s:%d\r\n"%(ip,port))
+        print ("请求协议头:\n%s\r\n请求头信息:\n%s\r\n"%(data,self.request))
 
+    #把页面转发给原来的请求
     def renderto(self):
         readsocket=[self.destnation]
         while True:
+            time.sleep(0.1)
             data=''
-            (rlist,wlist,elist)=select.select(readsocket,[],[],3)
-            if rlist:
-                data=rlist[0].recv(BUFLEN)
-                if len(data)>0:
-                    self.source.send(data)
-                else:
-                    break
-        #readsocket[0].close();
+            try:
+                (rlist,wlist,elist)=select.select(readsocket,[],[],3)
+                if rlist:
+                    data=rlist[0].recv(BUFLEN)
+                    if len(data)>0:
+                        self.source.send(data)
+                    else:
+                        break
+            except:
+                pass
+        readsocket[0].close();
 
     def run(self):
         self.get_headers()
@@ -75,6 +96,7 @@ class Proxy(object):
 
 class Server(object):
 
+    #初始化一个套接字接口并监听指定端口
     def __init__(self,host,port,handler=Proxy):
         self.host=host
         self.port=port
@@ -89,10 +111,10 @@ class Server(object):
         while True:
             time.sleep(0.1)
             try:
+                #接收请求
                 conn,addr=self.server.accept()
                 _thread.start_new_thread(self.handler,(conn,addr))
             except Exception as e:
-                #print(e)
                 pass
 
 
