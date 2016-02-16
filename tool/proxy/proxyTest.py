@@ -50,50 +50,77 @@ proxy=[
     {
     'proxyurl':'http://www.proxy360.cn/Region/China',
     'proxyitem':'proxylistitem.*?<span.*?>(?P<ip>.*?)</span>.*?<span.*?>(?P<port>.*?)</span>.*?<span.*?>(?P<proxy_type>.*?)</span>.*?<span.*?>(?P<proxy_area>.*?)</span>.*?ratingStar',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     #西刺免费代理IP
     {
     'proxyurl':'http://www.xicidaili.com/nn/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     {
     'proxyurl':'http://www.xicidaili.com/nt/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_area>.*?)</td>.*?<td>(?P<proxy_type>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     #快代理
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/1/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/2/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/3/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/4/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     {
     'proxyurl':'http://www.kuaidaili.com/proxylist/5/',
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<proxy_type>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
-    'charset':'utf-8'
+    'charset':'utf-8',
+    'area':'中国'
     },
     #IPCN 国家地区免费代理
     {
-    'proxyurl':'http://proxy.ipcn.org/country/',
+    'proxyurl':'http://proxy.ipcn.org/country/?s=cn',
     'proxyitem':'<td>.*?(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}):(?P<port>\d{1,5}).*?(?P<proxy_type>.*?)(?P<proxy_area>.*?)</td>',
-    'charset':'gb2312'
+    'charset':'gb2312',
+    'area':'中国'
+    },
+    {
+    'proxyurl':'http://proxy.ipcn.org/country/?q=US',
+    'proxyitem':'<td>.*?(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}):(?P<port>\d{1,5}).*?(?P<proxy_type>.*?)(?P<proxy_area>.*?)</td>',
+    'charset':'gb2312',
+    'area':'美国'
+    },
+    {
+    'proxyurl':'http://proxy.ipcn.org/country/?q=VI',
+    'proxyitem':'<td>.*?(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}):(?P<port>\d{1,5}).*?(?P<proxy_type>.*?)(?P<proxy_area>.*?)</td>',
+    'charset':'gb2312',
+    'area':'美国的'
+    },
+    {
+    'proxyurl':'http://proxy.ipcn.org/country/?q=VG',
+    'proxyitem':'<td>.*?(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3}):(?P<port>\d{1,5}).*?(?P<proxy_type>.*?)(?P<proxy_area>.*?)</td>',
+    'charset':'gb2312',
+    'area':'英国'
     }
 ]
 
@@ -105,22 +132,29 @@ iscaiji=iscaiji.lower()
 
 
 if iscaiji=='yes':
-    db.query('''\
-DROP TABLE IF EXISTS `kl_proxy`;
-CREATE TABLE `kl_proxy` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(255) DEFAULT NULL,
-  `port` varchar(255) DEFAULT NULL,
-  `proxy_type` varchar(255) DEFAULT NULL,
-  `proxy_area` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT '0',
-  `response_time` float(11,5) DEFAULT NULL,
-  `proxy_ip` varchar(255) DEFAULT NULL,
-  `zhenshi_ip` varchar(255) DEFAULT NULL,
-  `update_time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
-        ''')
+    istable=readInput('是否重新创建数据表(yes/no)','no')
+
+    if istable=='':
+        istable='no'
+    istable=istable.lower()
+    if istable=='yes':
+        db.query('''\
+            DROP TABLE IF EXISTS `kl_proxy`;
+            CREATE TABLE `kl_proxy` (
+              `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+              `ip` varchar(255) DEFAULT NULL,
+              `port` varchar(255) DEFAULT NULL,
+              `proxy_type` varchar(255) DEFAULT NULL,
+              `proxy_area` varchar(255) DEFAULT NULL,
+              `status` tinyint(1) DEFAULT '0',
+              `response_time` float(11,5) DEFAULT NULL,
+              `proxy_ip` varchar(255) DEFAULT NULL,
+              `zhenshi_ip` varchar(255) DEFAULT NULL,
+              `update_time` int(11) DEFAULT NULL,
+              `area` varchar(255) DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=MyISAM AUTO_INCREMENT=879 DEFAULT CHARSET=utf8;\
+            ''')
     for i in proxy:
         print('正在采集: %s'%i['proxyurl'])
         r=http.geturl(i['proxyurl'])
@@ -141,7 +175,8 @@ CREATE TABLE `kl_proxy` (
                 'port':filterhtml(port1),
                 'proxy_type':filterhtml(proxy_type1),
                 'proxy_area':filterhtml(proxy_area1),
-                'update_time':time.time()
+                'update_time':time.time(),
+                'area':i['area']
                 }
             result=db.table('proxy').where(ma).count()
             if result<=0:
@@ -226,4 +261,6 @@ if istest=='yes':
     time.sleep(2)
     input('测试完毕...')
 else:
+    progress.stop()
+    time.sleep(2)
     input('按任意键结束...')
