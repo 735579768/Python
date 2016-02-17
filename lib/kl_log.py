@@ -19,7 +19,7 @@ class kl_log:
 
         ti=time.strftime('%Y-%m-%d %X',time.localtime())
         f=open(fpath,model)
-        f.write("%s: %s\r\n"%(ti,data))
+        f.write("%s: %s\n"%(ti,data))
         f.close()
         return True
 
