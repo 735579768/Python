@@ -69,10 +69,18 @@ class urlspider(object):
     def shenduurl(self,url,cur_shendu=1):
         global  threadnum
         global  maxthread
+        threadnum+=1
         print("采集页面 %s 深度:%d"%(url,cur_shendu))
         ht=kl_http.kl_http()
-        ht.setproxy('','',self.get_proxy())
-        r=ht.geturl(url)
+        ht.autoUserAgent=True
+        r=None
+        while True:
+            ht.setproxy('','',self.get_proxy())
+            r=ht.geturl(url)
+            if ht.lasterror==None:
+                break
+            else:
+                print(ht.lasterror)
         if r!=None:
             content=r.read().decode(self.charset)
             #查找目标url
@@ -91,12 +99,11 @@ class urlspider(object):
                 for j in sdurl_list:
                     while True:
                         if threadnum<maxthread:
-                            threadnum+=1
                             threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
                             break
                         time.sleep(1)
                 #cur_shendu-=1
-            threadnum-=1
+        threadnum-=1
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
         #请求的url目录
