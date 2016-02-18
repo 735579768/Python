@@ -98,7 +98,7 @@ class urlspider(object):
                     'url':i,
                     'hostname':self.hostname,
                     'status':0,
-                    'update_time':time.time(),
+                    'update_time':int(time.time()),
                     'src_url':src_url
                     })
                 if res<=0:

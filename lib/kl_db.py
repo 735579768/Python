@@ -69,7 +69,8 @@ class mysql(object):
             self.lasterror=e
             self.__init()
             return None
-        except:
+        except Exception as e:
+            self.lasterror=e
             return None
 
     #返回执行结果记录数
@@ -102,7 +103,8 @@ class mysql(object):
             self.lasterror=e
             self.__init()
             return 0
-        except:
+        except Exception as e:
+            self.lasterror=e
             return 0
 
     #取最后执行的sql
