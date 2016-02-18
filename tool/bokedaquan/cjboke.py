@@ -1,10 +1,13 @@
 import sys,random
 sys.path.append('../../lib/')
-import kl_http,kl_db, kl_reg
+import kl_http,kl_db,kl_reg
+from urllib.parse import urlparse
+
 regex=kl_reg
 http=kl_http.kl_http()
 http.autoUserAgent=True
-
+#是否用代理
+isproxy=False
 #读取代理文件
 dlf=open('proxy.txt','r')
 proxyip=dlf.read()
@@ -43,11 +46,22 @@ def filterhtml(pattern,string):
     else:
         return ''
 
+#格式化请求的路径
+def formaturl(self,requestpath,curpath):
+    #请求的url目录
+    urldir=os.path.dirname(requestpath)
+    url=urlparse(requestpath)
+    protocol=url[0]
+    hostname=url[1]
+    if curpath[0:1]=='/':
+        return '%s://%s%s'%(protocol,hostname,curpath)
+    else:
+        return urldir+'/'+curpath
 db=kl_db.mysql({
             'host':'localhost',
             'user':'root',
             'passwd':'adminrootkl',
-            'db':'douban',
+            'db':'bokedaquan',
             'prefix':'kl_',
             'charset':'utf8'
         })
@@ -58,7 +72,7 @@ proxyiplen=len(proxyip)
 
 while databool:
     mlist=db.table('url').where({
-        'status':[['eq','2'],['eq','503'],['eq','500'],['eq','403'],['eq','504'],'or']
+        'status':['eq','0']
         }).limit(10).order('id asc').select()
     mlist=mlist.fetchall()
     if not (len(mlist)>0):
@@ -67,8 +81,9 @@ while databool:
     try:
         for i in mlist:
             print(i['url'])
-            proxip=proxyip[random.randint(0,proxyiplen-1)]
-            http.setproxy('','',proxip)
+            if isproxy:
+                proxip=proxyip[random.randint(0,proxyiplen-1)]
+                http.setproxy('','',proxip)
             r=http.geturl(i['url'])
             if not r:
                 res=db.table('url').where("id=%s"%i['id']).save({'status':http.lasterror.code})

@@ -2,10 +2,11 @@ import sys,re,random,os,threading,time,_thread
 sys.path.append('../../lib/')
 import kl_http,kl_db,kl_reg,kl_progress,kl_log
 from urllib.parse import urlparse
+
 log=kl_log.kl_log('bokedaquan')
 regex=kl_reg
 http=kl_http.kl_http()
-mylock = _thread.allocate_lock()  #线程锁
+mylock = _thread.allocate_lock()#线程锁
 #mylock.acquire() #Get the lock
 #mylock.release()  #Release the lock.
 progress=kl_progress.kl_progress('正在采集中')
@@ -13,6 +14,8 @@ progress.start()
 #最大线程
 maxthread=10
 threadnum=0
+#是否用代理
+isproxy=False
 http.setproxy('','','127.0.0.1:8087')
 db=kl_db.mysql({
             'host':'localhost',
@@ -71,16 +74,18 @@ class urlspider(object):
     def shenduurl(self,url,cur_shendu=1):
         global  threadnum
         global  maxthread
+        global isproxy
         threadnum+=1
         print("采集页面 %s 深度:%d"%(url,cur_shendu))
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
         r=None
         while True:
-            daili=self.get_proxy()
-            print("使用代理:%s"%daili)
-            http.resetsession()
-            http.setproxy('','',daili)
+            if isproxy:
+                daili=self.get_proxy()
+                print("使用代理:%s"%daili)
+                http.resetsession()
+                http.setproxy('','',daili)
             r=http.geturl(url)
             if http.lasterror==None:
                 break
