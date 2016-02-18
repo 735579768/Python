@@ -23,7 +23,7 @@ db=kl_db.mysql({
             'charset':'utf8'
         })
 
-f=open('proxy.txt','r')
+f=open('../proxy/proxy.txt','r')
 s=f.read()
 f.close()
 proxylist=s.splitlines()
