@@ -109,6 +109,8 @@ class urlspider(object):
                 if res<=0:
                     log.write('add %s error:%s'%(i,db.lasterror))
                     log.write('lastsql:%s'%db.getlastsql())
+                else:
+                    print("添加地址：%s"%i)
 for i in cjurl:
     urlspider(i).run()
 
