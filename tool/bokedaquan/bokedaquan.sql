@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost
-Source Server Version : 50540
+Source Server         : conn
+Source Server Version : 50160
 Source Host           : localhost:3306
 Source Database       : bokedaquan
 
 Target Server Type    : MYSQL
-Target Server Version : 50540
+Target Server Version : 50160
 File Encoding         : 65001
 
-Date: 2016-02-17 00:23:41
+Date: 2016-02-18 16:50:10
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,5 +32,15 @@ CREATE TABLE `kl_boke` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of kl_boke
+-- Table structure for kl_url
 -- ----------------------------
+DROP TABLE IF EXISTS `kl_url`;
+CREATE TABLE `kl_url` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) DEFAULT NULL,
+  `src_url` varchar(255) DEFAULT NULL,
+  `hostname` varchar(255) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64510 DEFAULT CHARSET=utf8;
