@@ -63,8 +63,10 @@ class urlspider(object):
         if proxylen<=0:
             print('没有代理服务器可用!')
             sys.exit()
-        pro=proxylist[random.randint(0,proxylen-1)]
-        return pro
+        while True:
+            pro=proxylist[random.randint(0,proxylen-1)]
+            if pro!="":
+                return pro
 
     def shenduurl(self,url,cur_shendu=1):
         global  threadnum
@@ -75,12 +77,15 @@ class urlspider(object):
         ht.autoUserAgent=True
         r=None
         while True:
-            ht.setproxy('','',self.get_proxy())
-            r=ht.geturl(url)
-            if ht.lasterror==None:
+            daili=self.get_proxy()
+            print("使用代理:%s"%daili)
+            http.resetsession()
+            http.setproxy('','',daili)
+            r=http.geturl(url)
+            if http.lasterror==None:
                 break
             else:
-                print(ht.lasterror)
+                print(http.lasterror)
         if r!=None:
             content=r.read().decode(self.charset)
             #查找目标url
