@@ -22,6 +22,12 @@ db=kl_db.mysql({
             'prefix':'kl_',
             'charset':'utf8'
         })
+
+f=open('proxy.txt','r')
+s=f.read()
+f.close()
+proxylist=s.splitlines()
+
 #链接url正则
 cjurl=[
     {
@@ -51,11 +57,22 @@ class urlspider(object):
     def run(self):
         self.shenduurl(self.url)
 
+    #随机取一个代理
+    def get_proxy(self):
+        proxylen=len(proxylist)
+        if proxylen<=0:
+            print('没有代理服务器可用!')
+            sys.exit()
+        pro=proxylist[random.randint(0,proxylen-1)]
+        return pro
+
     def shenduurl(self,url,cur_shendu=1):
         global  threadnum
         global  maxthread
         print("采集页面 %s 深度:%d"%(url,cur_shendu))
-        r=http.geturl(url)
+        ht=kl_http.kl_http()
+        ht.setproxy('','',self.get_proxy())
+        r=ht.geturl(url)
         if r!=None:
             content=r.read().decode(self.charset)
             #查找目标url
