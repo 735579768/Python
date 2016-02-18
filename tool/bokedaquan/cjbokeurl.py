@@ -1,10 +1,13 @@
-import sys,re,random,os,threading,time
+import sys,re,random,os,threading,time,_thread
 sys.path.append('../../lib/')
 import kl_http,kl_db,kl_reg,kl_progress,kl_log
 from urllib.parse import urlparse
 log=kl_log.kl_log('bokedaquan')
 regex=kl_reg
 http=kl_http.kl_http()
+mylock = _thread.allocate_lock()  #线程锁
+#mylock.acquire() #Get the lock
+#mylock.release()  #Release the lock.
 progress=kl_progress.kl_progress('正在采集中')
 progress.start()
 #最大线程
@@ -59,7 +62,9 @@ class urlspider(object):
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
             #去重
             mburl_list = list(set(mburl_list))
+            mylock.acquire()
             self.adddata(mburl_list,url)
+            mylock.release()
             #深度查找
             if cur_shendu<self.shendu:
                 cur_shendu+=1
@@ -98,7 +103,7 @@ class urlspider(object):
                     'url':i,
                     'hostname':self.hostname,
                     'status':0,
-                    'update_time':int(time.time()),
+                    'update_time':time.time(),
                     'src_url':src_url
                     })
                 if res<=0:
