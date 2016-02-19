@@ -1,13 +1,12 @@
-from pytesseract import *
-from PIL import Image
 import os
-curdir=(os.getcwd()+'/').replace('\\','/')
+#curdir=(os.getcwd()+'/').replace('\\','/')
 
-command='''\
-cd /d [CURDIR]
-tesseract test.png result -l num\
-'''
-command=command.replace('[CURDIR]',curdir)
+fileimg='E:/Python/tool/ocr/test.png'
+fileresult='E:/Python/tool/ocr/result'
+
+command='tesseract '+fileimg+' '+fileresult+' -l httpproxy_mimvp_com_num'
+#command=command.replace('[CURDIR]',curdir)
+print(command)
 os.system(command)
 
-input('...')
+#input('...')
