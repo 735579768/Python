@@ -16,7 +16,7 @@ niming=input('导出匿名等级:')
 proxylist=db.table('proxy').where({
 	'status':'1',
 	'area':['like','%'+keywords+'%'],
-    'proxy_type':['like','%'+niming+'%'],
+    'niming':['like','%'+niming+'%'],
 	'response_time':['lt','5']
 	}).order('response_time asc').select()
 proxylist=proxylist.fetchall()
