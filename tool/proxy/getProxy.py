@@ -6,30 +6,6 @@ import kl_http,kl_db, kl_reg,kl_progress
 regex=kl_reg
 http=kl_http.kl_http()
 http.autoUserAgent=True
-def readInput(caption, default, timeout=10):
-    start_time = time.time()
-    sys.stdout.write('%s(%d秒自动跳过):' % (caption,timeout))
-    sys.stdout.flush()
-    input = ''
-
-    while True:
-        ini=msvcrt.kbhit()
-        try:
-            if ini:
-                chr = msvcrt.getche()
-                if ord(chr) == 13:  # enter_key
-                    break
-                elif ord(chr) >= 32:
-                    input += chr.decode()
-        except Exception as e:
-            pass
-        if len(input) == 0 and time.time() - start_time > timeout:
-            break
-    print ('')  # needed to move to next line
-    if len(input) > 0:
-        return input+''
-    else:
-        return default
 
 def filterhtml(s):
     s=regex.replace(r'<.*?>','',s, regex.I|regex.S)
@@ -108,14 +84,14 @@ proxy=[
     'proxyitem':'<td>(?P<ip>\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})</td>.*?<td>(?P<port>\d{1,5})</td>.*?<td>(?P<niming>.*?)</td>.*?<td>(.*?)</td>.*?<td>(.*?)</td>.*?<td>(?P<proxy_area>.*?)</td>',
     'charset':'utf-8',
     'area':'中国'
-    },
-    #免费代理 - 米扑代理
-    {
-    'proxyurl':'http://proxy.mimvp.com/free.php?proxy=in_hp',
-    'proxyitem':'',
-    'charset':'utf-8',
-    'area':'中国'
-    },
+     },
+    # #免费代理 - 米扑代理
+    # {
+    # 'proxyurl':'http://proxy.mimvp.com/free.php?proxy=in_hp',
+    # 'proxyitem':'',
+    # 'charset':'utf-8',
+    # 'area':'中国'
+    # },
 
 
 
@@ -147,12 +123,12 @@ proxy=[
     }
 ]
 
-iscaiji=readInput('是否采集代理(y/n)','n')
+iscaiji=input('是否采集代理(y/n):')
 iscaiji=iscaiji.lower()
 
 
 if iscaiji=='y':
-    istable=readInput('是否重新创建数据表(y/n)','n')
+    istable=input('是否重新创建数据表(y/n):')
 
     istable=istable.lower()
     if istable=='y':
@@ -189,9 +165,10 @@ if iscaiji=='y':
             port1=a.group('port')
             niming1=a.group('niming')
             proxy_type1='http'
-            if 'proxy_type' in a.groupdict():
+            groupli=a.groupdict()
+            if 'proxy_type' in groupli:
                 proxy_type1=a.group('proxy_type')
-            proxy_type=proxy_type.lower()
+            proxy_type1=proxy_type1.lower()
 
             proxy_area1=a.group('proxy_area')
             ma={
@@ -247,7 +224,7 @@ def testProxy(i):
     mylock.release()  #Release the lock.
 
 
-istest=readInput('是否测试数据库的代理是否可用(y/n)','n')
+istest=input('是否测试数据库的代理是否可用(y/n):')
 if istest=='':
     istest='n'
 istest=istest.lower()
@@ -257,12 +234,12 @@ istest=istest.lower()
 
 maxnum=30
 curnum=0
-if istest=='yes':
-    input('按任意键开始测试代理是否可用...')
+if istest=='y':
+    keywords=input('输入区域代理关键字:')
     progress.settext('正在测试代理')
     progress.show()
-    db.table('proxy').where({'status':'1'}).save({'status':0})
-    proxylist=db.table('proxy').where({'status':'0'}).order('id asc').select()
+    db.table('proxy').where({'status':'1','area':['like','%'+keywords+'%']}).save({'status':0})
+    proxylist=db.table('proxy').where({'status':'0','area':['like','%'+keywords+'%']}).order('id asc').select()
     proxylist=proxylist.fetchall()
     threads=[]
     for i in proxylist:
