@@ -1,12 +1,13 @@
 from pytesseract import *
 from PIL import Image
+import os
+curdir=(os.getcwd()+'/').replace('\\','/')
 
-image_file='E:/Python/tool/proxy/ygrandimg.png'
-im = Image.open(image_file)
-#text = image_to_string(im)
-text = image_to_string(im,lang='fra')
-#text = image_file_to_string(image_file, graceful_errors=True)
-print ("=====output=======")
-print (text)
+command='''\
+cd /d [CURDIR]
+tesseract test.png result -l num\
+'''
+command=command.replace('[CURDIR]',curdir)
+os.system(command)
 
 input('...')
