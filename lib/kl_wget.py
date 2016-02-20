@@ -556,7 +556,7 @@ options:
 
 if __name__ == "__main__":
     url='http://dl.360safe.com/360/inst.exe'
-    filename = download(url,'./downs')
+    filename = download(url,'./downs/360')
     if len(sys.argv) < 2 or "-h" in sys.argv or "--help" in sys.argv:
         sys.exit(usage)
     if "--version" in sys.argv:
