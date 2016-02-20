@@ -41,7 +41,7 @@ if __name__ == "__main__":
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
     downfile(url,outdir)
-
     #启动线程下载
     #threading.Thread(target=downfile,args=(url,outdir,)).start()
-    input('下载完毕')
+    print('下载完毕')
+    input()
