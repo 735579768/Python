@@ -26,7 +26,7 @@ def downimg():
     #url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     #filename="./downs/"+os.path.basename(url)
     url='http://user.0yuanwang.com/index.php?m=Admin&c=Public&a=verify'
-    filename="./downs/verify.png"
+    filename="./verify.png"
     urllib.request.urlretrieve(url, filename, callbackfunc)
 
 #启动线程下载
