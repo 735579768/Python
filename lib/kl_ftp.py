@@ -9,12 +9,18 @@
 import ftplib, os , kl_log, paramiko, threading, math, time
 #定义匿名函数
 #打开一个文件句柄
+import sys
+from kl_progress import kl_progress
+from kl_log import kl_log
+
 writeFile = lambda filename:open(filename, 'wb').write
 #创建目录
 createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
 class kl_ftp:
     def __init__(self,host,port,username,password):
+        self.progress=kl_progress()
+        self.progress.start()
         self.host=host
         self.port=port
         self.username=username
@@ -25,20 +31,30 @@ class kl_ftp:
         self.ignorefolder=[]
         self.faillist=[]
         self.localroot='./'
-        self.ftp=self.__ftpconn()
         #初始化日志
-        self.log=kl_log.kl_log('kl_ftp')
-
+        self.log=kl_log('kl_ftp')
+        self.ftp=self.__ftpconn()
     def __ftpconn(self):
         ftp=ftplib.FTP()
         #最大1G文件
         ftp.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
-        ftp.connect(self.host,self.port)
-        resp = ftp.login(self.username, self.password)
-        #输出欢迎信息
-        #print(resp)
-        return ftp
+        try:
+            self.progress.settext('正在连接服务器...')
+            ftp.connect(self.host,self.port)
+            self.progress.settext('服务器连接成功...')
+            self.progress.settext('正在登陆服务器...')
+            resp = ftp.login(self.username, self.password)
+            #输出欢迎信息
+            #print(resp)
+            return ftp
+        except Exception as e:
+            self.progress.stop()
+            self.log.write(e)
+            print(e)
+            os.system("pause")
+            sys.exit(0)
+
 
     #判断是否是目录
     def isDirectory(self,filename):
@@ -398,4 +414,4 @@ if __name__ == '__main__':
     # sftp.ignorefolder=['Data', 'Public', 'App', 'Plugins', 'TP','zhaokeli.com.zip']
     # sftp.downloadfolder('/var/www/zhaokeli.com', 'E:/sftp')
     # sftp.close()
-    input('请输入任意键结束...')
+    os.system("pause")

@@ -80,4 +80,4 @@ if __name__ == '__main__':
         scd+=1
         time.sleep(1)
     progress.join()
-    input('按任意键继续...')
+    os.system("pause")

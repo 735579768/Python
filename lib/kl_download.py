@@ -46,6 +46,6 @@ if __name__ == "__main__":
     download=kl_download()
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
-    download.downfile(url,outdir,'kankan.exe')
+    download.downfile(url,outdir,'kan.exe')
     print('下载完毕')
-    input()
+    os.system("pause")

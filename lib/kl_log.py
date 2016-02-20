@@ -26,4 +26,4 @@ class kl_log:
 if __name__ == '__main__':
     log=kl_log('app')
     log.write('aaaaaa')
-    input('按任意键继续...')
+    os.system("pause")

@@ -215,4 +215,4 @@ User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like 
     #r=ht.posturl(r'http://127.0.0.1/')
     r=ht.posturl(r'http://1212.ip138.com/ic.asp').read().decode('gb2312')
     print(r)
-    input('按任意键继续...')
+    os.system("pause")
