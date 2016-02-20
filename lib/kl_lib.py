@@ -1,4 +1,4 @@
-import os
+import os,tempfile
 from urllib.parse import urlparse
 #格式化网页资源请求的路径
 def formatUrl(self,requestpath,curpath):
@@ -16,3 +16,14 @@ def formatUrl(self,requestpath,curpath):
 def createDir(dirpath):
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
+
+#ocr识别
+def ocr(imgpath):
+    temp = tempfile.TemporaryFile()
+    try:
+        fileimg='E:/Python/tool/ocr/test.png'
+        fileresult='E:/Python/tool/ocr/result'
+        command='tesseract '+fileimg+' '+fileresult+' -l httpproxy_mimvp_com_num'
+        os.system(command)
+    finally:
+        temp.close()　　# Automatically cleans up the file
