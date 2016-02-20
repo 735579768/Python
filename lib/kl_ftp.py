@@ -17,8 +17,9 @@ writeFile = lambda filename:open(filename, 'wb').write
 #创建目录
 createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
-class kl_ftp:
+class kl_ftp(ftplib.FTP):
     def __init__(self,host,port,username,password):
+        ftplib.FTP.__init__(self)
         self.progress=kl_progress()
         self.progress.start()
         self.host=host
@@ -46,7 +47,9 @@ class kl_ftp:
             self.progress.settext('正在登陆服务器...')
             resp = ftp.login(self.username, self.password)
             #输出欢迎信息
-            #print(resp)
+            print(resp)
+            self.progress.settext('')
+            self.progress.hide()
             return ftp
         except Exception as e:
             self.progress.stop()
