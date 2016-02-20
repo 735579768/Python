@@ -28,29 +28,26 @@ class kl_ftp(ftplib.FTP):
         self.password=password
         self.downloading=0
         self.bigfile=[]
-        self.ftp = None
         self.ignorefolder=[]
         self.faillist=[]
         self.localroot='./'
         #初始化日志
         self.log=kl_log('kl_ftp')
-        self.ftp=self.__ftpconn()
+        self.__ftpconn()
     def __ftpconn(self):
-        ftp=ftplib.FTP()
         #最大1G文件
-        ftp.maxline=1024*1024*1024
+        self.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
         try:
             self.progress.settext('正在连接服务器...')
-            ftp.connect(self.host,self.port)
+            self.connect(self.host,self.port)
             self.progress.settext('服务器连接成功...')
             self.progress.settext('正在登陆服务器...')
-            resp = ftp.login(self.username, self.password)
+            resp = self.login(self.username, self.password)
             #输出欢迎信息
             print(resp)
             self.progress.settext('')
             self.progress.hide()
-            return ftp
         except Exception as e:
             self.progress.stop()
             self.log.write(e)
@@ -62,7 +59,7 @@ class kl_ftp(ftplib.FTP):
     #判断是否是目录
     def isDirectory(self,filename):
         try:
-            self.ftp.cwd(filename)
+            self.cwd(filename)
             createDir(self.localroot+filename)
             return True
         except ftplib.error_perm as e:
@@ -79,14 +76,14 @@ class kl_ftp(ftplib.FTP):
                 fol=curpwd + file
                 try:
                     if self.isDirectory(fol):
-                        self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd())
+                        self.__recursiveDownload(self.nlst(), self.pwd())
                     else:
                         localpath=self.localroot + fol
                         print('downloading...%s ----> %s'%(fol, localpath))
 
                         #取文件的大小
                         cmd = "SIZE "+fol
-                        ret = self.ftp.sendcmd(cmd)
+                        ret = self.sendcmd(cmd)
                         fsize = int(ret.split(' ')[1])
                         #大于10M的文件用多线程分块下载
                         if fsize>1024*1024*10:
@@ -96,7 +93,7 @@ class kl_ftp(ftplib.FTP):
                             #self.download_by_thread(fol,fsize,10)
                             threading.Thread(target=self.download_by_thread, args=(fol,fsize, 5,)).start()
                         else:
-                            self.ftp.retrbinary('RETR '+fol, writeFile(localpath),self.ftp.maxline)
+                            self.retrbinary('RETR '+fol, writeFile(localpath),self.maxline)
                 except Exception as e:
                     print(e)
                     self.faillist.append(fol)
@@ -109,19 +106,19 @@ class kl_ftp(ftplib.FTP):
         self.localroot=localpath
         onlydir = os.path.dirname(filepath)
         onlyname = os.path.basename(filepath)
-        self.ftp.cwd(onlydir)
+        self.cwd(onlydir)
         createDir(self.localroot+'/'+onlydir)
-        self.__recursiveDownload([onlyname], self.ftp.pwd());
+        self.__recursiveDownload([onlyname], self.pwd());
         self.__isdownloadover()
         return True
 
     #下载远程文件夹到本地
     def downloadfolder(self,folder,localroot):
-        if self.ftp:
+        if self:
             self.localroot=localroot
-            self.ftp.cwd(folder)
+            self.cwd(folder)
             createDir(self.localroot+'/'+folder)
-            self.__recursiveDownload(self.ftp.nlst(), self.ftp.pwd());
+            self.__recursiveDownload(self.nlst(), self.pwd());
         self.log.write("下载错误的文件:%s"%self.faillist)
         print('下载错误的文件:')
         print(self.faillist)
@@ -142,7 +139,7 @@ class kl_ftp(ftplib.FTP):
         if not os.path.isfile(localpath):
             return
         print ('uploading... %s ----> %s'%(localpath,remotepath))
-        self.ftp.storbinary('STOR ' + remotepath, open(localpath, 'rb'))
+        self.storbinary('STOR ' + remotepath, open(localpath, 'rb'))
 
     #创建远程目录路径
     def __mkdremote(self,dirpath):
@@ -152,10 +149,10 @@ class kl_ftp(ftplib.FTP):
             if i!='':
                 try:
                     mdir+='/'+i
-                    self.ftp.mkd(mdir)
+                    self.mkd(mdir)
                 except:
                     pass
-                #self.ftp.cwd(i)
+                #self.cwd(i)
 
     #上传本地文件夹到远程
     def uploadfolder(self,localdir,remotedir):
@@ -171,8 +168,8 @@ class kl_ftp(ftplib.FTP):
                 self.uploadfolder(src, remotedir+'/'+file)
 
     def close(self):
-        if self.ftp!=None:
-            self.ftp.quit()
+        if self!=None:
+            self.quit()
 
     def download_by_thread(self, filename,fsize, threadnum=1, blocksize=8192):
         self.downloading=self.downloading+1
@@ -235,7 +232,7 @@ class kl_ftp(ftplib.FTP):
         # 新建一个连接来下载，每个线程一个连接，注意这里没有考虑有些ftp服务器限制一个ip只能有多少连接的情况。
         myftp=None
         try:
-            myftp =self.__ftpconn()
+            myftp =kl_ftp(self.host, self.port, self.username, self.password)
         except Exception as e:
             return False
         myftp.cwd(onlydir)
