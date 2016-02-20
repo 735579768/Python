@@ -6,7 +6,7 @@
 +----------------------------------------------------------------------
 // |远程和本地目录以不要 "/" 结尾
 '''
-import ftplib, os , kl_log, paramiko, threading, math, time
+import ftplib, os , kl_log, paramiko, threading, math, time,_thread
 #定义匿名函数
 #打开一个文件句柄
 import sys
@@ -19,6 +19,9 @@ createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
 class kl_ftp(ftplib.FTP):
     def __init__(self,host,port,username,password):
+        self.maxthread=5
+        self.curthreadnum=0
+        self.threadlock=_thread.allocate_lock()
         ftplib.FTP.__init__(self)
         self.progress=kl_progress()
         self.progress.start()
@@ -87,11 +90,17 @@ class kl_ftp(ftplib.FTP):
                         fsize = int(ret.split(' ')[1])
                         #大于10M的文件用多线程分块下载
                         if fsize>1024*1024*10:
-                            self.bigfile.append(fol)
-                            print('downloading...%s ----> %s'%(fol, localpath))
-                            print('start treading download file: size %d M'%(fsize/(1024*1024)))
-                            #self.download_by_thread(fol,fsize,10)
-                            threading.Thread(target=self.download_by_thread, args=(fol,fsize, 5,)).start()
+                            while True:
+                                if self.curthreadnum<self.maxthread:
+                                    self.curthreadnum+=1
+                                    self.bigfile.append(fol)
+                                    print('downloading...%s ----> %s'%(fol, localpath))
+                                    print('start treading download file: size %d M'%(fsize/(1024*1024)))
+                                    #self.download_by_thread(fol,fsize,10)
+                                    threading.Thread(target=self.download_by_thread, args=(fol,fsize, 2,)).start()
+                                    break
+                                else:
+                                    time.sleep(.5)
                         else:
                             self.retrbinary('RETR '+fol, writeFile(localpath),self.maxline)
                 except Exception as e:
@@ -127,7 +136,7 @@ class kl_ftp(ftplib.FTP):
 
     #判断是否下载完成
     def __isdownloadover(self):
-        print('大文件正在下载...%s'%self.bigfile)
+        #print('大文件正在下载...%s'%self.bigfile)
         while self.downloading!=0:
             time.sleep(1)
         print('下载完成!')
@@ -224,6 +233,7 @@ class kl_ftp(ftplib.FTP):
         print ('all ok')
         self.bigfile.remove(filename)
         self.downloading=self.downloading-1
+        self.curthreadnum-=1
 
     def download_file(self, inx, filename, begin=0, size=0, blocksize=8192, rest=None):
         onlydir = os.path.dirname(filename)
