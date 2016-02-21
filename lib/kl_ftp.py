@@ -42,10 +42,10 @@ class kl_ftp(ftplib.FTP):
         self.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
         try:
-            self.progress.settext('正在连接服务器...')
+            self.progress.settext('Connecting server...')
             self.connect(self.host,self.port)
-            self.progress.settext('服务器连接成功...')
-            self.progress.settext('正在登陆服务器...')
+            self.progress.settext('Connect server success...')
+            self.progress.settext('loging server...')
             resp = self.login(self.username, self.password)
             #输出欢迎信息
             print(resp)
@@ -89,7 +89,7 @@ class kl_ftp(ftplib.FTP):
                         ret = self.sendcmd(cmd)
                         fsize = int(ret.split(' ')[1])
                         #大于10M的文件用多线程分块下载
-                        if fsize>1024*1024*10:
+                        if fsize>1024*1024*5:
                             while True:
                                 if self.curthreadnum<self.maxthread:
                                     self.curthreadnum+=1
@@ -97,7 +97,7 @@ class kl_ftp(ftplib.FTP):
                                     print('downloading...%s ----> %s'%(fol, localpath))
                                     print('start treading download file: size %d M'%(fsize/(1024*1024)))
                                     #self.download_by_thread(fol,fsize,10)
-                                    threading.Thread(target=self.download_by_thread, args=(fol,fsize, 2,)).start()
+                                    threading.Thread(target=self.download_by_thread, args=(fol,fsize, 5,)).start()
                                     break
                                 else:
                                     time.sleep(.5)
@@ -129,7 +129,7 @@ class kl_ftp(ftplib.FTP):
             createDir(self.localroot+'/'+folder)
             self.__recursiveDownload(self.nlst(), self.pwd());
         self.log.write("下载错误的文件:%s"%self.faillist)
-        print('下载错误的文件:')
+        print('download file error:')
         print(self.faillist)
         self.__isdownloadover()
         return True
@@ -139,7 +139,7 @@ class kl_ftp(ftplib.FTP):
         #print('大文件正在下载...%s'%self.bigfile)
         while self.downloading!=0:
             time.sleep(1)
-        print('下载完成!')
+        print('download complete!')
 
     #从本地上传文件到远程
     def uploadfile(self,localpath,remotepath):
@@ -176,10 +176,6 @@ class kl_ftp(ftplib.FTP):
             elif os.path.isdir(src):
                 self.uploadfolder(src, remotedir+'/'+file)
 
-    def close(self):
-        if self!=None:
-            self.quit()
-
     def download_by_thread(self, filename,fsize, threadnum=1, blocksize=8192):
         self.downloading=self.downloading+1
         print ('file', filename, 'size:', fsize)
@@ -214,6 +210,7 @@ class kl_ftp(ftplib.FTP):
             t.join()
 
         # 每个线程都下载完成了，合并临时文件为一个文件
+        print('Merging files...')
         fw = open(self.localroot+filename, "wb")
         for i in range(0, threadnum):
          fname =self.localroot+ filename+'.part.'+str(i)
@@ -230,7 +227,7 @@ class kl_ftp(ftplib.FTP):
          f1.close()
          os.remove(fname)
         fw.close()
-        print ('all ok')
+        print ('file part merge complete!')
         self.bigfile.remove(filename)
         self.downloading=self.downloading-1
         self.curthreadnum-=1
@@ -257,7 +254,7 @@ class kl_ftp(ftplib.FTP):
         myftp.voidcmd('TYPE I')
         # 告诉服务器要从文件的哪个位置开始下载
         cmd1 = "REST "+str(begin)
-        print ('%s : 下载文件位置--> %s'%(tname, cmd1))
+        print ('%s : download file position--> %s'%(tname, cmd1))
         ret = myftp.sendcmd(cmd1)
         # 开始下载
         cmd = "RETR "+onlyname
