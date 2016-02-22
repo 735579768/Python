@@ -2,6 +2,7 @@ import zipfile,os
 class kl_zip(zipfile.ZipFile):
 
     def __init__(self,zip_dest_name, b='w'):
+        self.log=None
         zipfile.ZipFile.__init__(self,zip_dest_name,b)
 
     def addfile(self,filepath):
@@ -26,13 +27,35 @@ class kl_zip(zipfile.ZipFile):
                         print(e)
                 else:
                     print('file %s is not exist!'%filepath)
+    def extract_to(self, path):
+        for p in self.namelist():
+            self.extract(p, path)
 
+    def extract(self, filename, path):
+        try:
+            if not filename.endswith('/'):
+                f = os.path.join(path, filename).replace('\\','/')
+                dir = os.path.dirname(f)
+                if not os.path.exists(dir):
+                    os.makedirs(dir)
+                print('extracting :%s => %s'%(filename, f))
+                f=open(f,'wb')
+                f.write(self.read(filename))
+                f.close()
+        except Exception as e:
+            pass
 
     def complete(self):
         self.close()
 
 if __name__ == '__main__':
-    zip=kl_zip('E:/test.zip')
-    zip.addfolder(r'E:\wwwroot\test')
-    zip.complete()
+    #压缩
+    # zip=kl_zip('E:/test.zip')
+    # zip.addfolder(r'E:\wwwroot\test')
+    # zip.complete()
+
+    #解压
+    zip=kl_zip('E:/test.zip','r')
+    zip.extract_to('E:/test')
+
     os.system('pause')
