@@ -1,8 +1,8 @@
-import zipfile,os
+import zipfile,os,kl_log
 class kl_zip(zipfile.ZipFile):
 
     def __init__(self,zip_dest_name, b='w'):
-        self.log=None
+        self.log=kl_log.kl_log('kl_zip')
         zipfile.ZipFile.__init__(self,zip_dest_name,b)
 
     def addfile(self,filepath):
@@ -20,10 +20,11 @@ class kl_zip(zipfile.ZipFile):
                 arcpath=filepath[len(folderpath)+1:]
 
                 if os.path.exists(filepath):
-                    print('adding  file %s =>%s'%(filepath,arcpath))
                     try:
+                        print('adding  file %s =>%s'%(filepath,arcpath))
                         self.write(filepath,arcpath)
                     except Exception as e:
+                        self.log.write(e)
                         print(e)
                 else:
                     print('file %s is not exist!'%filepath)
