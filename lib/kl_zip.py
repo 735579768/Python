@@ -41,3 +41,4 @@ if __name__ == '__main__':
     zip=kl_zip('E:/test.zip')
     zip.addfolder(r'E:\wwwroot\test')
     zip.complete()
+    os.system('pause')
