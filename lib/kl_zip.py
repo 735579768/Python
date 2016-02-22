@@ -8,30 +8,24 @@ class kl_zip(zipfile.ZipFile):
         self.write(filepath,os.path.basename(filepath))
 
     def addfolder(self,folderpath):
-        self.__zipfolder(folderpath,os.path.basename(folderpath))
+        self.__zipfolder(folderpath)
 
-    def __zipfolder(self,folderpath,rootpath):
+    def __zipfolder(self,folderpath):
         #三个参数：分别返回1.父目录 2.所有文件夹名字（不含路径） 3.所有文件名字
         for parent,dirnames,filenames in os.walk(folderpath):
             #压缩文件
             for filename in filenames:
-                filepath=os.path.join(folderpath,filename).replace('\\','/')
-                arcpath=os.path.join(rootpath,os.path.basename(filename)).replace('\\','/')
+                filepath=os.path.join(parent,filename)
+                arcpath=filepath[len(folderpath)+1:]
 
-                print(filepath)
                 if os.path.exists(filepath):
-                   # print('adding  file %s =>%s'%(filepath,arcpath))
+                    print('adding  file %s =>%s'%(filepath,arcpath))
                     try:
                         self.write(filepath,arcpath)
                     except Exception as e:
                         print(e)
-
-            #输出文件夹信息
-            for dirname in  dirnames:
-                if dirname!='.' and dirname!='..':
-                    dirnam=os.path.join(folderpath,dirname).replace('\\','/')
-                    rotpath=os.path.join(rootpath,os.path.basename(dirname)).replace('\\','/')
-                    self.__zipfolder(dirnam,rotpath)
+                else:
+                    print('file %s is not exist!'%filepath)
 
 
     def complete(self):
