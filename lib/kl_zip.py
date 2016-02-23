@@ -9,6 +9,9 @@ class kl_zip(zipfile.ZipFile):
         self.write(filepath,os.path.basename(filepath))
 
     def addfolder(self,folderpath):
+        folderpath=folderpath.replace('\\','/')
+        if folderpath[len(folderpath)-1:]=='/':
+            folderpath=folderpath[0:len(folderpath)-1]
         self.__zipfolder(folderpath)
 
     def __zipfolder(self,folderpath):
