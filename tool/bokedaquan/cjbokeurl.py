@@ -64,7 +64,7 @@ class urlspider(object):
     def get_proxy(self):
         proxylen=len(proxylist)
         if proxylen<=0:
-            print('没有代理服务器可用!')
+            print('There is no available proxy server!')
             sys.exit()
         while True:
             pro=proxylist[random.randint(0,proxylen-1)]
@@ -76,14 +76,14 @@ class urlspider(object):
         global  maxthread
         global isproxy
         threadnum+=1
-        print("采集页面 %s 深度:%d"%(url,cur_shendu))
+        print("collection page %s depth:%d"%(url,cur_shendu))
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
         r=None
         while True:
             if isproxy:
                 daili=self.get_proxy()
-                print("使用代理:%s"%daili)
+                print("using proxy:%s"%daili)
                 http.resetsession()
                 http.setproxy('','',daili)
             r=http.geturl(url)
@@ -144,7 +144,7 @@ class urlspider(object):
                     log.write('add %s error:%s'%(i,db.lasterror))
                     log.write('lastsql:%s'%db.getlastsql())
                 else:
-                    print("添加地址：%s"%i)
+                    print("add url：%s"%i)
 for i in cjurl:
     urlspider(i).run()
 
@@ -157,4 +157,4 @@ while True:
 
 
 
-input('采集完毕输入任意键继续...')
+input('it is conllected,please press any key to continue...')
