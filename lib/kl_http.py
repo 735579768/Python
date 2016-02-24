@@ -172,9 +172,32 @@ class kl_http:
             except Exception as e:
                 self.lasterror=e
                 return r
+    #处理post字符串
+    def __formatpostdata(self,data):
+        if type(data)==type({}):
+            return data
+        elif data.find('\n')!=-1:
+            data=data.splitlines()
+            temarr={}
+            for i in data:
+                if i.find(':')!=-1:
+                    tem=i.split(':')
+                    temarr[tem[0]]=tem[1]
+            return temarr
+        elif data.find('&')!=-1:
+            data=data.split('&')
+            temarr={}
+            for i in data:
+                if i.find('=')!=-1:
+                    tem=i.split('=')
+                    temarr[tem[0]]=tem[1]
+            return temarr
+        else:
+            return {}
 
     #get取网页数据
-    def posturl(self,url,data={}):
+    def posturl(self,url,data=''):
+        data=self.__formatpostdata(data)
         global useragent
         self.__setcookies(url)
         r=None
