@@ -1,6 +1,8 @@
 import urllib.request
 import sys
 import os
+import socket
+socket.setdefaulttimeout(60)
 #创建目录
 def create_dir(dirpath):
     if not os.path.exists(dirpath):
@@ -37,10 +39,35 @@ class kl_download(object):
             outfilename=os.path.basename(url)
         try:
             create_dir(outdir)
-        except:
-            pass
-        filepath=outdir+'/'+outfilename
-        urllib.request.urlretrieve(url, filepath, self.callbackfunc)
+            filepath=outdir+'/'+outfilename
+            urllib.request.urlretrieve(url, filepath, self.callbackfunc)
+            return filepath
+        except Exception as e:
+            print(e)
+            return None
+
+    def downimage(self,url,outdir='',outfilename=''):
+        if not outfilename:
+            outfilename=os.path.basename(url)
+        try:
+            create_dir(outdir)
+            filepath=outdir+'/'+outfilename
+            opener=urllib.request.build_opener()
+            req=urllib.request.Request(url)
+            req.add_header('Referer',url)
+            req.add_header('User-Agent','Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;')
+            r=opener.open(req)
+
+            #写文件到本地
+            respHtml = r.read();
+            binfile = open(filepath, "wb");
+            binfile.write(respHtml);
+            binfile.close();
+
+            return filepath
+        except Exception as e:
+            print(e)
+            return None
 
 if __name__ == "__main__":
     download=kl_download()
