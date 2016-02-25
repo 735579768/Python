@@ -308,6 +308,13 @@ class mysql(object):
         self.sqlconf['action']='select'
         return self.__getcur()
 
+    def getarr(self):
+        record=self.select()
+        if record:
+            return record.fetchall()
+        else:
+            return []
+
     def count(self):
         self.sql=''
         self.sqlconf['action']='select count(*)'
