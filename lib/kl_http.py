@@ -139,6 +139,7 @@ class kl_http:
 
     #get取网页数据
     def geturl(self,url,data={}):
+            self.lasterror=None
             global useragent
             self.__setcookies(url)
             r=None
@@ -201,6 +202,7 @@ class kl_http:
 
     #get取网页数据
     def posturl(self,url,data=''):
+        self.lasterror=None
         data=self.__formatpostdata(data)
         global useragent
         self.__setcookies(url)
