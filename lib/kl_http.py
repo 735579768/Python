@@ -115,8 +115,9 @@ class kl_http:
             data=data.splitlines()
             for i in data:
                 if i!="":
-                    tem=i.split(':')
-                    self.headers[tem[0]]=tem[1]
+                    inde=i.find(':')
+                    if inde!=-1:
+                        self.headers[i[0:inde]]=i[inde+1:]
         elif type(data)==type({}):
             self.headers=data
         self.resetsession()
@@ -180,9 +181,12 @@ class kl_http:
             data=data.splitlines()
             temarr={}
             for i in data:
-                if i.find(':')!=-1:
-                    tem=i.split(':')
-                    temarr[tem[0]]=tem[1]
+                inde=i.find(':')
+                if inde!=-1:
+                    temarr[i[0:inde]]=i[inde+1:]
+                # if i.find(':')!=-1:
+                #     tem=i.split(':')
+                #     temarr[tem[0]]=tem[1]
             return temarr
         elif data.find('&')!=-1:
             data=data.split('&')
