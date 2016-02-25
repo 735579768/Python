@@ -1,0 +1,7 @@
+品牌  brandId
+车型品牌 familyId
+车款  groupId
+排气量
+手动/自动
+配置型号 parentVehId
+车型
