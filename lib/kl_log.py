@@ -1,7 +1,7 @@
 import os
 import time
 class kl_log:
-    def __init__(self,filename):
+    def __init__(self,filename='kl_log'):
         self.filename=filename+'-'
         self.filepath='./data/log/'
 
