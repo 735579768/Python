@@ -61,28 +61,28 @@ class kl_http:
             return None
         urls=urllib.parse.urlsplit(url)
         self.hostname=urls[1]
+        if os.path.exists('./data/cookies')==False :
+            os.makedirs('./data/cookies')
+        #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
+        self.ckjar=http.cookiejar.MozillaCookieJar("./data/cookies/cookies-%s.txt"%(self.hostname))
+        try:
+             """加载已存在的cookie，尝试此cookie是否还有效"""
+             self.ckjar.load(ignore_discard=True, ignore_expires=True)
+        except Exception:
+             """加载失败，说明从未登录过，需创建一个cookie kong 文件"""
+             self.ckjar.save(ignore_discard=True, ignore_expires=True)
+        self.__addcookies()
 
         #代理
-        if self.proxy['proxyserver']!='':
+        if self.proxy['proxyserver']:
             proxy='http://%s:%s@%s' %(self.proxy['username'],self.proxy['password'],self.proxy['proxyserver'])
             proxy_handler=urllib.request.ProxyHandler({'http':proxy})
             self.opener=urllib.request.build_opener(ckproc,proxy_handler)
             return None
-        if  self.autoUserAgent:
+        elif  self.autoUserAgent:
             self.opener=urllib.request.build_opener()
             return None
         else:
-            if os.path.exists('./data/cookies')==False :
-                os.makedirs('./data/cookies')
-            #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
-            self.ckjar=http.cookiejar.MozillaCookieJar("./data/cookies/cookies-%s.txt"%(self.hostname))
-            try:
-                 """加载已存在的cookie，尝试此cookie是否还有效"""
-                 self.ckjar.load(ignore_discard=True, ignore_expires=True)
-            except Exception:
-                 """加载失败，说明从未登录过，需创建一个cookie kong 文件"""
-                 self.ckjar.save(ignore_discard=True, ignore_expires=True)
-            self.__addcookies()
             ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
             self.opener=urllib.request.build_opener(ckproc)
             return None
@@ -158,7 +158,7 @@ class kl_http:
                 for a,b in self.headers.items():
                     req.add_header(a,b)
                 req.add_header('Referer',url)
-                if self.autoUserAgent:
+                if self.autoUserAgent or self.autoUserAgent:
                     usag=random.randint(0,18)
                     req.add_header('User-Agent',useragent[usag]);
                 starttime=time.time()
@@ -215,7 +215,7 @@ class kl_http:
             req=urllib.request.Request(url,params,self.headers)
             req.add_header('Referer',url)
 
-            if self.autoUserAgent:
+            if self.autoUserAgent or self.autoUserAgent:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
