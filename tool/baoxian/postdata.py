@@ -158,7 +158,7 @@ body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
 body.jyGroupId:[GROUPID]
-body.jyDisplacement:
+body.jyDisplacement:[ENGINEDESC]
 body.jyGearbox:
 body.jyParentId:
 body.jyFgwCode:请选择
@@ -181,8 +181,8 @@ body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
-body.jyGroupId:
-body.jyDisplacement:
+body.jyGroupId:[GROUPID]
+body.jyDisplacement:[ENGINEDESC]
 body.jyGearbox:
 body.jyParentId:[PARENTID]
 body.jyFgwCode:请选择

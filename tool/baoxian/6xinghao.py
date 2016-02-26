@@ -27,6 +27,8 @@ try:
     brandlist=db.table('5peizhixinghao').where({'status':0}).order('id asc').getarr()
     for i in brandlist:
         tjdata=postdata['xinghao'].replace('[PARENTID]',i['parentVehId'])
+        tjdata=tjdata.replace('[GROUPID]',i['groupId'])
+        tjdata=tjdata.replace('[ENGINEDESC]',i['engineDesc'])
         r=http.posturl(url,tjdata)
         content=''
         if not http.lasterror:
