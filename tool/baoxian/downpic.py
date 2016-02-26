@@ -3,7 +3,7 @@ db=kl_db.mysql({
             'host':'localhost',
             'user':'root',
             'passwd':'adminrootkl',
-            'db':'mydata',
+            'db':'qiche',
             'prefix':'kl_',
             'charset':'utf8'
         })

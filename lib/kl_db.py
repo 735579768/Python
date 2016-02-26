@@ -71,10 +71,10 @@ class mysql(object):
             return None
         except Exception as e:
             self.lasterror=e
+            self.__init()
             return None
 
     #返回执行结果记录数
-    @property
     def __execute(self):
         if self.sql=='':
             self.__zuhesqu()
@@ -105,6 +105,7 @@ class mysql(object):
             return 0
         except Exception as e:
             self.lasterror=e
+            self.__init()
             return 0
 
     #取最后执行的sql
@@ -283,27 +284,32 @@ class mysql(object):
         return self
 
     def query(self,data):
+        self.lasterror=None
         self.sql=data
         return self.__execute
 
     def save(self,data):
+        self.lasterror=None
         self.sql=''
         self.data=data
         self.sqlconf['action']='update'
         return self.__execute
 
     def add(self,data):
+        self.lasterror=None
         self.sql=''
         self.data=data
         self.sqlconf['action']='insert'
         return self.__execute
 
     def delete(self):
+        self.lasterror=None
         self.sql=''
         self.sqlconf['action']='delete'
         return self.__execute
 
     def select(self):
+        self.lasterror=None
         self.sql=''
         self.sqlconf['action']='select'
         return self.__getcur()
@@ -316,9 +322,10 @@ class mysql(object):
             return []
 
     def count(self):
+        self.lasterror=None
         self.sql=''
         self.sqlconf['action']='select count(*)'
-        return self.__execute
+        return self.__execute()
 
     def close(self):#关闭所有连接
         self.cur.close()
