@@ -30,6 +30,7 @@ try:
     for i in brandlist:
         #查询排气量
         tjdata=postdata['shoudong'].replace('[GROUPID]',i['groupId'])
+        tjdata=tjdata.replace('[ENGINEDESC]',i['engineDesc'])
         r=http.posturl(url,tjdata)
         content=''
         if not http.lasterror:

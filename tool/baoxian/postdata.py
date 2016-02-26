@@ -34,7 +34,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:20
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:[BRANDNAME]
 body.jyBrandId:[BRANDID]
 body.jyFamilyId:
@@ -57,7 +57,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:21
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:[FAMILYID]
@@ -81,7 +81,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:60
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
@@ -105,7 +105,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:30
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
@@ -129,12 +129,12 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:40
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
 body.jyGroupId:[GROUPID]
-body.jyDisplacement:
+body.jyDisplacement:[ENGINEDESC]
 body.jyGearbox:
 body.jyParentId:
 body.jyFgwCode:请选择
@@ -153,7 +153,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:50
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
@@ -177,7 +177,7 @@ head.checkStr:
 head.channelNo:
 body.jyFlag:81
 body.jyType:
-body.jyIcon:A
+body.jyIcon:
 body.jyBrandName:
 body.jyBrandId:
 body.jyFamilyId:
