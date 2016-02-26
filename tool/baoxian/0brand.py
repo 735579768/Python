@@ -3,6 +3,7 @@
 '''
 import kl_http,kl_db,os,json,kl_log
 from postdata import postdata
+addnum=0
 http=kl_http.kl_http()
 log=kl_log.kl_log('brand')
 db=kl_db.mysql({
@@ -36,14 +37,19 @@ try:
                 try:
                     info=json.loads(content)
                     if info['head']['errorCode']=='91':
-                        db.table('0brand').where({'id':i['id']}).save({'status':2})
+                        pass
+                        #db.table('0brand').where({'id':i['id']}).save({'status':2})
                     else:
                         brandlist=info['body']['Element']['brandIcons']['FcBrand']
                         for a in brandlist:
                             result=db.table('0brand').where(a).count()
                             if result<=0:
-                                db.table('0brand').add(a)
-                                print('adding %s'%a)
+                                res=db.table('0brand').add(a)
+                                if res>0:
+                                    print('adding %s'%a)
+                                    addnum+=1
+                            else:
+                                print('it is exist! %s'%a)
                 except Exception as e:
                     print(e)
         else:
@@ -51,4 +57,6 @@ try:
 
 except Exception as e:
     print(e)
+
+print('already add %d'%addnum)
 os.system('pause')

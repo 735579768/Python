@@ -3,6 +3,7 @@
 '''
 import kl_http,kl_db,os,json,kl_log
 from postdata import postdata
+addnum=0
 http=kl_http.kl_http()
 log=kl_log.kl_log('brand')
 db=kl_db.mysql({
@@ -50,6 +51,9 @@ try:
                                     addres=False
                                 else:
                                     print('adding %s'%a)
+                                    addnum+=1
+                            else:
+                                print('it is exist! %s'%a)
                         if addres:
                             db.table('5peizhixinghao').where({'id':i['id']}).save({'status':1})
                 except Exception as e:
@@ -59,4 +63,6 @@ try:
             print(http.lasterror)
 except Exception as e:
     print(e)
+
+print('already add %d'%addnum)
 os.system('pause')
