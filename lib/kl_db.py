@@ -286,27 +286,27 @@ class mysql(object):
     def query(self,data):
         self.lasterror=None
         self.sql=data
-        return self.__execute
+        return self.__execute()
 
     def save(self,data):
         self.lasterror=None
         self.sql=''
         self.data=data
         self.sqlconf['action']='update'
-        return self.__execute
+        return self.__execute()
 
     def add(self,data):
         self.lasterror=None
         self.sql=''
         self.data=data
         self.sqlconf['action']='insert'
-        return self.__execute
+        return self.__execute()
 
     def delete(self):
         self.lasterror=None
         self.sql=''
         self.sqlconf['action']='delete'
-        return self.__execute
+        return self.__execute()
 
     def select(self):
         self.lasterror=None

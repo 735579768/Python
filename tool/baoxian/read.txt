@@ -4,4 +4,5 @@
 排气量 displacementId
 手动/自动 gearboxId
 配置型号 parentVehId
+
 车型
