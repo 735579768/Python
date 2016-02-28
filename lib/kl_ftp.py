@@ -282,12 +282,16 @@ class kl_ftp(ftplib.FTP):
 
         conn.close()
         fp.close()
+        self.threadlock.acquire()
         try:
             #ret = myftp.getresp()
             myftp.quit()
         except Exception as e:
             self.log.write(e)
             print(e)
+
+        self.threadlock.release()
+        return ret
 
 class kl_sftp:
     def __init__(self,host,port,username,password):

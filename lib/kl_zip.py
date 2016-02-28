@@ -54,12 +54,12 @@ class kl_zip(zipfile.ZipFile):
 
 if __name__ == '__main__':
     #压缩
-    # zip=kl_zip('E:/test.zip')
-    # zip.addfolder(r'E:\wwwroot\test')
-    # zip.complete()
+    zip=kl_zip('E:/0yuanwang.com.zip')
+    zip.addfolder(r'E:\wwwroot\0yuanwang.com')
+    zip.complete()
 
     #解压
-    zip=kl_zip('E:/test.zip','r')
-    zip.extract_to('E:/test')
+    # zip=kl_zip('E:/test.zip','r')
+    # zip.extract_to('E:/test')
 
     os.system('pause')
