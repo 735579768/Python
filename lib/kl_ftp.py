@@ -10,7 +10,6 @@ import ftplib, os , kl_log, paramiko, threading, math, time,_thread
 #定义匿名函数
 #打开一个文件句柄
 import sys
-from kl_progress import kl_progress
 from kl_log import kl_log
 
 writeFile = lambda filename:open(filename, 'wb').write
@@ -23,8 +22,6 @@ class kl_ftp(ftplib.FTP):
         self.curthreadnum=0
         self.threadlock=_thread.allocate_lock()
         ftplib.FTP.__init__(self)
-        self.progress=kl_progress()
-        self.progress.start()
         self.host=host
         self.port=port
         self.username=username
@@ -42,17 +39,14 @@ class kl_ftp(ftplib.FTP):
         self.maxline=1024*1024*1024
         #f.encoding='UTF-8'#防止中文乱码
         try:
-            self.progress.settext('Connecting server...')
+            print('Connecting server...')
             self.connect(self.host,self.port)
-            self.progress.settext('Connect server success...')
-            self.progress.settext('loging server...')
+            print('Connect server success...')
+            print('loging server...')
             resp = self.login(self.username, self.password)
             #输出欢迎信息
             print(resp)
-            self.progress.settext('')
-            self.progress.hide()
         except Exception as e:
-            self.progress.stop()
             self.log.write(e)
             print(e)
             os.system("pause")
@@ -204,7 +198,7 @@ class kl_ftp(ftplib.FTP):
         #启动下载线程
         for t in threads:
             t.start()
-            #time.sleep(1)
+            time.sleep(1)
         #阻塞线程下载,直到结束
         for t in threads:
             t.join()
@@ -275,13 +269,13 @@ class kl_ftp(ftplib.FTP):
          haveread = haveread + len(data)
          # 只能下载指定长度的数据，下载到就退出
          if haveread > size:
-            print (tname, 'haveread:', haveread, 'size:', size)
+            print (tname, 'downloaded:', haveread, 'size:', size)
             hs = haveread - size
             callback(data[:hs])
             break
          elif haveread == size:
             callback(data)
-            print (tname, 'haveread:', haveread)
+            print (tname, 'downloaded:', haveread)
             break
 
          callback(data)
@@ -289,13 +283,11 @@ class kl_ftp(ftplib.FTP):
         conn.close()
         fp.close()
         try:
-            ret = myftp.getresp()
+            #ret = myftp.getresp()
+            myftp.quit()
         except Exception as e:
-            pass
-            #print ('%s %s'%(tname,e))
-        myftp.quit()
-        #print('返回值是:%s'%ret)
-        return ret
+            self.log.write(e)
+            print(e)
 
 class kl_sftp:
     def __init__(self,host,port,username,password):
