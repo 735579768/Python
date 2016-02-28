@@ -199,12 +199,12 @@ class kl_ftp(ftplib.FTP):
         tp = threading.Thread(target=self.download_file, args=(threadnum-1, filename, begin,lastsize,blocksize,rest,))
         threads.append(tp)
 
-        print ('threads:', len(threads))
+        print ('threads num:', len(threads))
 
         #启动下载线程
         for t in threads:
             t.start()
-            time.sleep(1)
+            #time.sleep(1)
         #阻塞线程下载,直到结束
         for t in threads:
             t.join()
