@@ -82,8 +82,8 @@ class kl_ftp(ftplib.FTP):
                         cmd = "SIZE "+fol
                         ret = self.sendcmd(cmd)
                         fsize = int(ret.split(' ')[1])
-                        #大于10M的文件用多线程分块下载
-                        if fsize>1024*1024*5:
+                        #大于100M的文件用多线程分块下载
+                        if fsize>1024*1024*100:
                             while True:
                                 if self.curthreadnum<self.maxthread:
                                     self.curthreadnum+=1
