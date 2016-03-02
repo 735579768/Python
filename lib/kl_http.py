@@ -12,7 +12,7 @@
 import urllib.request,os, random,time
 import urllib.parse
 import http.cookiejar
-import socket
+import socket,re
 socket.setdefaulttimeout(60)           #10秒内没有打开web页面，就算超时
 useragent=[
 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
@@ -143,6 +143,7 @@ class kl_http:
     #get取网页数据
     def geturl(self,url,data={}):
             self.lasterror=None
+            data=self.__formatpostdata(data)
             global useragent
             self.__setcookies(url)
             r=None
@@ -181,25 +182,33 @@ class kl_http:
     def __formatpostdata(self,data):
         if type(data)==type({}):
             return data
-        elif data.find('\n')!=-1:
-            data=data.splitlines()
+        elif type(data)==type(''):
+            data=re.split('\r?\n|&',data)
             temarr={}
             for i in data:
                 inde=i.find(':')
                 if inde!=-1:
                     temarr[i[0:inde]]=i[inde+1:]
-                # if i.find(':')!=-1:
-                #     tem=i.split(':')
-                #     temarr[tem[0]]=tem[1]
-            return temarr
-        elif data.find('&')!=-1:
-            data=data.split('&')
-            temarr={}
-            for i in data:
-                if i.find('=')!=-1:
-                    tem=i.split('=')
-                    temarr[tem[0]]=tem[1]
-            return temarr
+                inde=i.find('=')
+                if inde!=-1:
+                    temarr[i[0:inde]]=i[inde+1:]
+
+        # elif data.find('\n')!=-1:
+        #     data=data.splitlines()
+        #     temarr={}
+        #     for i in data:
+        #         inde=i.find(':')
+        #         if inde!=-1:
+        #             temarr[i[0:inde]]=i[inde+1:]
+        #     return temarr
+        # elif data.find('&')!=-1:
+        #     data=data.split('&')
+        #     temarr={}
+        #     for i in data:
+        #         if i.find('=')!=-1:
+        #             tem=i.split('=')
+        #             temarr[tem[0]]=tem[1]
+        #     return temarr
         else:
             return {}
 
