@@ -25,6 +25,7 @@ class mysql(object):
         self.lasterror=None
         self.sqlparam=[]
         self.prefix=''
+        self.primary=''
         self.sqlconf={
             'action':'',
             'table':'',
@@ -38,13 +39,23 @@ class mysql(object):
         self.data={}
         self.con=None
         self.cur=None
-        self.arg = arg
+        self.arg={
+            'dbtype':'mysql',
+            'host':'localhost',
+            'user':'root',
+            'passwd':'',
+            'db':'',
+            'prefix':'',
+            'charset':'utf8'
+        }
+        for i,j in arg.items():
+            self.arg[i]=j
+
         if self.arg['dbtype'].lower()=='sqllite':
             self.is_sqllite=True
-            self.__connsqllite(arg)
+            self.__connsqllite(self.arg)
         else:
             self.__conn(arg)
-
     #转换sqllite数据为字典
     def __dict_factory(self,cursor, row):
         d = {}
@@ -137,6 +148,19 @@ class mysql(object):
     #取最后执行的sql
     def getlastsql(self):
         return self.cur._executed
+
+    #取表主键字段
+    def __setprimary(self,tablename):
+        try:
+            if self.arg['dbtype']=='sqllite':
+                pass
+            else:
+                sql='SELECT TABLE_NAME,COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA=\'%s\' and TABLE_NAME=\'%s\''%(self.arg['db'],tablename)
+                self.cur.execute(sql)
+                datalist=self.cur.fetchone()
+                self.primary=datalist['COLUMN_NAME']
+        except Exception as e:
+            pass
 
     #组合sql语句
     def __zuhesqu(self):
@@ -254,6 +278,7 @@ class mysql(object):
     def table(self,data):
         if self.prefix!='':
             data=self.prefix+data
+        self.__setprimary(data)
         self.sqlconf['table']=data
         return self
 
@@ -328,11 +353,19 @@ class mysql(object):
         self.sqlconf['action']='insert into'
         return self.__execute()
 
-    def delete(self):
+    def delete(self,id=''):
         self.lasterror=None
         self.sql=''
         self.sqlconf['action']='delete'
+        if self.primary and id:
+            self.sqlconf['where']='%s=%s'%(self.primary,id)
         return self.__execute()
+
+    def find(self,id=''):
+        if self.primary and id:
+            self.sqlconf['where']='where %s=%s'%(self.primary,id)
+        data=self.getarr()
+        return data[0] if len(data) else None
 
     def select(self):
         self.lasterror=None
@@ -360,107 +393,107 @@ class mysql(object):
 
 #使用示例
 if __name__ == '__main__':
-    # db=mysql({
-    #     'host':'localhost',
-    #     'user':'root',
-    #     'passwd':'adminrootkl',
-    #     'db':'test',
-    #     'prefix':'kl_',
-    #     'charset':'utf8'
-    # })
-    #查询数据列表
-    '''
-     da=db.table('article').limit(2).select()
-     for a in da:
-         print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-
-    '''
-    #添加数据
-    ''''
-    content="<html '>"
-    num=db.table('article').add({
-         'title':'测试标题',
-         'content':content
-         })
-    '''
-    #更新数据
-    '''
-    num=db.table('article').where('id=1').save({'content':'已经更新'})
-    num=db.table('article').where('id=3').delete()
-    print(num)
-    '''
-    #组合查询条件查询
-    '''
-    map={
-    'title':['like','%1%'],
-    'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
-    }
-    list=db.table('article').order('id desc').where(map).select()
-    for a in list:
-        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-        print(a['content'])
-
-    print(db.getlastsql())
-    '''
-
-    #多表联合查询
-    '''
-    model={
-     'article':{'_as':'a','field':'title,id,content,category_id'},
-     'category':{'_as':'b','field':'category_id as cate_id','_on':'a.category_id=b.category_id'}
-    }
-    list=db.join(model).where("a.title like '%%'").select()
-    for a in list:
-        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-        print(a['content'])
-
-    print(db.getlastsql())
-    '''
-
-    #创建数据表
-    '''
-    sql = """CREATE TABLE EMPLOYEE (
-         FIRST_NAME  CHAR(20) NOT NULL,
-         LAST_NAME  CHAR(20),
-         AGE INT,
-         SEX CHAR(1),
-         INCOME FLOAT )"""
-    db.query(sql)
-    '''
-
-    #删除表
-    '''
-    sql="DROP TABLE IF EXISTS EMPLOYEE"
-    db.query(sql)
-    '''
-
-    #切换数据库
-    '''
-    db.selectdb('ainiku')
-    list=db.table('article').select()
-    for a in list:
-        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-        print(a['content'])
-    '''
-
-    # print("主机信息:%s"%db.gethostinfo())
-    # print("数据库版本:%s"%db.getserverinfo())
-    # db.close()
-
-    #sqllite数据库测试
-
     db=mysql({
-        'dbtype':'sqllite',
-        'db':'test.db',
-        'prefix':'',
+        'host':'localhost',
+        'user':'root',
+        'passwd':'adminrootkl',
+        'db':'test',
+        'prefix':'kl_',
         'charset':'utf8'
     })
-    #创建表
-    db.query('CREATE TABLE article(id INTEGER primary key, title text)')
-    result=db.table('article').add({'title':'测试标题'})
-    datalist=db.table('article').getarr()
-    num=db.table('article').where('id=3').delete()
-    res=db.table('article').where('id=1').save({'title':'更新数据'})
-    print(datalist)
-    db.close()
-    input('按任意键继续...')
+    #查询数据列表
+    da=db.table('article').find(1)
+    da=db.table('article').limit(2).select()
+    for a in da:
+        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+
+
+#添加数据
+''''
+content="<html '>"
+num=db.table('article').add({
+     'title':'测试标题',
+     'content':content
+     })
+'''
+#更新数据
+'''
+num=db.table('article').where('id=1').save({'content':'已经更新'})
+num=db.table('article').where('id=3').delete()
+print(num)
+'''
+#组合查询条件查询
+'''
+map={
+'title':['like','%1%'],
+'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
+}
+list=db.table('article').order('id desc').where(map).select()
+for a in list:
+    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+    print(a['content'])
+
+print(db.getlastsql())
+'''
+
+#多表联合查询
+'''
+model={
+ 'article':{'_as':'a','field':'title,id,content,category_id'},
+ 'category':{'_as':'b','field':'category_id as cate_id','_on':'a.category_id=b.category_id'}
+}
+list=db.join(model).where("a.title like '%%'").select()
+for a in list:
+    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+    print(a['content'])
+
+print(db.getlastsql())
+'''
+
+#创建数据表
+'''
+sql = """CREATE TABLE EMPLOYEE (
+     FIRST_NAME  CHAR(20) NOT NULL,
+     LAST_NAME  CHAR(20),
+     AGE INT,
+     SEX CHAR(1),
+     INCOME FLOAT )"""
+db.query(sql)
+'''
+
+#删除表
+'''
+sql="DROP TABLE IF EXISTS EMPLOYEE"
+db.query(sql)
+'''
+
+#切换数据库
+'''
+db.selectdb('ainiku')
+list=db.table('article').select()
+for a in list:
+    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+    print(a['content'])
+'''
+
+# print("主机信息:%s"%db.gethostinfo())
+# print("数据库版本:%s"%db.getserverinfo())
+# db.close()
+
+#sqllite数据库测试
+
+db=mysql({
+    'dbtype':'sqllite',
+    'db':'test.db',
+    'prefix':'',
+    'charset':'utf8'
+})
+#创建表
+db.query('CREATE TABLE article(id INTEGER primary key, title text)')
+result=db.table('article').add({'title':'测试标题'})
+datalist=db.table('article').getarr()
+num=db.table('article').where('id=3').delete()
+res=db.table('article').where('id=1').save({'title':'更新数据'})
+print(datalist)
+db.close()
+input('按任意键继续...')
