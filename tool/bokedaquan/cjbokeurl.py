@@ -18,13 +18,13 @@ threadnum=0
 isproxy=False
 http.setproxy('','','127.0.0.1:8087')
 db=kl_db.mysql({
-            'host':'localhost',
-            'user':'root',
-            'passwd':'adminrootkl',
-            'db':'bokedaquan',
-            'prefix':'kl_',
-            'charset':'utf8'
-        })
+    'host':'localhost',
+    'user':'root',
+    'passwd':'adminrootkl',
+    'db':'bokedaquan',
+    'prefix':'kl_',
+    'charset':'utf8'
+})
 
 f=open('../proxy/proxy.txt','r')
 s=f.read()
@@ -34,13 +34,13 @@ proxylist=s.splitlines()
 #链接url正则
 cjurl=[
     {
-    'hostname':'http://lusongsong.com',
-    'url':'http://lusongsong.com/daohang/',
-    'shendu':2,
-    'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
-    'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
-    'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
-    'charset':'utf-8',
+        'hostname':'http://lusongsong.com',
+        'url':'http://lusongsong.com/daohang/',
+        'shendu':2,
+        'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
+        'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
+        'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
+        'charset':'utf-8',
     }
 ]
 class urlspider(object):
@@ -112,7 +112,7 @@ class urlspider(object):
                             threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
                             break
                         time.sleep(1)
-                #cur_shendu-=1
+                        #cur_shendu-=1
         threadnum-=1
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
@@ -131,7 +131,7 @@ class urlspider(object):
             result=db.table('url').where({
                 'hostname':self.hostname,
                 'url':i
-                }).count()
+            }).count()
             if result<=0:
                 res=db.table('url').add({
                     'url':i,
@@ -139,7 +139,7 @@ class urlspider(object):
                     'status':0,
                     'update_time':time.time(),
                     'src_url':src_url
-                    })
+                })
                 if res<=0:
                     log.write('add %s error:%s'%(i,db.lasterror))
                     log.write('lastsql:%s'%db.getlastsql())

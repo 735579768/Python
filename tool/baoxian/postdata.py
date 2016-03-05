@@ -1,6 +1,6 @@
 postdata={
-#品牌
-'brand':'''\
+    #品牌
+    'brand':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -22,8 +22,8 @@ body.jyParentId:
 body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
-#车型品牌
-'chexingbrand':'''\
+    #车型品牌
+    'chexingbrand':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -45,8 +45,8 @@ body.jyParentId:
 body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
-#车款
-'chekuan':'''\
+    #车款
+    'chekuan':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -69,8 +69,8 @@ body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
 
-#车款图片
-'chekuanpic':'''\
+    #车款图片
+    'chekuanpic':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -93,8 +93,8 @@ body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
 
-#排气量
-'paiqiliang':'''\
+    #排气量
+    'paiqiliang':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -117,8 +117,8 @@ body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
 
-#手动/自动
-'shoudong':'''\
+    #手动/自动
+    'shoudong':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -141,8 +141,8 @@ body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
 
-#配置型号
-'peizhixinghao':'''\
+    #配置型号
+    'peizhixinghao':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088
@@ -165,8 +165,8 @@ body.jyFgwCode:请选择
 body.comCode:41010088\
 ''',
 
-#型号
-'xinghao':'''\
+    #型号
+    'xinghao':'''\
 areaCode:41000000
 cityCode:41010000
 comCode:41010088

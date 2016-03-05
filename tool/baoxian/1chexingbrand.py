@@ -7,13 +7,13 @@ addnum=0
 http=kl_http.kl_http()
 log=kl_log.kl_log('brand')
 db=kl_db.mysql({
-            'host':'localhost',
-            'user':'root',
-            'passwd':'adminrootkl',
-            'db':'qiche',
-            'prefix':'kl_',
-            'charset':'utf8'
-        })
+    'host':'localhost',
+    'user':'root',
+    'passwd':'adminrootkl',
+    'db':'qiche',
+    'prefix':'kl_',
+    'charset':'utf8'
+})
 #取brand数据
 url='http://www.epicc.com.cn/ecar/car/carModel/getCarModelFromJYDB'
 http.setheaders('''\
