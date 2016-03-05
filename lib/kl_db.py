@@ -150,12 +150,12 @@ class mysql(object):
         return self.cur._executed
 
     #取表主键字段
-    def __setprimary(self,tablename):
+    def __setprimary(self):
         try:
             if self.arg['dbtype']=='sqllite':
                 pass
             else:
-                sql='SELECT TABLE_NAME,COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA=\'%s\' and TABLE_NAME=\'%s\''%(self.arg['db'],tablename)
+                sql='SELECT TABLE_NAME,COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA=\'%s\' and TABLE_NAME=\'%s\''%(self.arg['db'],self.sqlconf['table'])
                 self.cur.execute(sql)
                 datalist=self.cur.fetchone()
                 self.primary=datalist['COLUMN_NAME']
@@ -278,7 +278,6 @@ class mysql(object):
     def table(self,data):
         if self.prefix!='':
             data=self.prefix+data
-        self.__setprimary(data)
         self.sqlconf['table']=data
         return self
 
@@ -354,6 +353,7 @@ class mysql(object):
         return self.__execute()
 
     def delete(self,id=''):
+        self.__setprimary()
         self.lasterror=None
         self.sql=''
         self.sqlconf['action']='delete'
@@ -362,6 +362,7 @@ class mysql(object):
         return self.__execute()
 
     def find(self,id=''):
+        self.__setprimary()
         if self.primary and id:
             self.sqlconf['where']='where %s=%s'%(self.primary,id)
         data=self.getarr()
@@ -379,6 +380,28 @@ class mysql(object):
             return record.fetchall()
         else:
             return []
+
+    def setinc(self,field,num=1):
+        self.__setprimary()
+        tabname=self.sqlconf['table']
+        data=self.getarr()
+        for i in data:
+            a=i[field]+num
+            self.sqlconf['table']=tabname
+            result=self.where({self.primary:i[self.primary]}).save({field:a})
+            if result<=0:
+                return False
+
+    def setdec(self,field,num=1):
+        self.__setprimary()
+        tabname=self.sqlconf['table']
+        data=self.getarr()
+        for i in data:
+            a=i[field]-num
+            self.sqlconf['table']=tabname
+            result=self.where({self.primary:i[self.primary]}).save({field:a})
+            if result<=0:
+                return False
 
     def count(self):
         self.lasterror=None
@@ -402,6 +425,8 @@ if __name__ == '__main__':
         'charset':'utf8'
     })
     #查询数据列表
+    db.table('article').setinc('views',10)
+    db.table('article').setdec('views',5)
     da=db.table('article').find(1)
     da=db.table('article').limit(2).select()
     for a in da:
