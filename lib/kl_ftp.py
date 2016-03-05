@@ -155,7 +155,7 @@ class kl_ftp(ftplib.FTP):
                     self.mkd(mdir)
                 except:
                     pass
-                #self.cwd(i)
+                    #self.cwd(i)
 
     #上传本地文件夹到远程
     def uploadfolder(self,localdir,remotedir):
@@ -163,7 +163,7 @@ class kl_ftp(ftplib.FTP):
             return
         for file in os.listdir(localdir):
             if file in self.ignorefolder:
-                    continue
+                continue
             src=localdir+'/'+file
             if os.path.isfile(src):
                 self.uploadfile(src, remotedir+'/'+file)
@@ -207,19 +207,19 @@ class kl_ftp(ftplib.FTP):
         print('Merging files...')
         fw = open(self.localroot+filename, "wb")
         for i in range(0, threadnum):
-         fname =self.localroot+ filename+'.part.'+str(i)
-         print (fname)
-         if not os.path.isfile(fname):
-            print ('not found', fname)
-            continue
-         f1 = open(fname, 'rb')
-         while 1:
-            data = f1.read(8192)
-            if not len(data):
-                   break
-            fw.write(data)
-         f1.close()
-         os.remove(fname)
+            fname =self.localroot+ filename+'.part.'+str(i)
+            print (fname)
+            if not os.path.isfile(fname):
+                print ('not found', fname)
+                continue
+            f1 = open(fname, 'rb')
+            while 1:
+                data = f1.read(8192)
+                if not len(data):
+                    break
+                fw.write(data)
+            f1.close()
+            os.remove(fname)
         fw.close()
         print ('file part merge complete!')
         self.bigfile.remove(filename)
@@ -255,41 +255,41 @@ class kl_ftp(ftplib.FTP):
         conn = myftp.transfercmd(cmd, rest)
         readsize = blocksize
         while 1:
-         if size > 0:
-            last = size - haveread
-            if last > blocksize:
-                   readsize = blocksize
-            else:
-                   readsize = last
-         data = conn.recv(readsize)
-         if not data:
-            break
+            if size > 0:
+                last = size - haveread
+                if last > blocksize:
+                    readsize = blocksize
+                else:
+                    readsize = last
+            data = conn.recv(readsize)
+            if not data:
+                break
 
-         # 已经下载的数据长度
-         haveread = haveread + len(data)
-         # 只能下载指定长度的数据，下载到就退出
-         if haveread > size:
-            print (tname, 'downloaded:', haveread, 'size:', size)
-            hs = haveread - size
-            callback(data[:hs])
-            break
-         elif haveread == size:
+            # 已经下载的数据长度
+            haveread = haveread + len(data)
+            # 只能下载指定长度的数据，下载到就退出
+            if haveread > size:
+                print (tname, 'downloaded:', haveread, 'size:', size)
+                hs = haveread - size
+                callback(data[:hs])
+                break
+            elif haveread == size:
+                callback(data)
+                print (tname, 'downloaded:', haveread)
+                break
+
             callback(data)
-            print (tname, 'downloaded:', haveread)
-            break
-
-         callback(data)
-
-        conn.close()
         fp.close()
         self.threadlock.acquire()
         try:
             #ret = myftp.getresp()
+            myftp.voidcmd('NOOP')
+            myftp.voidresp()
+            conn.close()
             myftp.quit()
         except Exception as e:
             self.log.write(e)
             print(e)
-
         self.threadlock.release()
         return ret
 
@@ -351,7 +351,7 @@ class kl_sftp:
         pass
     def __downfilelist(self,filelist, curpwd):
         for file in filelist:
-             if file != '.' and file != '..' :
+            if file != '.' and file != '..' :
                 if file in self.ignorefolder:
                     continue
                 fol=curpwd +'/'+ file
