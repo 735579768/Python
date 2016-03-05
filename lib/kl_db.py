@@ -403,6 +403,9 @@ class mysql(object):
             if result<=0:
                 return False
 
+    def setfield(self,field,value):
+        return self.save({field:value})
+
     def count(self):
         self.lasterror=None
         self.sql=''
