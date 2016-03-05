@@ -15,9 +15,12 @@
 // |MySQLdb.cursors.DictCursor， 执行SQL语句返回List，每行数据为Dict
 '''
 import pymysql,sqlite3,os
+
+
 class mysql(object):
 
     def __init__(self, arg):
+        self.is_sqllite=False
         self.sql=''
         self.lasterror=None
         self.sqlparam=[]
@@ -37,16 +40,25 @@ class mysql(object):
         self.cur=None
         self.arg = arg
         if self.arg['dbtype'].lower()=='sqllite':
-            self.connsqllite(arg)
+            self.is_sqllite=True
+            self.__connsqllite(arg)
         else:
-            self.conn(arg)
+            self.__conn(arg)
 
-    def connsqllite(self,arg):
+    #转换sqllite数据为字典
+    def __dict_factory(self,cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+
+    def __connsqllite(self,arg):
         if self.con==None:
             self.con = sqlite3.connect(arg['db'])
+            self.con.row_factory = self.__dict_factory
         self.cur = self.con.cursor()
 
-    def conn(self,config):
+    def __conn(self,config):
         self.prefix=config['prefix']
         if self.con == None :
             self.con=pymysql.connect(
@@ -88,11 +100,17 @@ class mysql(object):
             self.__zuhesqu()
         try:
             num=0
+            if self.is_sqllite:
+                self.sql=self.sql.replace('%s', '?')
+                #self.sqlparam=tuple(self.sqlparam)
             if len(self.sqlparam):
                 num=self.cur.execute(self.sql,self.sqlparam)
             else:
                 num=self.cur.execute(self.sql)
-            if self.sqlconf['action']=='insert':
+
+            #sqllite返回影响行数
+            num=num.rowcount  if self.is_sqllite  else num
+            if self.sqlconf['action']=='insert into':
                 #最新插入行的主键ID
                 zhuid=int(self.cur.lastrowid)
                 if num>0 and zhuid>0:
@@ -100,6 +118,8 @@ class mysql(object):
             elif self.sqlconf['action']=='select count(*)':
                 da=self.cur.fetchone()
                 num=da['num']
+            else:
+                num=num.rowcount  if self.is_sqllite  else num
             self.con.commit()
             self.__init()
             return num
@@ -138,14 +158,14 @@ class mysql(object):
         if field=='' and join=='':
             return None
 
-        if action=='insert':
+        if action=='insert into':
             fie=''
             val=''
             for a in self.data:
                 fie+=(',`%s`'%a) if fie!='' else  ('`%s`'%a)
                 val+=(',%s') if val!='' else ('%s')
                 self.sqlparam.append(self.data[a])
-            temsql='insert %s (%s) values(%s)'%(table, fie, val)
+            temsql='insert into %s (%s) values(%s)'%(table, fie, val)
 
         elif action=='update':
             val=''
@@ -307,7 +327,7 @@ class mysql(object):
         self.lasterror=None
         self.sql=''
         self.data=data
-        self.sqlconf['action']='insert'
+        self.sqlconf['action']='insert into'
         return self.__execute()
 
     def delete(self):
@@ -434,13 +454,13 @@ if __name__ == '__main__':
     db=mysql({
         'dbtype':'sqllite',
         'db':'test.db',
-        'prefix':'kl_',
+        'prefix':'',
         'charset':'utf8'
     })
     #创建表
-    db.query('''\
-        CREATE TABLE category
-      (id int primary key, sort int, name text)\
-      ''')
+    db.query('CREATE TABLE article(id INTEGER primary key, title text)')
+    result=db.table('article').add({'title':'测试标题'})
+    datalist=db.table('article').getarr()
+    print(datalist)
     db.close()
     input('按任意键继续...')
