@@ -382,6 +382,7 @@ class mysql(object):
             return []
 
     def setinc(self,field,num=1):
+        renum=0
         tabname=self.sqlconf['table']
         data=self.getarr()
         if len(data)<=0:
@@ -401,8 +402,11 @@ class mysql(object):
             result=self.where(param).save({field:a})
             if result<=0:
                 return False
-
+            else:
+                renum+=1
+        return renum
     def setdec(self,field,num=1):
+        renum=0
         tabname=self.sqlconf['table']
         data=self.getarr()
         if len(data)<=0:
@@ -422,6 +426,9 @@ class mysql(object):
             result=self.where(param).save({field:a})
             if result<=0:
                 return False
+            else:
+                renum+=1
+        return renum
 
     def setfield(self,field,value):
         return self.save({field:value})
