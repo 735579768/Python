@@ -382,9 +382,6 @@ class mysql(object):
             return []
 
     def setinc(self,field,num=1):
-        self.__setprimary()
-        if not self.primary:
-            return False
         tabname=self.sqlconf['table']
         data=self.getarr()
         if len(data)<=0:
@@ -392,14 +389,15 @@ class mysql(object):
         for i in data:
             a=i[field]+num
             self.sqlconf['table']=tabname
-            result=self.where({self.primary:i[self.primary]}).save({field:a})
+            param={}
+            for m,n in i.items():
+                if  n:
+                    param[m]=n
+            result=self.where(param).save({field:a})
             if result<=0:
                 return False
 
     def setdec(self,field,num=1):
-        self.__setprimary()
-        if not self.primary:
-            return False
         tabname=self.sqlconf['table']
         data=self.getarr()
         if len(data)<=0:
@@ -407,7 +405,11 @@ class mysql(object):
         for i in data:
             a=i[field]-num
             self.sqlconf['table']=tabname
-            result=self.where({self.primary:i[self.primary]}).save({field:a})
+            param={}
+            for m,n in i.items():
+                if  n:
+                    param[m]=n
+            result=self.where(param).save({field:a})
             if result<=0:
                 return False
 
