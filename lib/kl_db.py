@@ -387,7 +387,12 @@ class mysql(object):
         if len(data)<=0:
             return False
         for i in data:
-            a=i[field]+num
+            b=str(i[field])
+            try:
+                b= int(b) if (b.find('.')==-1) else float(b)
+            except Exception as e:
+                b=0
+            a=b+num
             self.sqlconf['table']=tabname
             param={}
             for m,n in i.items():
@@ -403,7 +408,12 @@ class mysql(object):
         if len(data)<=0:
             return False
         for i in data:
-            a=i[field]-num
+            b=str(i[field])
+            try:
+                b= int(b) if (b.find('.')==-1) else float(b)
+            except:
+                b=0
+            a=b-num
             self.sqlconf['table']=tabname
             param={}
             for m,n in i.items():
@@ -429,90 +439,90 @@ class mysql(object):
 
 #使用示例
 if __name__ == '__main__':
-    db=mysql({
-        'host':'localhost',
-        'user':'root',
-        'passwd':'adminrootkl',
-        'db':'test',
-        'prefix':'kl_',
-        'charset':'utf8'
-    })
-    #查询数据列表
-    db.table('article').setinc('views',10)
-    db.table('article').setdec('views',5)
-    da=db.table('article').find(1)
-    da=db.table('article').limit(2).select()
-    for a in da:
-        print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+# db=mysql({
+#     'host':'localhost',
+#     'user':'root',
+#     'passwd':'adminrootkl',
+#     'db':'test',
+#     'prefix':'kl_',
+#     'charset':'utf8'
+# })
+# #查询数据列表
+# db.table('article').setinc('views',10)
+# db.table('article').setdec('views',5)
+# da=db.table('article').find(1)
+# da=db.table('article').limit(2).select()
+# for a in da:
+#     print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
 
 
-#添加数据
-''''
-content="<html '>"
-num=db.table('article').add({
-     'title':'测试标题',
-     'content':content
-     })
-'''
-#更新数据
-'''
-num=db.table('article').where('id=1').save({'content':'已经更新'})
-num=db.table('article').where('id=3').delete()
-print(num)
-'''
-#组合查询条件查询
-'''
-map={
-'title':['like','%1%'],
-'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
-}
-list=db.table('article').order('id desc').where(map).select()
-for a in list:
-    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-    print(a['content'])
+# #添加数据
 
-print(db.getlastsql())
-'''
+# content="<html '>"
+# num=db.table('article').add({
+#      'title':'测试标题',
+#      'content':content
+#      })
 
-#多表联合查询
-'''
-model={
- 'article':{'_as':'a','field':'title,id,content,category_id'},
- 'category':{'_as':'b','field':'category_id as cate_id','_on':'a.category_id=b.category_id'}
-}
-list=db.join(model).where("a.title like '%%'").select()
-for a in list:
-    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-    print(a['content'])
+# #更新数据
 
-print(db.getlastsql())
-'''
+# num=db.table('article').where('id=1').save({'content':'已经更新'})
+# num=db.table('article').where('id=3').delete()
+# print(num)
 
-#创建数据表
-'''
-sql = """CREATE TABLE EMPLOYEE (
-     FIRST_NAME  CHAR(20) NOT NULL,
-     LAST_NAME  CHAR(20),
-     AGE INT,
-     SEX CHAR(1),
-     INCOME FLOAT )"""
-db.query(sql)
-'''
+# #组合查询条件查询
 
-#删除表
-'''
-sql="DROP TABLE IF EXISTS EMPLOYEE"
-db.query(sql)
-'''
+# map={
+# 'title':['like','%1%'],
+# 'id':[['gt',0],['lt',1],['lt',8],['lt',9],'or']
+# }
+# list=db.table('article').order('id desc').where(map).select()
+# for a in list:
+#     print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+#     print(a['content'])
 
-#切换数据库
-'''
-db.selectdb('ainiku')
-list=db.table('article').select()
-for a in list:
-    print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
-    print(a['content'])
-'''
+# print(db.getlastsql())
+
+
+# #多表联合查询
+
+# model={
+#  'article':{'_as':'a','field':'title,id,content,category_id'},
+#  'category':{'_as':'b','field':'category_id as cate_id','_on':'a.category_id=b.category_id'}
+# }
+# list=db.join(model).where("a.title like '%%'").select()
+# for a in list:
+#     print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+#     print(a['content'])
+
+# print(db.getlastsql())
+
+
+# #创建数据表
+
+# sql = """CREATE TABLE EMPLOYEE (
+#      FIRST_NAME  CHAR(20) NOT NULL,
+#      LAST_NAME  CHAR(20),
+#      AGE INT,
+#      SEX CHAR(1),
+#      INCOME FLOAT )"""
+# db.query(sql)
+
+
+# #删除表
+
+# sql="DROP TABLE IF EXISTS EMPLOYEE"
+# db.query(sql)
+
+
+# #切换数据库
+
+# db.selectdb('ainiku')
+# list=db.table('article').select()
+# for a in list:
+#     print(a['title']) # a[1] 表示当前游标所在行的的第2列值，如果是中文则需要处理编码
+#     print(a['content'])
+
 
 # print("主机信息:%s"%db.gethostinfo())
 # print("数据库版本:%s"%db.getserverinfo())
@@ -520,19 +530,19 @@ for a in list:
 
 #sqllite数据库测试
 
-db=mysql({
-    'dbtype':'sqllite',
-    'db':'test.db',
-    'prefix':'',
-    'charset':'utf8'
-})
+    db=mysql({
+        'dbtype':'sqllite',
+        'db':'test.db',
+        'prefix':'',
+        'charset':'utf8'
+    })
 #创建表
-db.query('CREATE TABLE article(id INTEGER primary key, title text)')
-result=db.table('article').add({'title':'测试标题'})
-datalist=db.table('article').getarr()
-num=db.table('article').where('id=3').delete()
-res=db.table('article').where('id=1').save({'title':'更新数据'})
-resul=db.table('article').setinc('views')
-print(datalist)
-db.close()
-input('按任意键继续...')
+    db.query('CREATE TABLE article(id INTEGER primary key, title text)')
+    result=db.table('article').add({'title':'测试标题'})
+    datalist=db.table('article').getarr()
+    num=db.table('article').where('id=3').delete()
+    res=db.table('article').where('id=1').save({'title':'更新数据'})
+    resul=db.table('article').setinc('views')
+    print(datalist)
+    db.close()
+    input('按任意键继续...')
