@@ -383,8 +383,12 @@ class mysql(object):
 
     def setinc(self,field,num=1):
         self.__setprimary()
+        if not self.primary:
+            return False
         tabname=self.sqlconf['table']
         data=self.getarr()
+        if len(data)<=0:
+            return False
         for i in data:
             a=i[field]+num
             self.sqlconf['table']=tabname
@@ -394,8 +398,12 @@ class mysql(object):
 
     def setdec(self,field,num=1):
         self.__setprimary()
+        if not self.primary:
+            return False
         tabname=self.sqlconf['table']
         data=self.getarr()
+        if len(data)<=0:
+            return False
         for i in data:
             a=i[field]-num
             self.sqlconf['table']=tabname
@@ -522,6 +530,7 @@ result=db.table('article').add({'title':'测试标题'})
 datalist=db.table('article').getarr()
 num=db.table('article').where('id=3').delete()
 res=db.table('article').where('id=1').save({'title':'更新数据'})
+resul=db.table('article').setinc('views')
 print(datalist)
 db.close()
 input('按任意键继续...')
