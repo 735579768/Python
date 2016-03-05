@@ -14,7 +14,7 @@
 // |MySQLdb.cursors.Cursor， 默认值，执行SQL语句返回List，每行数据为tuple
 // |MySQLdb.cursors.DictCursor， 执行SQL语句返回List，每行数据为Dict
 '''
-import pymysql
+import pymysql,sqlite3,os
 class mysql(object):
 
     def __init__(self, arg):
@@ -36,20 +36,28 @@ class mysql(object):
         self.con=None
         self.cur=None
         self.arg = arg
-        self.conn(arg)
+        if self.arg['dbtype'].lower()=='sqllite':
+            self.connsqllite(arg)
+        else:
+            self.conn(arg)
+
+    def connsqllite(self,arg):
+        if self.con==None:
+            self.con = sqlite3.connect(arg['db'])
+        self.cur = self.con.cursor()
 
     def conn(self,config):
         self.prefix=config['prefix']
         if self.con == None :
             self.con=pymysql.connect(
-                host=config['host'],
-                user=config['user'],
-                passwd=config['passwd'],
-                db=config['db'],
-                charset=config['charset'],
-                port=3306,
-                cursorclass=pymysql.cursors.DictCursor
-                )
+                    host=config['host'],
+                    user=config['user'],
+                    passwd=config['passwd'],
+                    db=config['db'],
+                    charset=config['charset'],
+                    port=3306,
+                    cursorclass=pymysql.cursors.DictCursor
+            )
         self.cur=self.con.cursor(pymysql.cursors.DictCursor)#获取操作游标
 
     #返回一个记录集
@@ -334,14 +342,14 @@ class mysql(object):
 
 #使用示例
 if __name__ == '__main__':
-    db=mysql({
-            'host':'localhost',
-            'user':'root',
-            'passwd':'adminrootkl',
-            'db':'test',
-            'prefix':'kl_',
-            'charset':'utf8'
-        })
+    # db=mysql({
+    #     'host':'localhost',
+    #     'user':'root',
+    #     'passwd':'adminrootkl',
+    #     'db':'test',
+    #     'prefix':'kl_',
+    #     'charset':'utf8'
+    # })
     #查询数据列表
     '''
      da=db.table('article').limit(2).select()
@@ -417,7 +425,22 @@ if __name__ == '__main__':
         print(a['content'])
     '''
 
-    print("主机信息:%s"%db.gethostinfo())
-    print("数据库版本:%s"%db.getserverinfo())
+    # print("主机信息:%s"%db.gethostinfo())
+    # print("数据库版本:%s"%db.getserverinfo())
+    # db.close()
+
+    #sqllite数据库测试
+
+    db=mysql({
+        'dbtype':'sqllite',
+        'db':'test.db',
+        'prefix':'kl_',
+        'charset':'utf8'
+    })
+    #创建表
+    db.query('''\
+        CREATE TABLE category
+      (id int primary key, sort int, name text)\
+      ''')
     db.close()
     input('按任意键继续...')
