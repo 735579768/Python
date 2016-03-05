@@ -1,4 +1,4 @@
-    #!/usr/bin/env python
+#!/usr/bin/env python
 """
 Download utility as an easy way to get file from the net
 
@@ -25,11 +25,11 @@ import math
 
 PY3K = sys.version_info >= (3, 0)
 if PY3K:
-  import urllib.request as ulib
-  import urllib.parse as urlparse
+    import urllib.request as ulib
+    import urllib.parse as urlparse
 else:
-  import urllib as ulib
-  import urlparse
+    import urllib as ulib
+    import urlparse
 
 #创建目录
 def create_dir(dirpath):
@@ -276,9 +276,9 @@ def filename_fix_existing(filename):
     suffixes = [x.replace(name, '') for x in names]
     # filter suffixes that match ' (x)' pattern
     suffixes = [x[2:-1] for x in suffixes
-                   if x.startswith(' (') and x.endswith(')')]
+                if x.startswith(' (') and x.endswith(')')]
     indexes  = [int(x) for x in suffixes
-                   if set(x) <= set('0123456789')]
+                if set(x) <= set('0123456789')]
     idx = 1
     if indexes:
         idx += sorted(indexes)[-1]
@@ -326,7 +326,7 @@ def get_console_width():
 
         sbi = CONSOLE_SCREEN_BUFFER_INFO()
         ret = windll.kernel32.GetConsoleScreenBufferInfo(
-            console_handle, byref(sbi))
+                console_handle, byref(sbi))
         if ret == 0:
             return 0
         return sbi.srWindow.Right+1
@@ -405,9 +405,9 @@ def bar_adaptive(current, total, width=80):
     # pppp bbbbb sssssss
 
     min_width = {
-      'percent': 4,  # 100%
-      'bar': 3,      # [.]
-      'size': len("%s" % total)*2 + 3, # 'xxxx / yyyy'
+        'percent': 4,  # 100%
+        'bar': 3,      # [.]
+        'size': len("%s" % total)*2 + 3, # 'xxxx / yyyy'
     }
     priority = ['percent', 'bar', 'size']
 
@@ -415,27 +415,27 @@ def bar_adaptive(current, total, width=80):
     selected = []
     avail = width
     for field in priority:
-      if min_width[field] < avail:
-        selected.append(field)
-        avail -= min_width[field]+1   # +1 is for separator or for reserved space at
-                                      # the end of line to avoid linefeed on Windows
+        if min_width[field] < avail:
+            selected.append(field)
+            avail -= min_width[field]+1   # +1 is for separator or for reserved space at
+            # the end of line to avoid linefeed on Windows
     # render
     output = ''
     for field in selected:
 
-      if field == 'percent':
-        # fixed size width for percentage
-        output += ('%s%%' % (100 * current // total)).rjust(min_width['percent'])
-      elif field == 'bar':  # [. ]
-        # bar takes its min width + all available space
-        output += bar_thermometer(current, total, min_width['bar']+avail)
-      elif field == 'size':
-        # size field has a constant width (min == max)
-        output += ("%s / %s" % (current, total)).rjust(min_width['size'])
+        if field == 'percent':
+            # fixed size width for percentage
+            output += ('%s%%' % (100 * current // total)).rjust(min_width['percent'])
+        elif field == 'bar':  # [. ]
+            # bar takes its min width + all available space
+            output += bar_thermometer(current, total, min_width['bar']+avail)
+        elif field == 'size':
+            # size field has a constant width (min == max)
+            output += ("%s / %s" % (current, total)).rjust(min_width['size'])
 
-      selected = selected[1:]
-      if selected:
-        output += ' '  # add field separator
+        selected = selected[1:]
+        if selected:
+            output += ' '  # add field separator
 
     return output
 
@@ -443,9 +443,9 @@ def bar_adaptive(current, total, width=80):
 
 
 __current_size = 0  # global state variable, which exists solely as a
-                    # workaround against Python 3.3.0 regression
-                    # http://bugs.python.org/issue16409
-                    # fixed in Python 3.3.1
+# workaround against Python 3.3.0 regression
+# http://bugs.python.org/issue16409
+# fixed in Python 3.3.1
 def callback_progress(blocks, block_size, total_size, bar_function):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
