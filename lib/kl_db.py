@@ -118,8 +118,6 @@ class mysql(object):
             elif self.sqlconf['action']=='select count(*)':
                 da=self.cur.fetchone()
                 num=da['num']
-            else:
-                num=num.rowcount  if self.is_sqllite  else num
             self.con.commit()
             self.__init()
             return num
@@ -461,6 +459,8 @@ if __name__ == '__main__':
     db.query('CREATE TABLE article(id INTEGER primary key, title text)')
     result=db.table('article').add({'title':'测试标题'})
     datalist=db.table('article').getarr()
+    num=db.table('article').where('id=3').delete()
+    res=db.table('article').where('id=1').save({'title':'更新数据'})
     print(datalist)
     db.close()
     input('按任意键继续...')
