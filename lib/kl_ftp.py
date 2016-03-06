@@ -11,6 +11,7 @@ import ftplib, os , kl_log, paramiko, threading, math, time,_thread
 #打开一个文件句柄
 import sys
 from kl_log import kl_log
+from kl_progressbar import kl_progressbar
 
 writeFile = lambda filename:open(filename, 'wb').write
 #创建目录
@@ -18,7 +19,7 @@ createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
 class kl_ftp(ftplib.FTP):
     def __init__(self,host,port,username,password):
-        self.progress='downloading.  '
+        self.progress=kl_progressbar('downloading',30)
         self.maxthread=5
         self.curthreadnum=0
         self.threadlock=_thread.allocate_lock()
@@ -256,7 +257,7 @@ class kl_ftp(ftplib.FTP):
         conn = myftp.transfercmd(cmd, rest)
         readsize = blocksize
         while 1:
-            self.__progresstext()
+            self.progress.show()
             if size > 0:
                 last = size - haveread
                 if last > blocksize:
@@ -295,15 +296,15 @@ class kl_ftp(ftplib.FTP):
         self.threadlock.release()
         return ret
 
-    def __progresstext(self):
-        if self.progress=='downloading.  ':
-            self.progress='downloading.. '
-        elif self.progress=='downloading.. ':
-            self.progress='downloading...'
-        elif self.progress=='downloading...':
-            self.progress='downloading.  '
-        sys.stdout.write(self.progress+'\r')
-        sys.stdout.flush()
+    # def __progresstext(self):
+    #     if self.progress=='downloading.  ':
+    #         self.progress='downloading.. '
+    #     elif self.progress=='downloading.. ':
+    #         self.progress='downloading...'
+    #     elif self.progress=='downloading...':
+    #         self.progress='downloading.  '
+    #     sys.stdout.write(self.progress+'\r')
+    #     sys.stdout.flush()
 
 
 class kl_sftp:
