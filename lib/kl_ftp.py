@@ -9,10 +9,10 @@
 import ftplib, os , kl_log, paramiko, threading, math, time,_thread
 #定义匿名函数
 #打开一个文件句柄
-import sys
+import sys,socket
 from kl_log import kl_log
 from kl_progressbar import kl_progressbar
-
+socket.setdefaulttimeout(60)
 writeFile = lambda filename:open(filename, 'wb').write
 #创建目录
 createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
