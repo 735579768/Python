@@ -36,6 +36,12 @@ class kl_ftp(ftplib.FTP):
         #初始化日志
         self.log=kl_log('kl_ftp')
         self.__ftpconn()
+
+    def __del__(self):
+        try:
+            self.quit()
+        except Exception as e:
+            pass
     def __ftpconn(self):
         #最大1G文件
         self.maxline=1024*1024*1024
@@ -283,17 +289,20 @@ class kl_ftp(ftplib.FTP):
 
             callback(data)
         fp.close()
-        self.threadlock.acquire()
-        try:
-            #ret = myftp.getresp()
-            myftp.voidcmd('NOOP')
-            myftp.voidresp()
-            conn.close()
-            myftp.quit()
-        except Exception as e:
-            self.log.write(e)
-            print(e)
-        self.threadlock.release()
+        conn.close()
+        # self.threadlock.acquire()
+        # try:
+        #     print('exit ftp!')
+        #     #ret = myftp.getresp()
+        #     myftp.voidcmd('NOOP')
+        #     myftp.voidresp()
+        #     conn.close()
+        #     myftp.quit()
+        #     print('exit ftp success!')
+        # except Exception as e:
+        #     self.log.write(e)
+        #     print(e)
+        # self.threadlock.release()
         return ret
 
     # def __progresstext(self):
