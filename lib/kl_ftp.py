@@ -18,6 +18,7 @@ createDir = lambda dirname: not os.path.exists(dirname) and os.makedirs(dirname)
 
 class kl_ftp(ftplib.FTP):
     def __init__(self,host,port,username,password):
+        self.progress='downloading.  '
         self.maxthread=5
         self.curthreadnum=0
         self.threadlock=_thread.allocate_lock()
@@ -82,8 +83,8 @@ class kl_ftp(ftplib.FTP):
                         cmd = "SIZE "+fol
                         ret = self.sendcmd(cmd)
                         fsize = int(ret.split(' ')[1])
-                        #大于100M的文件用多线程分块下载
-                        if fsize>1024*1024*100:
+                        #大于10M的文件用多线程分块下载
+                        if fsize>1024*1024*10:
                             while True:
                                 if self.curthreadnum<self.maxthread:
                                     self.curthreadnum+=1
@@ -255,6 +256,7 @@ class kl_ftp(ftplib.FTP):
         conn = myftp.transfercmd(cmd, rest)
         readsize = blocksize
         while 1:
+            self.__progresstext()
             if size > 0:
                 last = size - haveread
                 if last > blocksize:
@@ -292,6 +294,17 @@ class kl_ftp(ftplib.FTP):
             print(e)
         self.threadlock.release()
         return ret
+
+    def __progresstext(self):
+        if self.progress=='downloading.  ':
+            self.progress='downloading.. '
+        elif self.progress=='downloading.. ':
+            self.progress='downloading...'
+        elif self.progress=='downloading...':
+            self.progress='downloading.  '
+        sys.stdout.write(self.progress+'\r')
+        sys.stdout.flush()
+
 
 class kl_sftp:
     def __init__(self,host,port,username,password):
