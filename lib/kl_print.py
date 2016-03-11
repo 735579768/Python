@@ -19,3 +19,6 @@ def print_bg_red(str):
 
 def print_bg_green(str):
     print(Back.GREEN +str)
+
+if __name__ == '__main__':
+    print_red('asdfasdf');
