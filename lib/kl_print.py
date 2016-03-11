@@ -22,3 +22,6 @@ def print_bg_green(str):
 
 if __name__ == '__main__':
     print_red('asdfasdf');
+    print_bg_red('asdfasdf');
+    print_green('asdfasdf');
+    print_bg_green('asdfasdf');
