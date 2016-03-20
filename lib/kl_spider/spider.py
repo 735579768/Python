@@ -49,6 +49,7 @@ class urlspider(object):
         self.content_table=arg['name']+'_content'
         self.urled_table=arg['name']+'_urled'
         self.content_sql=arg['content_sql']
+        self.con_field=arg['field']
         self.init()
 
     #创建数据表
@@ -163,7 +164,7 @@ CREATE TABLE `[TABLE]` (
                 break
             for i in dlist:
                 url=self.formaturl(i['src_url'],i['url'])
-                print("collection page %s"%(url))
+                print("collection content %s"%(url))
                 ht=kl_http.kl_http()
                 ht.autoUserAgent=True
                 r=None
@@ -182,10 +183,14 @@ CREATE TABLE `[TABLE]` (
                     content=r.read().decode(self.charset)
                     #查找目标url
                     mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
-                    #去重
-                    mbcon_list = list(set(mbcon_list))
+                    adddata={}
+                    for m in mbcon_list:
+                        for o,p in self.con_field.items():
+                            adddata[o]=m[int(p)-1]
+
                     print(mbcon_list)
                     db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
+                    db.table(self.content_table).add(adddata)
 
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
@@ -241,10 +246,7 @@ cjurl=[
     #内容正则中的分组对应的字段信息
     'field':{
         'title':1,
-        'url':2,
-        'descr':3,
-        'area':4,
-        'blog_type':5
+        'url':2
     },
     #采集到的内容字段sql语句
     'content_sql':'''\
