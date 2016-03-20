@@ -47,11 +47,21 @@ class urlspider(object):
         self.shendu=int(arg['shendu'])
         self.url_table=arg['name']+'_url'
         self.content_table=arg['name']+'_content'
+        self.urled_table=arg['name']+'_urled'
         self.content_sql=arg['content_sql']
         self.init()
 
     #创建数据表
     def init(self):
+        #创建已经采集的url数据表
+        sql='''\
+CREATE TABLE `[TABLE]` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
+        sql=sql.replace('[TABLE]',db.prefix+self.urled_table)
+        db.query(sql);
         #创建url数据表
         sql='''\
 CREATE TABLE `[TABLE]` (
@@ -60,7 +70,7 @@ CREATE TABLE `[TABLE]` (
   `src_url` varchar(255) DEFAULT NULL,
   `hostname` varchar(255) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT '0',
+  `status` tinyint(3) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
         sql=sql.replace('[TABLE]',db.prefix+self.url_table)
@@ -94,6 +104,9 @@ CREATE TABLE `[TABLE]` (
                 return pro
 
     def shenduurl(self,url,cur_shendu=1):
+        result=db.table(self.urled_table).where({'url':url}).count()
+        if result>0:
+            return True
         global  threadnum
         global  maxthread
         global isproxy
@@ -134,12 +147,40 @@ CREATE TABLE `[TABLE]` (
                             threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
                             break
                         time.sleep(1)
-                #cur_shendu-=1
+
+        #添加已经采集过的网址
+        db.table(self.urled_table).add({'url':url})
         threadnum-=1
 
      #下面开始采集内容
     def caijicon(self):
-        pass
+        dlist=db.table(self.url_table).limit(10).where({
+            'status':0
+            }).getarr()
+        for i in dlist:
+            url=self.formaturl(i['src_url'],i['url'])
+            print("collection page %s"%(url))
+            ht=kl_http.kl_http()
+            ht.autoUserAgent=True
+            r=None
+            while True:
+                if isproxy:
+                    daili=self.get_proxy()
+                    print("using proxy:%s"%daili)
+                    http.resetsession()
+                    http.setproxy('','',daili)
+                r=http.geturl(url)
+                if http.lasterror==None:
+                    break
+                else:
+                    print(http.lasterror)
+            if r!=None:
+                content=r.read().decode(self.charset)
+                #查找目标url
+                mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
+                #去重
+                mbcon_list = list(set(mbcon_list))
+                print(mbcon_list)
 
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
