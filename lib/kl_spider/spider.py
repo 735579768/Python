@@ -11,7 +11,7 @@ mylock = _thread.allocate_lock()#线程锁
 progress=kl_progress.kl_progress('正在采集中')
 progress.start()
 #最大线程
-maxthread=10
+maxthread=5
 threadnum=0
 #是否用代理
 isproxy=False
@@ -42,7 +42,7 @@ class urlspider(object):
         self.url=arg['url']
         self.charset=arg['charset']
         self.mb_url_reg=arg['mb_url_reg']
-        self.mb_url_reg=arg['mb_url_reg']
+        self.mb_con_reg=arg['mb_con_reg']
         self.link_tezheng=arg['link_tezheng']
         self.shendu=int(arg['shendu'])
         self.url_table=arg['name']+'_url'
@@ -70,7 +70,7 @@ CREATE TABLE `[TABLE]` (
   `src_url` varchar(255) DEFAULT NULL,
   `hostname` varchar(255) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
-  `status` tinyint(3) DEFAULT '0',
+  `status` smallint(3) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
         sql=sql.replace('[TABLE]',db.prefix+self.url_table)
@@ -91,6 +91,7 @@ CREATE TABLE `[TABLE]` (
 
     def run(self):
         self.shenduurl(self.url)
+        self.caijicon()
 
     #随机取一个代理
     def get_proxy(self):
@@ -154,33 +155,37 @@ CREATE TABLE `[TABLE]` (
 
      #下面开始采集内容
     def caijicon(self):
-        dlist=db.table(self.url_table).limit(10).where({
-            'status':0
-            }).getarr()
-        for i in dlist:
-            url=self.formaturl(i['src_url'],i['url'])
-            print("collection page %s"%(url))
-            ht=kl_http.kl_http()
-            ht.autoUserAgent=True
-            r=None
-            while True:
-                if isproxy:
-                    daili=self.get_proxy()
-                    print("using proxy:%s"%daili)
-                    http.resetsession()
-                    http.setproxy('','',daili)
-                r=http.geturl(url)
-                if http.lasterror==None:
-                    break
-                else:
-                    print(http.lasterror)
-            if r!=None:
-                content=r.read().decode(self.charset)
-                #查找目标url
-                mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
-                #去重
-                mbcon_list = list(set(mbcon_list))
-                print(mbcon_list)
+        while 1:
+            dlist=db.table(self.url_table).limit(10).order('id asc').where({
+                'status':0
+                }).getarr()
+            if not dlist:
+                break
+            for i in dlist:
+                url=self.formaturl(i['src_url'],i['url'])
+                print("collection page %s"%(url))
+                ht=kl_http.kl_http()
+                ht.autoUserAgent=True
+                r=None
+                while True:
+                    if isproxy:
+                        daili=self.get_proxy()
+                        print("using proxy:%s"%daili)
+                        http.resetsession()
+                        http.setproxy('','',daili)
+                    r=http.geturl(url)
+                    if http.lasterror==None:
+                        break
+                    else:
+                        print(http.lasterror)
+                if r!=None:
+                    content=r.read().decode(self.charset)
+                    #查找目标url
+                    mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
+                    #去重
+                    mbcon_list = list(set(mbcon_list))
+                    print(mbcon_list)
+                    db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
 
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
@@ -200,7 +205,7 @@ CREATE TABLE `[TABLE]` (
                 'hostname':self.hostname,
                 'url':i
                 }).count()
-            if result<=0:
+            if result<1:
                 res=db.table(self.url_table).add({
                     'url':i,
                     'hostname':self.hostname,
