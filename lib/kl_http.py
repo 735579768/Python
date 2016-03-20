@@ -77,6 +77,7 @@ class kl_http:
         if self.proxy['proxyserver']:
             proxy='http://%s:%s@%s' %(self.proxy['username'],self.proxy['password'],self.proxy['proxyserver'])
             proxy_handler=urllib.request.ProxyHandler({'http':proxy})
+            ckproc=urllib.request.HTTPCookieProcessor(self.ckjar)
             self.opener=urllib.request.build_opener(ckproc,proxy_handler)
             return None
         elif  self.autoUserAgent:

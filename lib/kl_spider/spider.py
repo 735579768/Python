@@ -24,11 +24,13 @@ db=kl_db.mysql({
             'prefix':'kl_',
             'charset':'utf8'
         })
-
-f=open('../proxy/proxy.txt','r')
-s=f.read()
-f.close()
-proxylist=s.splitlines()
+prooxypath='../proxy/proxy.txt'
+proxylist=[]
+if os.path.exists(prooxypath):
+    f=open('../proxy/proxy.txt','r')
+    s=f.read()
+    f.close()
+    proxylist=s.splitlines()
 
 class urlspider(object):
     """docstring for urlspider"""
