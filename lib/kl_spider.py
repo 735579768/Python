@@ -128,7 +128,7 @@ CREATE TABLE `[TABLE]` (
             if ht.lasterror==None:
                 break
             else:
-                print(ht.lasterror,ht.code)
+                print(ht.lasterror)
         if r!=None:
             content=r.read().decode(self.charset)
             #查找目标url
@@ -179,7 +179,7 @@ CREATE TABLE `[TABLE]` (
                     if ht.lasterror==None:
                         break
                     else:
-                        print(ht.lasterror,ht.code)
+                        print(ht.lasterror)
                 if r!=None:
                     content=r.read().decode(self.charset)
                     #查找目标url
