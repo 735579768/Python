@@ -45,6 +45,24 @@ class urlspider(object):
         self.mb_url_reg=arg['mb_url_reg']
         self.link_tezheng=arg['link_tezheng']
         self.shendu=int(arg['shendu'])
+        self.url_table='url_'+arg['name']
+        self.content_table='content_'+arg['name']
+        self.init()
+
+    #创建数据表
+    def init(self):
+        sql='''\
+CREATE TABLE `[TABLE]` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) DEFAULT NULL,
+  `src_url` varchar(255) DEFAULT NULL,
+  `hostname` varchar(255) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
+        sql=sql.replace('[TABLE]',db.prefix+self.url_table)
+        db.query(sql);
 
     def run(self):
         self.shenduurl(self.url)
@@ -103,6 +121,11 @@ class urlspider(object):
                         time.sleep(1)
                 #cur_shendu-=1
         threadnum-=1
+
+     #下面开始采集内容
+    def caijicon(self):
+        pass
+
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
         #请求的url目录
@@ -117,12 +140,12 @@ class urlspider(object):
     #添加数据到数据库
     def adddata(self,urllist,src_url):
         for i in urllist:
-            result=db.table('url').where({
+            result=db.table(self.url_table).where({
                 'hostname':self.hostname,
                 'url':i
                 }).count()
             if result<=0:
-                res=db.table('url').add({
+                res=db.table(self.url_table).add({
                     'url':i,
                     'hostname':self.hostname,
                     'status':0,
@@ -141,6 +164,7 @@ class urlspider(object):
 #链接url正则
 cjurl=[
     {
+    'name':'boke',
     'hostname':'http://lusongsong.com',
     'url':'http://lusongsong.com/daohang/',
     'shendu':2,
