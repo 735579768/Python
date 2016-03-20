@@ -188,9 +188,12 @@ CREATE TABLE `[TABLE]` (
                         for o,p in self.con_field.items():
                             adddata[o]=m[int(p)-1]
 
-                    print(mbcon_list)
+                        resu=db.table(self.content_table).where(adddata).count()
+                        if resu<1:
+                            db.table(self.content_table).add(adddata)
+                            print('added %s'%adddata)
                     db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
-                    db.table(self.content_table).add(adddata)
+
 
     #格式化请求的路径
     def formaturl(self,requestpath,curpath):
