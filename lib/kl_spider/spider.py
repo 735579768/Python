@@ -45,12 +45,14 @@ class urlspider(object):
         self.mb_url_reg=arg['mb_url_reg']
         self.link_tezheng=arg['link_tezheng']
         self.shendu=int(arg['shendu'])
-        self.url_table='url_'+arg['name']
-        self.content_table='content_'+arg['name']
+        self.url_table=arg['name']+'_url'
+        self.content_table=arg['name']+'_content'
+        self.content_sql=arg['content_sql']
         self.init()
 
     #创建数据表
     def init(self):
+        #创建url数据表
         sql='''\
 CREATE TABLE `[TABLE]` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -62,6 +64,19 @@ CREATE TABLE `[TABLE]` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
         sql=sql.replace('[TABLE]',db.prefix+self.url_table)
+        db.query(sql);
+        #创建content内容数据表
+        sql='''\
+CREATE TABLE `[TABLE]` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    [CONTENT_SQL]
+  `src_url` varchar(255) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
+        sql=sql.replace('[TABLE]',db.prefix+self.content_table)
+        sql=sql.replace('[CONTENT_SQL]',self.content_sql)
         db.query(sql);
 
     def run(self):
@@ -164,13 +179,34 @@ CREATE TABLE `[TABLE]` (
 #链接url正则
 cjurl=[
     {
+    #采集项目的名字
     'name':'boke',
     'hostname':'http://lusongsong.com',
+    #入口地址
     'url':'http://lusongsong.com/daohang/',
+    #抓取进入的深度
     'shendu':2,
+    #类似网址入口正则(精确要进入采集的网址)
     'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
+    #目标网址正则
     'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
+    #目标内容正则
     'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
+    #内容正则中的分组对应的字段信息
+    'field':{
+        'title':1,
+        'url':2,
+        'descr':3,
+        'area':4,
+        'blog_type':5
+    },
+    #采集到的内容字段sql语句
+    'content_sql':'''\
+              `title` varchar(255) DEFAULT NULL,
+              `url` varchar(255) DEFAULT NULL,
+              `descr` varchar(255) DEFAULT NULL,
+              `area` varchar(255) DEFAULT NULL,
+              `blog_type` varchar(255) DEFAULT NULL,''',
     'charset':'utf-8',
     }
 ]
