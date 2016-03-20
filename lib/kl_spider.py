@@ -122,13 +122,13 @@ CREATE TABLE `[TABLE]` (
             if isproxy:
                 daili=self.get_proxy()
                 print("using proxy:%s"%daili)
-                http.resetsession()
-                http.setproxy('','',daili)
-            r=http.geturl(url)
-            if http.lasterror==None:
+                ht.resetsession()
+                ht.setproxy('','',daili)
+            r=ht.geturl(url)
+            if ht.lasterror==None:
                 break
             else:
-                print(http.lasterror)
+                print(ht.lasterror,ht.code)
         if r!=None:
             content=r.read().decode(self.charset)
             #查找目标url
@@ -173,13 +173,13 @@ CREATE TABLE `[TABLE]` (
                     if isproxy:
                         daili=self.get_proxy()
                         print("using proxy:%s"%daili)
-                        http.resetsession()
-                        http.setproxy('','',daili)
-                    r=http.geturl(url)
-                    if http.lasterror==None:
+                        ht.resetsession()
+                        ht.setproxy('','',daili)
+                    r=ht.geturl(url)
+                    if ht.lasterror==None:
                         break
                     else:
-                        print(http.lasterror)
+                        print(ht.lasterror,ht.code)
                 if r!=None:
                     content=r.read().decode(self.charset)
                     #查找目标url
