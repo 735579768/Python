@@ -31,7 +31,6 @@ if os.path.exists(proxypath):
     s=f.read()
     f.close()
     proxylist=s.splitlines()
-proxylist=[]
 
 class urlspider(object):
     """docstring for urlspider"""
@@ -122,7 +121,6 @@ CREATE TABLE `[TABLE]` (
             if isproxy:
                 daili=self.get_proxy()
                 print("using proxy:%s"%daili)
-                ht.resetsession()
                 ht.setproxy('','',daili)
             r=ht.geturl(url)
             if ht.lasterror==None:
@@ -173,7 +171,6 @@ CREATE TABLE `[TABLE]` (
                     if isproxy:
                         daili=self.get_proxy()
                         print("using proxy:%s"%daili)
-                        ht.resetsession()
                         ht.setproxy('','',daili)
                     r=ht.geturl(url)
                     if ht.lasterror==None:
