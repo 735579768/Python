@@ -107,7 +107,7 @@ CREATE TABLE `[TABLE]` (
 
     def shenduurl(self,url,cur_shendu=1):
         result=db.table(self.urled_table).where({'url':url}).count()
-        if result>0:
+        if result>0 and not db.lasterror:
             return True
         global  threadnum
         global  maxthread
@@ -131,6 +131,7 @@ CREATE TABLE `[TABLE]` (
                 else:
                     print(ht.lasterror)
             except Exception as e:
+                content=''
                 print(e)
         if content:
             #查找目标url
@@ -185,6 +186,7 @@ CREATE TABLE `[TABLE]` (
                         else:
                             print(ht.lasterror)
                     except Exception as e:
+                        content=''
                         print(e)
                 if content:
                     #查找目标url
@@ -219,7 +221,7 @@ CREATE TABLE `[TABLE]` (
                 'hostname':self.hostname,
                 'url':i
                 }).count()
-            if result<1:
+            if result<1 and not db.lasterror:
                 res=db.table(self.url_table).add({
                     'url':i,
                     'hostname':self.hostname,
