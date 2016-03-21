@@ -161,46 +161,49 @@ CREATE TABLE `[TABLE]` (
      #下面开始采集内容
     def caijicon(self):
         while 1:
-            dlist=db.table(self.url_table).limit(10).order('id asc').where({
-                'status':0
-                }).getarr()
-            if not dlist:
-                break
-            for i in dlist:
-                url=self.formaturl(i['src_url'],i['url'])
-                print("collection content %s"%(url))
-                ht=kl_http.kl_http()
-                ht.autoUserAgent=True
-                r=None
-                content=''
-                while True:
-                    try:
-                        if isproxy:
-                            daili=self.get_proxy()
-                            print("using proxy:%s"%daili)
-                            ht.setproxy('','',daili)
-                        r=ht.geturl(url)
-                        if ht.lasterror==None:
-                            content=r.read().decode(self.charset)
-                            break
-                        else:
-                            print(ht.lasterror)
-                    except Exception as e:
-                        content=''
-                        print(e)
-                if content:
-                    #查找目标url
-                    mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
-                    adddata={}
-                    for m in mbcon_list:
-                        for o,p in self.con_field.items():
-                            adddata[o]=m[int(p)-1]
+            try:
+                dlist=db.table(self.url_table).limit(10).order('id asc').where({
+                    'status':0
+                    }).getarr()
+                if not dlist:
+                    break
+                for i in dlist:
+                    url=self.formaturl(i['src_url'],i['url'])
+                    print("collection content %s"%(url))
+                    ht=kl_http.kl_http()
+                    ht.autoUserAgent=True
+                    r=None
+                    content=''
+                    while True:
+                        try:
+                            if isproxy:
+                                daili=self.get_proxy()
+                                print("using proxy:%s"%daili)
+                                ht.setproxy('','',daili)
+                            r=ht.geturl(url)
+                            if ht.lasterror==None:
+                                content=r.read().decode(self.charset)
+                                break
+                            else:
+                                print(ht.lasterror)
+                        except Exception as e:
+                            content=''
+                            print(e)
+                    if content:
+                        #查找目标url
+                        mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
+                        adddata={}
+                        for m in mbcon_list:
+                            for o,p in self.con_field.items():
+                                adddata[o]=m[int(p)-1]
 
-                        resu=db.table(self.content_table).where(adddata).count()
-                        if resu<1:
-                            db.table(self.content_table).add(adddata)
-                            print('added %s'%adddata)
-                    db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
+                            resu=db.table(self.content_table).where(adddata).count()
+                            if resu<1:
+                                db.table(self.content_table).add(adddata)
+                                print('added %s'%adddata)
+                        db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
+            except Exception as e:
+                print(e)
 
 
     #格式化请求的路径
