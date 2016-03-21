@@ -51,6 +51,7 @@ class kl_http:
         self.ckjar=None
         self.autoUserAgent=False
         self.request=None
+        self.timeout=60
 
     def __del__(self):
         try:
@@ -144,8 +145,8 @@ class kl_http:
         self.resetsession()
 
     #设置超时
-    def settimeout(self,timeout=10):
-        socket.setdefaulttimeout(timeout)
+    def settimeout(self,timeout=60):
+        self.timeout=timeout
 
     #get取网页数据
     def geturl(self,url,data={}):
