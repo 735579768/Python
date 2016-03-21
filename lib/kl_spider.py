@@ -117,18 +117,22 @@ CREATE TABLE `[TABLE]` (
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
         r=None
+        content=''
         while True:
-            if isproxy:
-                daili=self.get_proxy()
-                print("using proxy:%s"%daili)
-                ht.setproxy('','',daili)
-            r=ht.geturl(url)
-            if ht.lasterror==None:
-                break
-            else:
-                print(ht.lasterror)
-        if r!=None:
-            content=r.read().decode(self.charset)
+            try:
+                if isproxy:
+                    daili=self.get_proxy()
+                    print("using proxy:%s"%daili)
+                    ht.setproxy('','',daili)
+                r=ht.geturl(url)
+                if ht.lasterror==None:
+                    content=r.read().decode(self.charset)
+                    break
+                else:
+                    print(ht.lasterror)
+            except Exception as e:
+                print(e)
+        if content:
             #查找目标url
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
             #去重
@@ -167,18 +171,22 @@ CREATE TABLE `[TABLE]` (
                 ht=kl_http.kl_http()
                 ht.autoUserAgent=True
                 r=None
+                content=''
                 while True:
-                    if isproxy:
-                        daili=self.get_proxy()
-                        print("using proxy:%s"%daili)
-                        ht.setproxy('','',daili)
-                    r=ht.geturl(url)
-                    if ht.lasterror==None:
-                        break
-                    else:
-                        print(ht.lasterror)
-                if r!=None:
-                    content=r.read().decode(self.charset)
+                    try:
+                        if isproxy:
+                            daili=self.get_proxy()
+                            print("using proxy:%s"%daili)
+                            ht.setproxy('','',daili)
+                        r=ht.geturl(url)
+                        if ht.lasterror==None:
+                            content=r.read().decode(self.charset)
+                            break
+                        else:
+                            print(ht.lasterror)
+                    except Exception as e:
+                        print(e)
+                if content:
                     #查找目标url
                     mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
                     adddata={}
@@ -227,49 +235,49 @@ CREATE TABLE `[TABLE]` (
 
 
 
+if __name__ == '__main__':
+    #链接url正则
+    cjurl=[
+        {
+        #采集项目的名字
+        'name':'boke',
+        'hostname':'http://lusongsong.com',
+        #入口地址
+        'url':'http://lusongsong.com/daohang/',
+        #抓取进入的深度
+        'shendu':2,
+        #类似网址入口正则(精确要进入采集的网址)
+        'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
+        #目标网址正则
+        'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
+        #目标内容正则
+        'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
+        #内容正则中的分组对应的字段信息
+        'field':{
+            'title':1,
+            'url':2
+        },
+        #采集到的内容字段sql语句
+        'content_sql':'''\
+                  `title` varchar(255) DEFAULT NULL,
+                  `url` varchar(255) DEFAULT NULL,
+                  `descr` varchar(255) DEFAULT NULL,
+                  `area` varchar(255) DEFAULT NULL,
+                  `blog_type` varchar(255) DEFAULT NULL,''',
+        'charset':'utf-8',
+        }
+    ]
 
-#链接url正则
-cjurl=[
-    {
-    #采集项目的名字
-    'name':'boke',
-    'hostname':'http://lusongsong.com',
-    #入口地址
-    'url':'http://lusongsong.com/daohang/',
-    #抓取进入的深度
-    'shendu':2,
-    #类似网址入口正则(精确要进入采集的网址)
-    'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
-    #目标网址正则
-    'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
-    #目标内容正则
-    'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
-    #内容正则中的分组对应的字段信息
-    'field':{
-        'title':1,
-        'url':2
-    },
-    #采集到的内容字段sql语句
-    'content_sql':'''\
-              `title` varchar(255) DEFAULT NULL,
-              `url` varchar(255) DEFAULT NULL,
-              `descr` varchar(255) DEFAULT NULL,
-              `area` varchar(255) DEFAULT NULL,
-              `blog_type` varchar(255) DEFAULT NULL,''',
-    'charset':'utf-8',
-    }
-]
-
-for i in cjurl:
-    urlspider(i).run()
-
-
-while True:
-    if threadnum==0:
-        progress.stop()
-        break
-    time.sleep(1)
+    for i in cjurl:
+        urlspider(i).run()
 
 
+    while True:
+        if threadnum==0:
+            progress.stop()
+            break
+        time.sleep(1)
 
-input('it is conllected,please press any key to continue...')
+
+
+    input('it is conllected,please press any key to continue...')

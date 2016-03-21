@@ -201,22 +201,6 @@ class kl_http:
                 if inde!=-1:
                     temarr[i[0:inde]]=i[inde+1:]
 
-        # elif data.find('\n')!=-1:
-        #     data=data.splitlines()
-        #     temarr={}
-        #     for i in data:
-        #         inde=i.find(':')
-        #         if inde!=-1:
-        #             temarr[i[0:inde]]=i[inde+1:]
-        #     return temarr
-        # elif data.find('&')!=-1:
-        #     data=data.split('&')
-        #     temarr={}
-        #     for i in data:
-        #         if i.find('=')!=-1:
-        #             tem=i.split('=')
-        #             temarr[tem[0]]=tem[1]
-        #     return temarr
         else:
             return {}
 
