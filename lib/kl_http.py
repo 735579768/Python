@@ -72,10 +72,10 @@ class kl_http:
         #创建一个带cookie的网络打开器,后面的get post请求都使用这个打开
         self.ckjar=http.cookiejar.MozillaCookieJar("./data/cookies/cookies-%s.txt"%(self.hostname))
         try:
-            """加载已存在的cookie，尝试此cookie是否还有效"""
+            #加载已存在的cookie，尝试此cookie是否还有效
             self.ckjar.load(ignore_discard=True, ignore_expires=True)
         except Exception:
-            """加载失败，说明从未登录过，需创建一个cookie kong 文件"""
+            #加载失败，说明从未登录过，需创建一个cookie kong 文件
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
         self.__addcookies()
 
