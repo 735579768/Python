@@ -13,7 +13,7 @@ import urllib.request,os, random,time
 import urllib.parse
 import http.cookiejar
 import socket,re
-socket.setdefaulttimeout(60)           #10秒内没有打开web页面，就算超时
+#socket.setdefaulttimeout(60)           #10秒内没有打开web页面，就算超时
 useragent=[
     'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
     'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
@@ -170,7 +170,7 @@ class kl_http:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            self.request=self.opener.open(req)
+            self.request=self.opener.open(req,timeout=60)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return self.request
@@ -228,14 +228,14 @@ class kl_http:
         self.request=None
         try:
             params=urllib.parse.urlencode(data).encode(encoding='UTF8')
-            req=urllib.request.Request(url,params,self.headers)
+            req=urllib.request.Request(url,data=params,headers=self.headers)
             req.add_header('Referer',url)
 
             if self.autoUserAgent or self.autoUserAgent:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            self.request=self.opener.open(req)
+            self.request=self.opener.open(req,timeout=60)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return self.request
