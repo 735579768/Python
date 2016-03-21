@@ -50,7 +50,13 @@ class kl_http:
         self.opener=None
         self.ckjar=None
         self.autoUserAgent=False
+        self.request=None
 
+    def __del__(self):
+        try:
+            self.request.close()
+        except Exception as e:
+            pass
     #重置会话
     def resetsession(self):
         self.opener=None
@@ -147,7 +153,7 @@ class kl_http:
         data=self.__formatpostdata(data)
         global useragent
         self.__setcookies(url)
-        r=None
+        self.request=None
         try:
             params=urllib.parse.urlencode(data)#.encode(encoding='UTF8')
             req=''
@@ -164,21 +170,21 @@ class kl_http:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            r=self.opener.open(req)
+            self.request=self.opener.open(req)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
-            return r
+            return self.request
         except urllib.error.HTTPError as e:
             #print(e.code)
             self.lasterror=e
-            return r
+            return self.request
         except urllib.error.URLError as e:
             #print(e.reason)
             self.lasterror=e
-            return r
+            return self.request
         except Exception as e:
             self.lasterror=e
-            return r
+            return self.request
     #处理post字符串
     def __formatpostdata(self,data):
         if type(data)==type({}):
@@ -219,7 +225,7 @@ class kl_http:
         data=self.__formatpostdata(data)
         global useragent
         self.__setcookies(url)
-        r=None
+        self.request=None
         try:
             params=urllib.parse.urlencode(data).encode(encoding='UTF8')
             req=urllib.request.Request(url,params,self.headers)
@@ -229,21 +235,21 @@ class kl_http:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            r=self.opener.open(req)
+            self.request=self.opener.open(req)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
-            return r
+            return self.request
         except urllib.error.HTTPError as e:
             #print(e.code)
             self.lasterror=e
-            return r
+            return self.request
         except urllib.error.URLError as e:
             #print(e.reason)
             self.lasterror=e
-            return r
+            return self.request
         except Exception as e:
             self.lasterror=e
-            return r
+            return self.request
 
 if __name__ == '__main__':
     ht=kl_http()
