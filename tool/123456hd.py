@@ -35,9 +35,6 @@ for i in cjurl:
 
 
 
-progress.stop()
-
-
 
 
 input('it is conllected,please press any key to continue...')
