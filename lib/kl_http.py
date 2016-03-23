@@ -171,7 +171,7 @@ class kl_http:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            self.request=self.opener.open(req,timeout=60)
+            self.request=self.opener.open(req,timeout=10)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return self.request
@@ -220,7 +220,7 @@ class kl_http:
                 usag=random.randint(0,18)
                 req.add_header('User-Agent',useragent[usag]);
             starttime=time.time()
-            self.request=self.opener.open(req,timeout=60)
+            self.request=self.opener.open(req,timeout=10)
             self.responsetime=time.time()-starttime
             self.ckjar.save(ignore_discard=True, ignore_expires=True)
             return self.request

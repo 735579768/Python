@@ -30,7 +30,7 @@ cjurl=[
 
 for i in cjurl:
     spi=urlspider(i)
-    spi.isproxy=True
+    spi.isproxy=False
     spi.run()
 
 
