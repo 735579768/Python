@@ -24,7 +24,7 @@ cjurl=[
     'content_sql':'''\
               `title` varchar(255) DEFAULT NULL,
               `moviebt` varchar(255) DEFAULT NULL,''',
-    'charset':'gb2312',
+    'charset':'gbk',
     }
 ]
 
@@ -34,11 +34,9 @@ for i in cjurl:
     spi.run()
 
 
-while True:
-    if threadnum==0:
-        progress.stop()
-        break
-    time.sleep(1)
+
+progress.stop()
+
 
 
 

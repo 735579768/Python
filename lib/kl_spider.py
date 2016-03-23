@@ -47,7 +47,7 @@ class urlspider(object):
         self.content_sql=arg['content_sql']
         self.con_field=arg['field']
         self.maxthread=5
-        self. threadnum=0
+        self.threadnum=0
         self.init()
 
     #创建数据表
@@ -157,7 +157,7 @@ CREATE TABLE `[TABLE]` (
 
         #添加已经采集过的网址
         db.table(self.urled_table).add({'url':url})
-       self. threadnum-=1
+        self.threadnum-=1
 
      #下面开始采集内容
     def caijicon(self):
@@ -179,7 +179,7 @@ CREATE TABLE `[TABLE]` (
                     while True:
                         try:
                             print("collection content %s  request nums:%d"%(url,changshi))
-                            if isproxy:
+                            if self.isproxy:
                                 daili=self.get_proxy()
                                 print("using proxy:%s"%daili)
                                 ht.setproxy('','',daili)
@@ -279,15 +279,6 @@ if __name__ == '__main__':
     ]
 
     for i in cjurl:
-        urlspider(i).run()
-
-
-    while True:
-        if threadnum==0:
-            progress.stop()
-            break
-        time.sleep(1)
-
-
-
+        spi=urlspider(i)
+        spi.run()
     input('it is conllected,please press any key to continue...')

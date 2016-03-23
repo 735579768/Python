@@ -39,13 +39,13 @@ def match(pattern,subject,pos=0,endpos=0,flags=0):
 #匹配整个字符串,匹配失败返回None
 def fullmatch(pattern,subject,pos=0,endpos=0,flags=0):
     try:
-            endpos =len(subject)
-            p = re.compile(pattern,flags)
-            return p.fullmatch(subject,pos,endpos)
+        endpos =len(subject)
+        p = re.compile(pattern,flags)
+        return p.fullmatch(subject,pos,endpos)
     except Exception as e:
-    print_red('[ERROR]:%s  [REGEX]:%s'%(e, pattern))
-    print()
-    return ()
+        print_red('[ERROR]:%s  [REGEX]:%s'%(e, pattern))
+        print()
+        return ()
 
 #搜索失败返回None,成功返回一个match对象,可以使用match.group([num])取分组信息
 def search(pattern,subject,pos=0,endpos=0,flags=0):
