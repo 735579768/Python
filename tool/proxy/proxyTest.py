@@ -54,16 +54,21 @@ proxyfile=open('proxy.txt','w')
 proxyfile.write('')
 proxyfile.close()
 
+threadarr=[]
 for i in proxylist:
     i=i.split(':')
     i={'ip':i[0],'port':i[1]}
-    while True:
-        if curnum<=maxnum:
-            t=threading.Thread(target=testProxy,args=(i,))
-            t.start()
-            curnum+=1
-            break
+    t=threading.Thread(target=testProxy,args=(i,))
+    threadarr.append(t)
+
+while True:
+    if curnum<=maxnum:
+        threadarr.pop().start()
+        curnum+=1
+    if len(threadarr)<1:
+        break
     time.sleep(0.1)
+
 
 progress.settext('马上测试完毕,请稍等')
 time.sleep(2)
