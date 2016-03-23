@@ -1,6 +1,6 @@
 import threading,sys,time
 class kl_progress(threading.Thread): #The timer class is derived from the class threading.Thread
-    def __init__(self, text='', interval=0.2,total_len=6):
+    def __init__(self, text='', interval=0.5,total_len=6):
         threading.Thread.__init__(self)
         self.text = text
         self.cur_text = text

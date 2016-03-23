@@ -1,5 +1,6 @@
 import sys,re,random,os,threading,time,_thread
 import kl_http,kl_db,kl_reg,kl_progress,kl_log
+from kl_print import *
 from urllib.parse import urlparse
 
 log=kl_log.kl_log('spider')
@@ -119,7 +120,7 @@ CREATE TABLE `[TABLE]` (
                 print("collection page %s depth:%d  request nums:%d"%(url,cur_shendu,changshi))
                 if self.isproxy:
                     daili=self.get_proxy()
-                    print("using proxy:%s"%daili)
+                    print_green("using proxy:%s"%daili)
                     ht.setproxy('','',daili)
                 r=ht.geturl(url)
                 if ht.lasterror==None:
@@ -132,6 +133,8 @@ CREATE TABLE `[TABLE]` (
                 content=''
                 print(e)
                 changshi=changshi+1
+            # finally:
+            #     del ht
         if content:
             #查找目标url
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
@@ -181,7 +184,7 @@ CREATE TABLE `[TABLE]` (
                             print("collection content %s  request nums:%d"%(url,changshi))
                             if self.isproxy:
                                 daili=self.get_proxy()
-                                print("using proxy:%s"%daili)
+                                print_green("using proxy:%s"%daili)
                                 ht.setproxy('','',daili)
                             r=ht.geturl(url)
                             if ht.lasterror==None:

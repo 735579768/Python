@@ -6,11 +6,11 @@ cjurl=[
     'name':'moviebt',
     'hostname':'http://www.123456hd.com',
     #入口地址
-    'url':'http://www.123456hd.com/list/?2.html',
+    'url':'http://123456hd.com/1_2____datetime_.html',
     #抓取进入的深度
-    'shendu':2,
+    'shendu':3,
     #类似网址入口正则(精确要进入采集的网址)
-    'link_tezheng':['/\d_\d_\d{4,4}___.*?_\.htm','/list/\?\d{1,5}\-\d{1,5}\.html)'],
+    'link_tezheng':['/\d{1,5}_\d{1,5}____datetime_\.html','/\d{1,5}_\d{1.5}____datetime_\.html'],
     #目标网址正则
     'mb_url_reg':'<a[^><\n]*?href=["|\']?(/detail/\?\d{1,10}\.html)["|\']?[^><\n]*?>.*?</a>',
     #目标内容正则
@@ -30,7 +30,7 @@ cjurl=[
 
 for i in cjurl:
     spi=urlspider(i)
-    spi.isproxy=False
+    spi.isproxy=True
     spi.run()
 
 
