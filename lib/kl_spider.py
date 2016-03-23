@@ -10,11 +10,6 @@ mylock = _thread.allocate_lock()#线程锁
 #mylock.release()  #Release the lock.
 progress=kl_progress.kl_progress('正在采集中')
 progress.start()
-#最大线程
-maxthread=5
-threadnum=0
-#是否用代理
-isproxy=False
 http.setproxy('','','127.0.0.1:8087')
 db=kl_db.mysql({
             'host':'localhost',
@@ -51,6 +46,8 @@ class urlspider(object):
         self.urled_table=arg['name']+'_urled'
         self.content_sql=arg['content_sql']
         self.con_field=arg['field']
+        self.maxthread=5
+        self. threadnum=0
         self.init()
 
     #创建数据表
@@ -110,10 +107,7 @@ CREATE TABLE `[TABLE]` (
         result=db.table(self.urled_table).where({'url':url}).count()
         if result>0 and not db.lasterror:
             return True
-        global  threadnum
-        global  maxthread
-        global isproxy
-        threadnum+=1
+        self.threadnum+=1
 
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
@@ -156,14 +150,14 @@ CREATE TABLE `[TABLE]` (
                     sdurl_list = list(set(sdurl_list))
                     for j in sdurl_list:
                         while True:
-                            if threadnum<maxthread:
+                            if self.threadnum<self.maxthread:
                                 threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
                                 break
                             time.sleep(1)
 
         #添加已经采集过的网址
         db.table(self.urled_table).add({'url':url})
-        threadnum-=1
+       self. threadnum-=1
 
      #下面开始采集内容
     def caijicon(self):
