@@ -36,6 +36,7 @@ class urlspider(object):
     """docstring for urlspider"""
     def __init__(self, arg):
         super(urlspider, self).__init__()
+        self.isproxy=False
         self.arg = arg
         self.hostname=arg['hostname']
         self.linkreg='<a[^><\n]*?href=["|\']{0,1}([^><\n]*?(?:00_00)[^><\n]*?)["|\']{0,1}[^><\n]*?>.*?</a>'
@@ -113,14 +114,16 @@ CREATE TABLE `[TABLE]` (
         global  maxthread
         global isproxy
         threadnum+=1
-        print("collection page %s depth:%d"%(url,cur_shendu))
+
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
         r=None
         content=''
+        changshi=1
         while True:
             try:
-                if isproxy:
+                print("collection page %s depth:%d  request nums:%d"%(url,cur_shendu,changshi))
+                if self.isproxy:
                     daili=self.get_proxy()
                     print("using proxy:%s"%daili)
                     ht.setproxy('','',daili)
@@ -129,10 +132,12 @@ CREATE TABLE `[TABLE]` (
                     content=r.read().decode(self.charset)
                     break
                 else:
-                    print(ht.lasterror)
+                    #print(ht.lasterror)
+                    changshi=changshi+1
             except Exception as e:
                 content=''
                 print(e)
+                changshi=changshi+1
         if content:
             #查找目标url
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
@@ -144,15 +149,17 @@ CREATE TABLE `[TABLE]` (
             #深度查找
             if cur_shendu<self.shendu:
                 cur_shendu+=1
-                xiangsereg=self.linkreg.replace('00_00',self.link_tezheng)
-                sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
-                sdurl_list = list(set(sdurl_list))
-                for j in sdurl_list:
-                    while True:
-                        if threadnum<maxthread:
-                            threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
-                            break
-                        time.sleep(1)
+                #查找特征列表
+                for x in self.link_tezheng:
+                    xiangsereg=self.linkreg.replace('00_00',x)
+                    sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
+                    sdurl_list = list(set(sdurl_list))
+                    for j in sdurl_list:
+                        while True:
+                            if threadnum<maxthread:
+                                threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
+                                break
+                            time.sleep(1)
 
         #添加已经采集过的网址
         db.table(self.urled_table).add({'url':url})
@@ -169,13 +176,15 @@ CREATE TABLE `[TABLE]` (
                     break
                 for i in dlist:
                     url=self.formaturl(i['src_url'],i['url'])
-                    print("collection content %s"%(url))
+
                     ht=kl_http.kl_http()
                     ht.autoUserAgent=True
                     r=None
                     content=''
+                    changshi=1
                     while True:
                         try:
+                            print("collection content %s  request nums:%d"%(url,changshi))
                             if isproxy:
                                 daili=self.get_proxy()
                                 print("using proxy:%s"%daili)
@@ -185,10 +194,12 @@ CREATE TABLE `[TABLE]` (
                                 content=r.read().decode(self.charset)
                                 break
                             else:
-                                print(ht.lasterror)
+                                #print(ht.lasterror)
+                                changshi=changshi+1
                         except Exception as e:
                             content=''
                             print(e)
+                            changshi=changshi+1
                     if content:
                         #查找目标url
                         mbcon_list=regex.findall(self.mb_con_reg,content, regex.I|regex.S)
@@ -252,7 +263,7 @@ if __name__ == '__main__':
         #抓取进入的深度
         'shendu':2,
         #类似网址入口正则(精确要进入采集的网址)
-        'link_tezheng':'\/daohang\/webdir\-[^><\n]*?\.html',
+        'link_tezheng':['\/daohang\/webdir\-[^><\n]*?\.html'],
         #目标网址正则
         'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
         #目标内容正则
