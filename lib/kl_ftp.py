@@ -235,6 +235,7 @@ class kl_ftp(ftplib.FTP):
         self.curthreadnum-=1
 
     def download_file(self, inx, filename, begin=0, size=0, blocksize=8192, rest=None):
+        src_size=size
         onlydir = os.path.dirname(filename)
         onlyname = os.path.basename(filename)
         tname = threading.currentThread().getName()+': '
@@ -309,7 +310,7 @@ class kl_ftp(ftplib.FTP):
                 fp.close()
                 conn.close()
                 print(e)
-                self.download_file(inx, filename, begin, size, blocksize, rest)
+                self.download_file(inx, filename, begin, src_size, blocksize, rest)
                 return None
         fp.close()
         conn.close()
