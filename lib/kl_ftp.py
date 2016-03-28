@@ -246,8 +246,20 @@ class kl_ftp(ftplib.FTP):
             return False
         myftp.cwd(onlydir)
         #print('进入文件夹:%s'%onlydir)
+        lsize=0
+        localpath=self.localroot+filename+'.part.'+str(inx)
+        fp=None
+        if os.path.exists(localpath):
+            lsize=os.stat(localpath).st_size
+            if lsize >= size:
+                print ('local file is bigger or equal remote file')
+                return
+            fp = open(localpath, 'ab')
+        else:
+            fp = open(localpath, 'wb')
+
         # 创建临时文件
-        fp = open(self.localroot+filename+'.part.'+str(inx), 'wb')
+
         #fp.seek(begin)
 
         callback = fp.write
@@ -255,39 +267,50 @@ class kl_ftp(ftplib.FTP):
         haveread = 0
         myftp.voidcmd('TYPE I')
         # 告诉服务器要从文件的哪个位置开始下载
-        cmd1 = "REST "+str(begin)
+        cmd1 = "REST "+str(begin+lsize)
         print ('%s : download file position--> %s'%(tname, cmd1))
         ret = myftp.sendcmd(cmd1)
         # 开始下载
         cmd = "RETR "+onlyname
         conn = myftp.transfercmd(cmd, rest)
         readsize = blocksize
+
+        #要下载的数据长度
+        size=size-lsize
         while 1:
-            self.progress.show()
-            if size > 0:
-                last = size - haveread
-                if last > blocksize:
-                    readsize = blocksize
-                else:
-                    readsize = last
-            data = conn.recv(readsize)
-            if not data:
-                break
+            try:
+                self.progress.show()
+                if size > 0:
+                    last = size - haveread
+                    if last > blocksize:
+                        readsize = blocksize
+                    else:
+                        readsize = last
+                data = conn.recv(readsize)
 
-            # 已经下载的数据长度
-            haveread = haveread + len(data)
-            # 只能下载指定长度的数据，下载到就退出
-            if haveread > size:
-                print (tname, 'downloaded:', haveread, 'size:', size)
-                hs = haveread - size
-                callback(data[:hs])
-                break
-            elif haveread == size:
+                if not data:
+                    break
+
+                # 已经下载的数据长度
+                haveread = haveread + len(data)
+                # 只能下载指定长度的数据，下载到就退出
+                if haveread > size:
+                    print (tname, 'downloaded:', haveread, 'size:', size)
+                    hs = haveread - size
+                    callback(data[:hs])
+                    break
+                elif haveread == size:
+                    callback(data)
+                    print (tname, 'downloaded:', haveread)
+                    break
+
                 callback(data)
-                print (tname, 'downloaded:', haveread)
-                break
-
-            callback(data)
+            except Exception as e:
+                fp.close()
+                conn.close()
+                print(e)
+                self.download_file(inx, filename, begin, size, blocksize, rest)
+                return None
         fp.close()
         conn.close()
         # self.threadlock.acquire()
