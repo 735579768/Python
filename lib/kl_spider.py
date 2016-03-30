@@ -58,6 +58,7 @@ class urlspider(object):
 CREATE TABLE `[TABLE]` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) DEFAULT NULL,
+  `status` smallint(3) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
         sql=sql.replace('[TABLE]',db.prefix+self.urled_table)
@@ -108,6 +109,9 @@ CREATE TABLE `[TABLE]` (
         result=db.table(self.urled_table).where({'url':url}).count()
         if result>0 and not db.lasterror:
             return True
+
+        #添加正在采集的地址
+        db.table(self.urled_table).add({'url':url})
         self.threadnum+=1
 
         ht=kl_http.kl_http()
@@ -144,7 +148,7 @@ CREATE TABLE `[TABLE]` (
             self.adddata(mburl_list,url)
             mylock.release()
             #深度查找
-            if cur_shendu<self.shendu:
+            if cur_shendu<self.shendu or self.shendu==0:
                 cur_shendu+=1
                 #查找特征列表
                 for x in self.link_tezheng:
@@ -158,8 +162,8 @@ CREATE TABLE `[TABLE]` (
                                 break
                             time.sleep(1)
 
-        #添加已经采集过的网址
-        db.table(self.urled_table).add({'url':url})
+        #更新已经采集过的网址为采集完成状态
+        db.table(self.urled_table).where({'url':url}).save('status':1)
         self.threadnum-=1
 
      #下面开始采集内容
