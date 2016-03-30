@@ -106,12 +106,15 @@ CREATE TABLE `[TABLE]` (
                 return pro
 
     def shenduurl(self,url,cur_shendu=1):
+        url=url.strip()
+        mylock.acquire()
         result=db.table(self.urled_table).where({'url':url}).count()
         if result>0 and not db.lasterror:
             return True
 
         #添加正在采集的地址
         db.table(self.urled_table).add({'url':url})
+        mylock.release()
         self.threadnum+=1
 
         ht=kl_http.kl_http()
@@ -163,7 +166,7 @@ CREATE TABLE `[TABLE]` (
                             time.sleep(1)
 
         #更新已经采集过的网址为采集完成状态
-        db.table(self.urled_table).where({'url':url}).save('status':1)
+        db.table(self.urled_table).where({'url':url}).save({'status':1})
         self.threadnum-=1
 
      #下面开始采集内容
