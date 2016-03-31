@@ -103,9 +103,8 @@ CREATE TABLE `[TABLE]` (
 
     def run(self):
         self.shenduurl(self.url)
-        while self.threadnum==0:
-            self.caijicon()
-            time.sleep(1)
+        self.caijicon()
+
 
     #随机取一个代理
     def get_proxy(self):
@@ -122,7 +121,7 @@ CREATE TABLE `[TABLE]` (
         #global  mylock
         url=url.strip()
 
-        self.mylock.acquire()
+        #self.mylock.acquire()
         result=db.table(self.urled_table).where({'url':url}).count()
         runing=db.table('runtimeing').where({'url':url}).count()
         if (result>0 or runing>0 )and not db.lasterror:
@@ -130,7 +129,7 @@ CREATE TABLE `[TABLE]` (
 
         #添加正在采集的地址
         db.table('runtimeing').add({'url':url})
-        self.mylock.release()
+        #self.mylock.release()
 
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
@@ -149,11 +148,11 @@ CREATE TABLE `[TABLE]` (
                     content=r.read().decode(self.charset)
                     break
                 else:
-                    #print(ht.lasterror)
+                    print_red(ht.lasterror)
                     changshi=changshi+1
             except Exception as e:
                 content=''
-                print(e)
+                print_red(e)
                 changshi=changshi+1
             # finally:
             #     del ht
@@ -162,9 +161,9 @@ CREATE TABLE `[TABLE]` (
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
             #去重
             mburl_list = list(set(mburl_list))
-            self.mylock.acquire()
+            #self.mylock.acquire()
             self.adddata(mburl_list,url)
-            self.mylock.release()
+            #self.mylock.release()
             #深度查找
             if cur_shendu<self.shendu or self.shendu==0:
                 cur_shendu+=1
@@ -172,9 +171,12 @@ CREATE TABLE `[TABLE]` (
                 for x in self.link_tezheng:
                     xiangsereg=self.linkreg.replace('00_00',x)
                     sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
+                    #self.mylock.acquire()
                     sdurl_list = self.__filterurl(sdurl_list,url)
+                    #self.mylock.release()
                     for j in sdurl_list:
-                        if cur_shendu==2:
+                        #if cur_shendu==2:
+                        if False:
                             while True:
                                 #print('curthread nums:%d'%self.threadnum)
                                 self.progress.show();
@@ -195,14 +197,13 @@ CREATE TABLE `[TABLE]` (
     def __filterurl(self,urllist,requesturl):
         relist=[]
         sdurl_list = list(set(urllist))
-        self.mylock.acquire()
         for i in sdurl_list:
             i=i.strip()
             j=self.formaturl(requesturl,i)
             result=db.table(self.urled_table).where({'url':j}).count()
-            if not result and not db.lasterror:
+            resing=db.table('runtimeing').where({'url':j}).count()
+            if not result and not resing and not db.lasterror:
                 relist.append(i)
-        self.mylock.release()
         return relist
      #下面开始采集内容
     def caijicon(self):
@@ -237,7 +238,7 @@ CREATE TABLE `[TABLE]` (
                                 changshi=changshi+1
                         except Exception as e:
                             content=''
-                            print(e)
+                            print_red(e)
                             changshi=changshi+1
                     if content:
                         #查找目标url
@@ -250,10 +251,10 @@ CREATE TABLE `[TABLE]` (
                             resu=db.table(self.content_table).where(adddata).count()
                             if resu<1:
                                 db.table(self.content_table).add(adddata)
-                                print('added %s'%adddata)
+                                print_green('added %s'%adddata)
                         db.table(self.url_table).where({'id':i['id']}).save({'status':r.code})
             except Exception as e:
-                print(e)
+                print_red(e)
 
 
     #格式化请求的路径
@@ -305,7 +306,7 @@ if __name__ == '__main__':
         'link_tezheng':['\/daohang\/webdir\-[^><\n]*?\.html'],
         #目标网址正则
         'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:showurl_\d+?\.html)[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
-        #目标内容正则
+        #目标内容正则(至少要有两个正则分组)
         'mb_con_reg':'点此打开.*?【(.*?)】.*?网址.*?<a.*?href="(.*?)".*?>.*?</a>',
         #内容正则中的分组对应的字段信息
         'field':{

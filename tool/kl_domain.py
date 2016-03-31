@@ -14,10 +14,10 @@ cjurl=[
     #目标网址正则
     'mb_url_reg':'<a[^><\n]*?href=["|\']?([^><\n]*?(?:/\?kw\=&p\=0&bl\=6&el\=6&ds%5B%5D\=1&py\=1&pl\=0&sort\=1&suffix%5B%5D\=com&dt\=1&date\=1&pagesize\=30&st\=1&page\=\d{1,5})[^><\n]*?)["|\']?[^><\n]*?>.*?</a>',
     #目标内容正则
-    'mb_con_reg':'<td.*?>(\w{6,6}\.com)</td>',
+    'mb_con_reg':'<td[^>]*?domainname.*?>.*?(<a[^>]*?>(\w{6,6}\.com).*?</a>).*?</td>',
     #内容正则中的分组对应的字段信息
     'field':{
-        'domain':1,
+        'domain':2,
     },
     #采集到的内容字段sql语句
     'content_sql':'''\
