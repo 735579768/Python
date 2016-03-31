@@ -174,18 +174,18 @@ CREATE TABLE `[TABLE]` (
                     sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
                     sdurl_list = self.__filterurl(sdurl_list,url)
                     for j in sdurl_list:
-                        while True:
-                            #print('curthread nums:%d'%self.threadnum)
-                            self.progress.show();
-                            if cur_shendu==2:
-                                #只有第一次进入这个函数时才可以启动线程
+                        if cur_shendu==2:
+                            while True:
+                                #print('curthread nums:%d'%self.threadnum)
+                                self.progress.show();
+                                    #只有第一次进入这个函数时才可以启动线程
                                 if self.threadnum<self.maxthread:
                                     self.threadnum+=1
                                     threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
                                     break
                                 time.sleep(1)
-                            else:
-                                self.shenduurl(self.formaturl(url,j),cur_shendu)
+                        else:
+                            self.shenduurl(self.formaturl(url,j),cur_shendu)
 
         #更新已经采集过的网址为采集完成状态
         db.table(self.urled_table).add({'url':url})
