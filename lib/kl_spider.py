@@ -90,6 +90,17 @@ CREATE TABLE `[TABLE]` (
         sql=sql.replace('[CONTENT_SQL]',self.content_sql)
         db.query(sql);
 
+        #创建content内容数据表
+        sql='''\
+DROP TABLE IF EXISTS `[TABLE]`;
+CREATE TABLE `[TABLE]` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=77089 DEFAULT CHARSET=utf8;'''
+        sql=sql.replace('[TABLE]',db.prefix+'runtimeing')
+        db.query(sql);
+
     def run(self):
         self.shenduurl(self.url)
         while self.threadnum==0:
@@ -108,15 +119,17 @@ CREATE TABLE `[TABLE]` (
                 return pro
 
     def shenduurl(self,url,cur_shendu=1):
-        global  mylock
+        #global  mylock
         url=url.strip()
 
-        # result=db.table(self.urled_table).where({'url':url}).count()
-        # if result>0 and not db.lasterror:
-        #     return True
         self.mylock.acquire()
+        result=db.table(self.urled_table).where({'url':url}).count()
+        runing=db.table('runtimeing').where({'url':url}).count()
+        if (result>0 or runing>0 )and not db.lasterror:
+            return True
+
         #添加正在采集的地址
-        db.table(self.urled_table).add({'url':url})
+        db.table('runtimeing').add({'url':url})
         self.mylock.release()
 
         ht=kl_http.kl_http()
@@ -159,7 +172,7 @@ CREATE TABLE `[TABLE]` (
                 for x in self.link_tezheng:
                     xiangsereg=self.linkreg.replace('00_00',x)
                     sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
-                    sdurl_list = self.__filterurl(sdurl_list)
+                    sdurl_list = self.__filterurl(sdurl_list,url)
                     for j in sdurl_list:
                         while True:
                             #print('curthread nums:%d'%self.threadnum)
@@ -175,16 +188,18 @@ CREATE TABLE `[TABLE]` (
                                 self.shenduurl(self.formaturl(url,j),cur_shendu)
 
         #更新已经采集过的网址为采集完成状态
-        db.table(self.urled_table).where({'url':url}).save({'status':1})
+        db.table(self.urled_table).add({'url':url})
+        db.table('runtimeing').where({'url':url}).delete()
         self.threadnum-=1
     #过滤已经查询过后地址
-    def __filterurl(self,urllist):
+    def __filterurl(self,urllist,requesturl):
         relist=[]
         sdurl_list = list(set(urllist))
         self.mylock.acquire()
         for i in sdurl_list:
             i=i.strip()
-            result=db.table(self.urled_table).where({'url':i}).count()
+            j=self.formaturl(requesturl,i)
+            result=db.table(self.urled_table).where({'url':j}).count()
             if not result and not db.lasterror:
                 relist.append(i)
         self.mylock.release()
