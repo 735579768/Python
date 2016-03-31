@@ -1,16 +1,14 @@
 import sys,re,random,os,threading,time,_thread
-import kl_http,kl_db,kl_reg,kl_progress,kl_log
+import kl_http,kl_db,kl_reg,kl_progressbar,kl_log
 from kl_print import *
 from urllib.parse import urlparse
 
 log=kl_log.kl_log('spider')
 regex=kl_reg
 http=kl_http.kl_http()
-mylock = _thread.allocate_lock()#线程锁
-#mylock.acquire() #Get the lock
-#mylock.release()  #Release the lock.
-progress=kl_progress.kl_progress('正在采集中')
-progress.start()
+#mylock = _thread.allocate_lock()#线程锁
+#self.mylock.acquire() #Get the lock
+#self.mylock.release()  #Release the lock.
 http.setproxy('','','127.0.0.1:8087')
 db=kl_db.mysql({
             'host':'localhost',
@@ -47,8 +45,10 @@ class urlspider(object):
         self.urled_table=arg['name']+'_urled'
         self.content_sql=arg['content_sql']
         self.con_field=arg['field']
-        self.maxthread=5
+        self.maxthread=4
         self.threadnum=0
+        self.progress=kl_progressbar.kl_progressbar('正在运行中')
+        self.mylock = _thread.allocate_lock()#线程锁
         self.init()
 
     #创建数据表
@@ -92,7 +92,9 @@ CREATE TABLE `[TABLE]` (
 
     def run(self):
         self.shenduurl(self.url)
-        self.caijicon()
+        while self.threadnum==0:
+            self.caijicon()
+            time.sleep(1)
 
     #随机取一个代理
     def get_proxy(self):
@@ -106,16 +108,16 @@ CREATE TABLE `[TABLE]` (
                 return pro
 
     def shenduurl(self,url,cur_shendu=1):
+        global  mylock
         url=url.strip()
-        mylock.acquire()
-        result=db.table(self.urled_table).where({'url':url}).count()
-        if result>0 and not db.lasterror:
-            return True
 
+        # result=db.table(self.urled_table).where({'url':url}).count()
+        # if result>0 and not db.lasterror:
+        #     return True
+        self.mylock.acquire()
         #添加正在采集的地址
         db.table(self.urled_table).add({'url':url})
-        mylock.release()
-        self.threadnum+=1
+        self.mylock.release()
 
         ht=kl_http.kl_http()
         ht.autoUserAgent=True
@@ -147,9 +149,9 @@ CREATE TABLE `[TABLE]` (
             mburl_list=regex.findall(self.mb_url_reg,content, regex.I|regex.S)
             #去重
             mburl_list = list(set(mburl_list))
-            mylock.acquire()
+            self.mylock.acquire()
             self.adddata(mburl_list,url)
-            mylock.release()
+            self.mylock.release()
             #深度查找
             if cur_shendu<self.shendu or self.shendu==0:
                 cur_shendu+=1
@@ -157,18 +159,36 @@ CREATE TABLE `[TABLE]` (
                 for x in self.link_tezheng:
                     xiangsereg=self.linkreg.replace('00_00',x)
                     sdurl_list=regex.findall(xiangsereg,content, regex.I|regex.S)
-                    sdurl_list = list(set(sdurl_list))
+                    sdurl_list = self.__filterurl(sdurl_list)
                     for j in sdurl_list:
                         while True:
-                            if self.threadnum<self.maxthread:
-                                threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
-                                break
-                            time.sleep(1)
+                            #print('curthread nums:%d'%self.threadnum)
+                            self.progress.show();
+                            if cur_shendu==2:
+                                #只有第一次进入这个函数时才可以启动线程
+                                if self.threadnum<self.maxthread:
+                                    self.threadnum+=1
+                                    threading.Thread(target=self.shenduurl,args=(self.formaturl(url,j),cur_shendu,)).start()
+                                    break
+                                time.sleep(1)
+                            else:
+                                self.shenduurl(self.formaturl(url,j),cur_shendu)
 
         #更新已经采集过的网址为采集完成状态
         db.table(self.urled_table).where({'url':url}).save({'status':1})
         self.threadnum-=1
-
+    #过滤已经查询过后地址
+    def __filterurl(self,urllist):
+        relist=[]
+        sdurl_list = list(set(urllist))
+        self.mylock.acquire()
+        for i in sdurl_list:
+            i=i.strip()
+            result=db.table(self.urled_table).where({'url':i}).count()
+            if not result and not db.lasterror:
+                relist.append(i)
+        self.mylock.release()
+        return relist
      #下面开始采集内容
     def caijicon(self):
         while 1:
