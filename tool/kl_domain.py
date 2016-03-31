@@ -29,4 +29,4 @@ cjurl=[
 for i in cjurl:
     spi=kl_spider.urlspider(i)
     spi.run()
-#input('it is conllected,please press any key to continue...')
+input('it is conllected,please press any key to continue...')
