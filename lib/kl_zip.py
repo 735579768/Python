@@ -70,7 +70,7 @@ class kl_zip(zipfile.ZipFile):
 if __name__ == '__main__':
     #压缩
     zip=kl_zip('E:/0yuanwang.com.zip')
-    zip.ignore=['.svn']
+    zip.ignore=['.svn','Runtime']
     zip.addfolder(r'E:\wwwroot\0yuanwang.com')
     zip.complete()
 
