@@ -1,9 +1,13 @@
-import zipfile,os,kl_log
+import zipfile,os,kl_log,re
 class kl_zip(zipfile.ZipFile):
 
     def __init__(self,zip_dest_name, b='w'):
         self.log=kl_log.kl_log('kl_zip')
         zipfile.ZipFile.__init__(self,zip_dest_name,b)
+        self.ignore=[]
+
+    def __del__(self):
+        self.complete()
 
     def addfile(self,filepath):
         self.write(filepath,os.path.basename(filepath))
@@ -14,13 +18,24 @@ class kl_zip(zipfile.ZipFile):
             folderpath=folderpath[0:len(folderpath)-1]
         self.__zipfolder(folderpath)
 
+    #判断文件是不是在过滤的列表中
+    def __filterfile(self,filepath):
+        filepath=filepath.replace('\\', '/')
+        for a in self.ignore:
+            pathre='.*?/'+a+'/.*'
+            if re.match(pathre,filepath,re.S|re.I) :
+                return True
+
     def __zipfolder(self,folderpath):
-        #三个参数：分别返回1.父目录 2.所有文件夹名字（不含路径） 3.所有文件名字
+        #三个参数：分别返回1.父目录 2.所有文件夹名字（不含路径） 3.所有文件名字(不含路径)
         for parent,dirnames,filenames in os.walk(folderpath):
             #压缩文件
             for filename in filenames:
                 filepath=os.path.join(parent,filename)
                 arcpath=filepath[len(folderpath)+1:]
+                #要忽略的文件
+                if self.__filterfile(filepath):
+                    continue
 
                 if os.path.exists(filepath):
                     try:
@@ -55,6 +70,7 @@ class kl_zip(zipfile.ZipFile):
 if __name__ == '__main__':
     #压缩
     zip=kl_zip('E:/0yuanwang.com.zip')
+    zip.ignore=['.svn']
     zip.addfolder(r'E:\wwwroot\0yuanwang.com')
     zip.complete()
 
