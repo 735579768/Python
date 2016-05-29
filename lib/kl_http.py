@@ -249,13 +249,23 @@ class kl_http:
             filepath=outdir+'/'+outfilename
             req=urllib.request.Request(url)
             req.add_header('Referer',url)
-           # req.add_header('User-Agent','Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;')
             r=self.opener.open(req)
 
             #写文件到本地
-            respHtml = r.read();
             binfile = open(filepath, "wb");
-            binfile.write(respHtml);
+            c=0
+            totallen=r.length
+            print('Download size(%d) %s to %s'%(totallen,url,filepath))
+            while True:
+                s = r.read(1024*32)
+                if len(s) == 0:
+                        break
+                binfile.write(s)
+                c += len(s)
+                print('Download %d %%'%(100*c/totallen))
+            #respHtml = r.read();
+
+            #binfile.write(respHtml);
             binfile.close();
 
             return filepath
