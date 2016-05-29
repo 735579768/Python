@@ -200,7 +200,7 @@ class kl_http:
                 inde=i.find('=')
                 if inde!=-1:
                     temarr[i[0:inde]]=i[inde+1:]
-
+            return temarr
         else:
             return {}
 
