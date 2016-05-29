@@ -249,26 +249,30 @@ class kl_http:
             filepath=outdir+'/'+outfilename
             req=urllib.request.Request(url)
             req.add_header('Referer',url)
+            print('start download file...')
             r=self.opener.open(req)
 
             #写文件到本地
             binfile = open(filepath, "wb");
-            c=0
-            totallen=r.length
-            print('Download size(%d) %s to %s'%(totallen,url,filepath))
-            while True:
-                s = r.read(1024*32)
-                if len(s) == 0:
-                        break
-                binfile.write(s)
-                c += len(s)
-                print('Download %d %%'%(100*c/totallen))
-            #respHtml = r.read();
+            try:
+                c=0
+                totallen=r.length
+                print('Download size(%d) %s to %s'%(totallen,url,filepath))
+                while True:
+                    s = r.read(1024*32)
+                    if len(s) == 0:
+                            break
+                    binfile.write(s)
+                    c += len(s)
+                    print('Downloading %d %%'%(100*c/totallen))
+                binfile.close()
+                return filepath
 
-            #binfile.write(respHtml);
-            binfile.close();
+            except Exception as e:
+                print(e)
+                binfile.close()
+                return None
 
-            return filepath
         except Exception as e:
             print(e)
             return None
@@ -288,5 +292,5 @@ User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like 
 
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
-    print(ht.downfile(url,outdir,'kan.exe'))
+    print(ht.downfile(url,outdir))
     os.system("pause")
