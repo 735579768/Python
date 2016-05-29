@@ -14,6 +14,11 @@ import urllib.parse
 import http.cookiejar
 import socket,re
 #socket.setdefaulttimeout(60)           #10秒内没有打开web页面，就算超时
+
+#创建目录
+def create_dir(dirpath):
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
 useragent=[
     'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
     'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
@@ -236,6 +241,28 @@ class kl_http:
             self.lasterror=e
             return self.request
 
+    def downfile(self,url,outdir='',outfilename=''):
+        if not outfilename:
+            outfilename=os.path.basename(url)
+        try:
+            create_dir(outdir)
+            filepath=outdir+'/'+outfilename
+            req=urllib.request.Request(url)
+            req.add_header('Referer',url)
+           # req.add_header('User-Agent','Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0;')
+            r=self.opener.open(req)
+
+            #写文件到本地
+            respHtml = r.read();
+            binfile = open(filepath, "wb");
+            binfile.write(respHtml);
+            binfile.close();
+
+            return filepath
+        except Exception as e:
+            print(e)
+            return None
+
 if __name__ == '__main__':
     ht=kl_http()
     ht.setheaders('''\
@@ -248,4 +275,8 @@ User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like 
     #r=ht.posturl(r'http://127.0.0.1/')
     r=ht.posturl(r'http://1212.ip138.com/ic.asp').read().decode('gb2312')
     print(r)
+
+    url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
+    outdir="./downs"
+    print(ht.downfile(url,outdir,'kan.exe'))
     os.system("pause")
