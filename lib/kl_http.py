@@ -241,19 +241,24 @@ class kl_http:
             self.lasterror=e
             return self.request
 
+    #支持断点续传
     def downfile(self,url,outdir='',outfilename=''):
         if not outfilename:
             outfilename=os.path.basename(url)
         try:
             create_dir(outdir)
             filepath=outdir+'/'+outfilename
+            temfilepath=filepath+'.tmp'
             req=urllib.request.Request(url)
             req.add_header('Referer',url)
+            #实现断点下载文件
+            if os.path.exists(temfilepath):
+                req.add_header('Range','bytes=%d-'%(os.path.getsize(temfilepath)))
             print('start download file...')
             r=self.opener.open(req)
 
             #写文件到本地
-            binfile = open(filepath, "wb");
+            binfile = open(temfilepath, "ab");
             try:
                 c=0
                 totallen=r.length
@@ -266,6 +271,7 @@ class kl_http:
                     c += len(s)
                     print('Downloading %d %%'%(100*c/totallen))
                 binfile.close()
+                os.rename(temfilepath,filepath)
                 return filepath
 
             except Exception as e:
