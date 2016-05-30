@@ -252,16 +252,22 @@ class kl_http:
             req=urllib.request.Request(url)
             req.add_header('Referer',url)
             #实现断点下载文件
+
+            #已经下载的长度
+            downloadedlen=0
             if os.path.exists(temfilepath):
-                req.add_header('Range','bytes=%d-'%(os.path.getsize(temfilepath)))
+                downloadedlen=os.path.getsize(temfilepath)
+            req.add_header('Range','bytes=%d-'%(downloadedlen))
             print('start download file...')
             r=self.opener.open(req)
 
             #写文件到本地
             binfile = open(temfilepath, "ab");
             try:
-                c=0
+                c=downloadedlen
                 totallen=r.length
+                tlen=r.getheader('Content-Range')
+                totallen=int(tlen[tlen.find('/')+1:])
                 print('Download size(%d) %s to %s'%(totallen,url,filepath))
                 while True:
                     s = r.read(1024*10)
