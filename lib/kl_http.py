@@ -259,7 +259,7 @@ class kl_http:
                 totallen=r.length
                 print('Download size(%d) %s to %s'%(totallen,url,filepath))
                 while True:
-                    s = r.read(1024*32)
+                    s = r.read(1024*10)
                     if len(s) == 0:
                             break
                     binfile.write(s)
