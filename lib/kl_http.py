@@ -245,10 +245,10 @@ class kl_http:
     def downfile(self,url,outdir='',outfilename=''):
         if not outfilename:
             outfilename=os.path.basename(url)
-        try:
-            create_dir(outdir)
             filepath=outdir+'/'+outfilename
             temfilepath=filepath+'.tmp'
+        try:
+            create_dir(outdir)
             req=urllib.request.Request(url)
             req.add_header('Referer',url)
             #实现断点下载文件
@@ -267,7 +267,8 @@ class kl_http:
                 c=downloadedlen
                 totallen=r.length
                 tlen=r.getheader('Content-Range')
-                totallen=int(tlen[tlen.find('/')+1:])
+                if tlen:
+                    totallen=int(tlen[tlen.find('/')+1:])
                 print('Download size(%d) %s to %s'%(totallen,url,filepath))
                 while True:
                     s = r.read(1024*10)
@@ -275,8 +276,10 @@ class kl_http:
                             break
                     binfile.write(s)
                     c += len(s)
-                    print('Downloading %d %%'%(100*c/totallen))
+                    print('Downloading %0.3f %%'%(100*c/totallen))
                 binfile.close()
+                if os.path.exists(filepath):
+                    os.unlink(filepath)
                 os.rename(temfilepath,filepath)
                 return filepath
 
@@ -286,6 +289,11 @@ class kl_http:
                 return None
 
         except Exception as e:
+            if e.code==416:
+                if os.path.exists(filepath):
+                    os.unlink(filepath)
+                os.rename(temfilepath,filepath)
+                return filepath
             print(e)
             return None
 
