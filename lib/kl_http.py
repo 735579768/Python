@@ -289,6 +289,7 @@ class kl_http:
                 return None
 
         except Exception as e:
+            #416请求的开始点不在指定范围，可能是已经下载完啦
             if e.code==416:
                 if os.path.exists(filepath):
                     os.unlink(filepath)
