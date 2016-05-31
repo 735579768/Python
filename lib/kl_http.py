@@ -242,7 +242,7 @@ class kl_http:
             return self.request
 
     #支持断点续传
-    def downfile(self,url,outdir='',outfilename=''):
+    def downfile(self,url,outdir='./',outfilename=''):
         if not outfilename:
             outfilename=os.path.basename(url)
             filepath=outdir+'/'+outfilename

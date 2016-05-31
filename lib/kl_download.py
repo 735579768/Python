@@ -46,7 +46,7 @@ class kl_download(object):
             print(e)
             return None
 
-    def downimage(self,url,outdir='',outfilename=''):
+    def downimage(self,url,outdir='./',outfilename=''):
         if not outfilename:
             outfilename=os.path.basename(url)
         try:
