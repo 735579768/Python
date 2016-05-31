@@ -312,7 +312,7 @@ Accept-Language: en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
     #ht.setproxy('','','127.0.0.1:8087')
     #r=ht.posturl(r'http://127.0.0.1/')
     #r=ht.geturl(r'http://1212.ip138.com/ic.asp')
-    r=ht.geturl(r'https://www.baidu.com/')
+    r=ht.geturl(r'http://ss.ainiku.com/')
     if r:
         re=r.read()#.decode('gbk').encode('utf8')
         charset=chardet.detect(re)
