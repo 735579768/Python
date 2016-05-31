@@ -1,3 +1,4 @@
+#-*-coding:UTF-8-*-
 '''
 +----------------------------------------------------------------------
 // | Author: 赵克立 <735579768@qq.com> <http://www.zhaokeli.com>
@@ -54,7 +55,7 @@ class kl_http:
         self.cookies = {}
         self.opener=None
         self.ckjar=None
-        self.autoUserAgent=False
+        self.autoUserAgent=True
         self.request=None
         self.timeout=10
 
@@ -299,20 +300,26 @@ class kl_http:
             return None
 
 if __name__ == '__main__':
+    import chardet,io,sys
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8') #改变标准输出的默认编码
+    #sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='gb18030')         #改变标准输出的默认编码
     ht=kl_http()
-#     ht.setheaders('''\
-# Accept:*/*
-# Accept-Language:en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
-# User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36\
-#     ''');
+    ht.setheaders('''\
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36
+Accept-Language: en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
+''');
     #ht.setcookies('ankc_admin__uid__=ainiku%3A%7B%22u%22%3A%22MDAwMDAwMDAwMLyQiNbHupWh%22%2C%22p%22%3A%22MDAwMDAwMDAwMLyQiNbHupbdxGRqlcaUqHU%22%7D;')
     #ht.setproxy('','','127.0.0.1:8087')
     #r=ht.posturl(r'http://127.0.0.1/')
-    r=ht.geturl(r'http://1212.ip138.com/ic.asp')
+    #r=ht.geturl(r'http://1212.ip138.com/ic.asp')
+    r=ht.geturl(r'https://www.baidu.com/')
     if r:
-        r.read().decode('gb2312')
-        print(r)
-
+        re=r.read()#.decode('gbk').encode('utf8')
+        charset=chardet.detect(re)
+        chars=charset['encoding']
+        print(chars)
+        strr=re.decode(chars)
+        print(strr)
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
     print(ht.downfile(url,outdir))
