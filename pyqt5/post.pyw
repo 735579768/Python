@@ -2,54 +2,49 @@
 #coding:utf-8
 
 from PyQt5.QtWidgets import *
-import sys
+import sys,kl_http
 
 class LoginDlg(QDialog):
     def __init__(self, parent=None):
         super(LoginDlg, self).__init__(parent)
-        usr = QLabel("用户：")
-        pwd = QLabel("密码：")
+        usr = QLabel("地址：")
+        pwd = QLabel("内容：")
         self.usrLineEdit = QLineEdit()
-        self.pwdLineEdit = QLineEdit()
-        self.pwdLineEdit.setEchoMode(QLineEdit.Password)
+        self.htmlEdit = QTextEdit()
+        self.okBtn = QPushButton("取网页")
 
         gridLayout = QGridLayout()
         gridLayout.addWidget(usr, 0, 0, 1, 1)
-        gridLayout.addWidget(pwd, 1, 0, 1, 1)
-        gridLayout.addWidget(self.usrLineEdit, 0, 1, 1, 3);
-        gridLayout.addWidget(self.pwdLineEdit, 1, 1, 1, 3);
+        gridLayout.addWidget(self.usrLineEdit, 0, 1, 1, 4);
+        gridLayout.addWidget(self.okBtn, 0, 5, 1, 2);
 
-        okBtn = QPushButton("确定")
-        cancelBtn = QPushButton("取消")
-        btnLayout = QHBoxLayout()
 
-        btnLayout.setSpacing(60)
-        btnLayout.addWidget(okBtn)
-        btnLayout.addWidget(cancelBtn)
+
+        editLayout = QVBoxLayout()
+        editLayout.addWidget(self.htmlEdit);
 
         dlgLayout = QVBoxLayout()
-        dlgLayout.setContentsMargins(40, 40, 40, 40)
+        dlgLayout.setContentsMargins(10, 10, 10, 10)
         dlgLayout.addLayout(gridLayout)
-        dlgLayout.addStretch(40)
-        dlgLayout.addLayout(btnLayout)
+        dlgLayout.addLayout(editLayout)
+        #dlgLayout.addStretch(40)
 
         self.setLayout(dlgLayout)
-        okBtn.clicked.connect(self.accept)
-        cancelBtn.clicked.connect(self.reject)
-        self.setWindowTitle("登录")
-        self.resize(300, 200)
+        self.okBtn.clicked.connect(self.accept)
+        self.setWindowTitle("取网页内容")
+        self.resize(400, 300)
 
     def accept(self):
-        if self.usrLineEdit.text().strip() == "eric" and self.pwdLineEdit.text() == "eric":
-            super(LoginDlg, self).accept()
-        else:
-            QMessageBox.warning(self,
-                    "警告",
-                    "用户名或密码错误！",
-                    QMessageBox.Yes)
-            self.usrLineEdit.setFocus()
+        ht=kl_http.kl_http()
+        r=ht.geturl('http://www.zhaokeli.com/')
+        if r:
+            self.htmlEdit.setPlainText(r.read().decode())
 
 app = QApplication(sys.argv)
+app.setStyleSheet('''
+    QTextEdit{width:100%;height:100%;}
+    QDialog{border:solid 1px #cccccc;}
+    ''')
 dlg = LoginDlg()
 dlg.show()
 dlg.exec_()
