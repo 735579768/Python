@@ -3,7 +3,6 @@
 #from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import *
 import sys
 
 class myDialog(QDialog):
@@ -17,10 +16,7 @@ class myDialog(QDialog):
 
         conLayout = QHBoxLayout()
         tableWidget=QTableWidget()
-        strlist=QStringList()
-        strlist.append('a')
-        strlist.append('b')
-        strlist.append('c')
+        strlist=['a','b','a','b']
         tableWidget.setHorizontalHeaderLabels(strlist)
         #默认表格是可编辑的,下面设置为只读
         tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers);
