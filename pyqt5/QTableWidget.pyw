@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-"""第一个程序"""
-#from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import sys
@@ -43,14 +41,6 @@ class myDialog(QDialog):
                 # tableWidget.setCellWidget(i,j,comBox);
 
         self.setLayout(conLayout)
-
-    def clearComboBox(self):
-        #清空组合框
-        self.sexComboBox.clear()
-
-    def additem(self):
-        #添加文本
-        self.sexComboBox.addItem('测试数据')
 
     def comboxchange(self):
         QMessageBox.warning(self,"警告",str(self.sexComboBox.currentIndex())+self.tr(':')+self.sexComboBox.currentText(),QMessageBox.Yes)
