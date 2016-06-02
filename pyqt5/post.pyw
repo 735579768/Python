@@ -2,11 +2,13 @@
 #coding:utf-8
 
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import sys,kl_http
 
 class LoginDlg(QDialog):
     def __init__(self, parent=None):
         super(LoginDlg, self).__init__(parent)
+        self.setWindowFlags(Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
         usr = QLabel("地址：")
         pwd = QLabel("内容：")
         self.usrLineEdit = QLineEdit()
@@ -36,7 +38,7 @@ class LoginDlg(QDialog):
 
     def accept(self):
         ht=kl_http.kl_http()
-        r=ht.geturl('http://www.zhaokeli.com/')
+        r=ht.geturl('http://www.baidu.com/')
         if r:
             self.htmlEdit.setPlainText(r.read().decode())
 
