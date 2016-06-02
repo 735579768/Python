@@ -18,9 +18,7 @@ class myDialog(QDialog):
         tableWidget=QTableWidget()
         tableWidget.setRowCount(5)
         tableWidget.setColumnCount(4)
-        # strlist=['a','b','a','b']
-        # tableWidget.setHorizontalHeaderLabels(strlist)
-        tableWidget.setHorizontalHeaderItem(1,QTableWidgetItem('你好'))
+        tableWidget.setHorizontalHeaderLabels(['a','b','a','b'])
         #默认表格是可编辑的,下面设置为只读
         tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers);
         #整行选中的方式
