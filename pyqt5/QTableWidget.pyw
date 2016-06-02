@@ -2,7 +2,7 @@
 """第一个程序"""
 #from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import *
 import sys
 
 class myDialog(QDialog):
@@ -21,7 +21,7 @@ class myDialog(QDialog):
         conLayout.addWidget(tableWidget)
         for i in range(5):
             for j in range(4):
-                tableWidget.setItem(i,j, QTableWidgetItem(self.tr(str(i)+str(j))))
+                tableWidget.setItem(i,j, QTableWidgetItem(QIcon("images/qt.jpg"),self.tr(str(i)+str(j))))
         self.setLayout(conLayout)
 
     def clearComboBox(self):
