@@ -16,6 +16,8 @@ class myDialog(QDialog):
 
         conLayout = QHBoxLayout()
         tableWidget=QTableWidget()
+        tableWidget.setRowCount(5)
+        tableWidget.setColumnCount(4)
         # strlist=['a','b','a','b']
         # tableWidget.setHorizontalHeaderLabels(strlist)
         tableWidget.setHorizontalHeaderItem(1,QTableWidgetItem('你好'))
@@ -31,8 +33,7 @@ class myDialog(QDialog):
         tableWidget.resizeColumnsToContents();
         tableWidget.resizeRowsToContents();
 
-        tableWidget.setRowCount(5)
-        tableWidget.setColumnCount(4)
+
         conLayout.addWidget(tableWidget)
         for i in range(5):
             for j in range(4):
