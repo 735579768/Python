@@ -3,6 +3,7 @@
 #from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
 class myDialog(QDialog):
@@ -16,14 +17,19 @@ class myDialog(QDialog):
 
         conLayout = QHBoxLayout()
         tableWidget=QTableWidget()
+        strlist=QStringList()
+        strlist.append('a')
+        strlist.append('b')
+        strlist.append('c')
+        tableWidget.setHorizontalHeaderLabels(strlist)
         #默认表格是可编辑的,下面设置为只读
         tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers);
         #整行选中的方式
         tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows);
         #隐藏列表头
-        tableWidget.verticalHeader().setVisible(False);
+        #tableWidget.verticalHeader().setVisible(False);
         #隐藏行表头
-        tableWidget.horizontalHeader().setVisible(False);
+        #tableWidget.horizontalHeader().setVisible(False);
         #还可以将行和列的大小设为与内容相匹配
         tableWidget.resizeColumnsToContents();
         tableWidget.resizeRowsToContents();
