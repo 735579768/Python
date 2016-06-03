@@ -12,6 +12,7 @@ class LoginDlg(QDialog):
 
         usr = QLabel("地址：")
         pwd = QLabel("内容：")
+        #控件
         self.urlLineEdit = QLineEdit()
         self.combox=QComboBox()
         self.htmlEdit = QTextEdit()
@@ -22,15 +23,19 @@ class LoginDlg(QDialog):
         self.combox.addItem('POST')
 
         #分组
-        hGroupbox=QGroupBox('请求头')
-        pGroupbox=QGroupBox('请求参数')
+        hGroupbox=QGroupBox('请求头(以换行为分隔)')
+        pGroupbox=QGroupBox('请求参数(以换行或&&分隔)')
+        cGroupbox=QGroupBox('响应内容')
         heditLayout = QHBoxLayout()
         peditLayout = QHBoxLayout()
+        ceditLayout = QVBoxLayout()
 
         heditLayout.addWidget(self.headEdit)
         peditLayout.addWidget(self.paramEdit)
+        ceditLayout.addWidget(self.htmlEdit)
         hGroupbox.setLayout(heditLayout)
         pGroupbox.setLayout(peditLayout)
+        cGroupbox.setLayout(ceditLayout)
 
         self.combox.setFixedWidth(50)
         self.okBtn.setMaximumWidth(200)
@@ -43,19 +48,14 @@ class LoginDlg(QDialog):
         gridLayout.addWidget(self.urlLineEdit, 0, 1, 1, 4);
         gridLayout.addWidget(self.combox, 0, 5, 1, 1);
         gridLayout.addWidget(self.okBtn, 0, 6, 1, 2);
-        # gridLayout.addWidget(self.paramEdit, 1, 0, 1, 8);
 
-
-
-        editLayout = QVBoxLayout()
-        editLayout.addWidget(self.htmlEdit);
 
         dlgLayout = QVBoxLayout()
         dlgLayout.setContentsMargins(10, 10, 10, 10)
         dlgLayout.addLayout(gridLayout)
         dlgLayout.addWidget(hGroupbox)
         dlgLayout.addWidget(pGroupbox)
-        dlgLayout.addLayout(editLayout)
+        dlgLayout.addWidget(cGroupbox)
         #dlgLayout.addStretch(40)
 
         self.setLayout(dlgLayout)
@@ -69,6 +69,9 @@ class LoginDlg(QDialog):
             strr=self.urlLineEdit.text()
             metch=self.combox.currentText()
             param=self.paramEdit.toPlainText()
+            header=self.headEdit.toPlainText()
+            if not header:
+                ht.setheaders(header)
             if not strr:
                 strr='http://www.baidu.com/'
             r=None
