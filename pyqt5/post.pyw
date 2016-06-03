@@ -9,20 +9,34 @@ class LoginDlg(QDialog):
     def __init__(self, parent=None):
         super(LoginDlg, self).__init__(parent)
         self.setWindowFlags(Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
+
         usr = QLabel("地址：")
         pwd = QLabel("内容：")
         self.urlLineEdit = QLineEdit()
         self.combox=QComboBox()
         self.htmlEdit = QTextEdit()
+        self.paramEdit=QTextEdit()
+        self.headEdit=QTextEdit()
         self.okBtn = QPushButton("取网页")
         self.combox.addItem('GET')
         self.combox.addItem('POST')
-        self.paramEdit=QTextEdit()
+
+        #分组
+        hGroupbox=QGroupBox('请求头')
+        pGroupbox=QGroupBox('请求参数')
+        heditLayout = QHBoxLayout()
         peditLayout = QHBoxLayout()
+
+        heditLayout.addWidget(self.headEdit)
         peditLayout.addWidget(self.paramEdit)
+        hGroupbox.setLayout(heditLayout)
+        pGroupbox.setLayout(peditLayout)
+
         self.combox.setFixedWidth(50)
         self.okBtn.setMaximumWidth(200)
-        self.paramEdit.setFixedHeight(80)
+        hGroupbox.setFixedHeight(80)
+        pGroupbox.setFixedHeight(80)
+
 
         gridLayout = QGridLayout()
         gridLayout.addWidget(usr, 0, 0, 1, 1)
@@ -39,14 +53,15 @@ class LoginDlg(QDialog):
         dlgLayout = QVBoxLayout()
         dlgLayout.setContentsMargins(10, 10, 10, 10)
         dlgLayout.addLayout(gridLayout)
-        dlgLayout.addLayout(peditLayout)
+        dlgLayout.addWidget(hGroupbox)
+        dlgLayout.addWidget(pGroupbox)
         dlgLayout.addLayout(editLayout)
         #dlgLayout.addStretch(40)
 
         self.setLayout(dlgLayout)
         self.okBtn.clicked.connect(self.accept)
         self.setWindowTitle("取网页内容")
-        self.resize(400, 300)
+        self.resize(800,600)
 
     def accept(self):
         try:
