@@ -10,8 +10,7 @@ class LoginDlg(QDialog):
         super(LoginDlg, self).__init__(parent)
         self.setWindowFlags(Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
 
-        usr = QLabel("地址：")
-        pwd = QLabel("内容：")
+        addr = QLabel("地址：")
         #控件
         self.urlLineEdit = QLineEdit()
         self.combox=QComboBox()
@@ -43,20 +42,20 @@ class LoginDlg(QDialog):
         pGroupbox.setFixedHeight(80)
 
 
-        gridLayout = QGridLayout()
-        gridLayout.addWidget(usr, 0, 0, 1, 1)
-        gridLayout.addWidget(self.urlLineEdit, 0, 1, 1, 4);
-        gridLayout.addWidget(self.combox, 0, 5, 1, 1);
-        gridLayout.addWidget(self.okBtn, 0, 6, 1, 2);
+        searchLayout = QHBoxLayout()
+        searchLayout.addWidget(addr)
+        searchLayout.addWidget(self.urlLineEdit)
+        searchLayout.addWidget(self.combox)
+        searchLayout.addWidget(self.okBtn)
 
 
         dlgLayout = QVBoxLayout()
         dlgLayout.setContentsMargins(10, 10, 10, 10)
-        dlgLayout.addLayout(gridLayout)
+        dlgLayout.addLayout(searchLayout)
         dlgLayout.addWidget(hGroupbox)
         dlgLayout.addWidget(pGroupbox)
         dlgLayout.addWidget(cGroupbox)
-        #dlgLayout.addStretch(40)
+
 
         self.setLayout(dlgLayout)
         self.okBtn.clicked.connect(self.accept)
