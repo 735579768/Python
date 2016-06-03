@@ -20,6 +20,9 @@ class LoginDlg(QDialog):
         self.paramEdit=QTextEdit()
         peditLayout = QHBoxLayout()
         peditLayout.addWidget(self.paramEdit)
+        self.combox.setFixedWidth(50)
+        self.okBtn.setMaximumWidth(200)
+        self.paramEdit.setFixedHeight(80)
 
         gridLayout = QGridLayout()
         gridLayout.addWidget(usr, 0, 0, 1, 1)
@@ -50,13 +53,14 @@ class LoginDlg(QDialog):
             ht=kl_http.kl_http()
             strr=self.urlLineEdit.text()
             metch=self.combox.currentText()
+            param=self.paramEdit.toPlainText()
             if not strr:
                 strr='http://www.baidu.com/'
             r=None
             if metch=='GET':
-                r=ht.geturl(strr)
+                r=ht.geturl(strr,param)
             else:
-                r=ht.posturl(strr)
+                r=ht.posturl(strr,param)
 
             if r:
                 self.htmlEdit.setPlainText(r.read().decode())
