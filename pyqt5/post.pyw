@@ -12,13 +12,21 @@ class LoginDlg(QDialog):
         usr = QLabel("地址：")
         pwd = QLabel("内容：")
         self.urlLineEdit = QLineEdit()
+        self.combox=QComboBox()
         self.htmlEdit = QTextEdit()
         self.okBtn = QPushButton("取网页")
+        self.combox.addItem('GET')
+        self.combox.addItem('POST')
+        self.paramEdit=QTextEdit()
+        peditLayout = QHBoxLayout()
+        peditLayout.addWidget(self.paramEdit)
 
         gridLayout = QGridLayout()
         gridLayout.addWidget(usr, 0, 0, 1, 1)
         gridLayout.addWidget(self.urlLineEdit, 0, 1, 1, 4);
-        gridLayout.addWidget(self.okBtn, 0, 5, 1, 2);
+        gridLayout.addWidget(self.combox, 0, 5, 1, 1);
+        gridLayout.addWidget(self.okBtn, 0, 6, 1, 2);
+        # gridLayout.addWidget(self.paramEdit, 1, 0, 1, 8);
 
 
 
@@ -28,6 +36,7 @@ class LoginDlg(QDialog):
         dlgLayout = QVBoxLayout()
         dlgLayout.setContentsMargins(10, 10, 10, 10)
         dlgLayout.addLayout(gridLayout)
+        dlgLayout.addLayout(peditLayout)
         dlgLayout.addLayout(editLayout)
         #dlgLayout.addStretch(40)
 
@@ -37,13 +46,22 @@ class LoginDlg(QDialog):
         self.resize(400, 300)
 
     def accept(self):
-        ht=kl_http.kl_http()
-        strr=self.urlLineEdit.text()
-        if not strr:
-            strr='http://www.baidu.com/'
-        r=ht.geturl(strr)
-        if r:
-            self.htmlEdit.setPlainText(r.read().decode())
+        try:
+            ht=kl_http.kl_http()
+            strr=self.urlLineEdit.text()
+            metch=self.combox.currentText()
+            if not strr:
+                strr='http://www.baidu.com/'
+            r=None
+            if metch=='GET':
+                r=ht.geturl(strr)
+            else:
+                r=ht.posturl(strr)
+
+            if r:
+                self.htmlEdit.setPlainText(r.read().decode())
+        except Exception as e:
+            print(e)
 
 app = QApplication(sys.argv)
 app.setStyleSheet('''
