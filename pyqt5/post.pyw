@@ -11,13 +11,13 @@ class LoginDlg(QDialog):
         self.setWindowFlags(Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
         usr = QLabel("地址：")
         pwd = QLabel("内容：")
-        self.usrLineEdit = QLineEdit()
+        self.urlLineEdit = QLineEdit()
         self.htmlEdit = QTextEdit()
         self.okBtn = QPushButton("取网页")
 
         gridLayout = QGridLayout()
         gridLayout.addWidget(usr, 0, 0, 1, 1)
-        gridLayout.addWidget(self.usrLineEdit, 0, 1, 1, 4);
+        gridLayout.addWidget(self.urlLineEdit, 0, 1, 1, 4);
         gridLayout.addWidget(self.okBtn, 0, 5, 1, 2);
 
 
@@ -38,7 +38,10 @@ class LoginDlg(QDialog):
 
     def accept(self):
         ht=kl_http.kl_http()
-        r=ht.geturl('http://www.baidu.com/')
+        strr=self.urlLineEdit.text()
+        if not strr:
+            strr='http://www.baidu.com/'
+        r=ht.geturl(strr)
         if r:
             self.htmlEdit.setPlainText(r.read().decode())
 
