@@ -34,7 +34,14 @@ class myDialog(QDialog):
 
     def clickitem(self,obj):
         print(obj.text())
-        QMessageBox.warning(self,"警告",obj.text(),QMessageBox.Yes)
+        self.__msg(obj.text())
+
+    def __msg(self,s):
+        box=QMessageBox()
+        box.setText(s)
+        box.setWindowTitle(self.tr('信息提醒'))
+        box.addButton(self.tr("确定"), QMessageBox.ActionRole);
+        box.exec()
 
 app = QApplication(sys.argv)
 dlg = myDialog()
