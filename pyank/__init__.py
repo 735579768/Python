@@ -1,4 +1,5 @@
-__all__ = [
+#from kl_lib import *
+__all__ = (
     "kl_db",
     "kl_excel",
     "kl_ftp",
@@ -9,5 +10,4 @@ __all__ = [
     "kl_zip",
     "kl_lib"
 
-    ]
-from kl_lib import *
+)
