@@ -38,8 +38,8 @@ class LoginDlg(QDialog):
 
         self.combox.setFixedWidth(50)
         self.okBtn.setMaximumWidth(200)
-        hGroupbox.setFixedHeight(80)
-        pGroupbox.setFixedHeight(80)
+        #hGroupbox.setFixedHeight(80)
+        #pGroupbox.setFixedHeight(80)
 
 
         searchLayout = QHBoxLayout()
@@ -52,9 +52,13 @@ class LoginDlg(QDialog):
         dlgLayout = QVBoxLayout()
         dlgLayout.setContentsMargins(10, 10, 10, 10)
         dlgLayout.addLayout(searchLayout)
+        dlgLayout.setStretchFactor(searchLayout,1)
         dlgLayout.addWidget(hGroupbox)
+        dlgLayout.setStretchFactor(hGroupbox,1)
         dlgLayout.addWidget(pGroupbox)
+        dlgLayout.setStretchFactor(pGroupbox,1)
         dlgLayout.addWidget(cGroupbox)
+        dlgLayout.setStretchFactor(cGroupbox,5)
 
 
         self.setLayout(dlgLayout)
