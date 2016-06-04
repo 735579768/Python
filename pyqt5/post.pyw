@@ -14,9 +14,9 @@ class LoginDlg(QDialog):
         #控件
         self.urlLineEdit = QLineEdit()
         self.combox=QComboBox()
-        self.htmlEdit = QTextEdit()
-        self.paramEdit=QTextEdit()
-        self.headEdit=QTextEdit()
+        self.htmlEdit = QPlainTextEdit()
+        self.paramEdit=QPlainTextEdit()
+        self.headEdit=QPlainTextEdit()
         self.okBtn = QPushButton("取网页")
         self.combox.addItem('GET')
         self.combox.addItem('POST')
