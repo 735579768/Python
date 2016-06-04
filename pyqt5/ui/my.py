@@ -36,3 +36,7 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
 
+app = QtGui.QApplication( sys.argv )
+mywindow = MyWindow()
+mywindow.show()
+app.exec_()

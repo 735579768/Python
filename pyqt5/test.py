@@ -1,48 +1,50 @@
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-import time
-'''
-信号传参类型
-pyqtSignal()                                #无参数信号
-pyqtSignal(int)                             # 一个参数(整数)的信号
-pyqtSignal([int],[str]                     # 一个参数(整数或者字符串)重载版本的信号
-pyqtSignal(int,str)                         #二个参数(整数,字符串)的信号
-pyqtSignal([int,int],[int,str])           #二个参数([整数,整数]或者[整数,字符串])重载版本
-'''
-class Mythread(QThread):
-    #定义信号,定义参数为str类型
-    _signal=pyqtSignal(str)
-    def __init__(self):
-        super(Mythread,self).__init__()
-    def run(self):
-        for i in range(2000000):
-            #发出信号
-            self._signal.emit('当前循环值为:%s'%i)
-            #让程序休眠
-            time.sleep(0.5)
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+import sys,os
+class SelectDialog(QDialog):
+    def __init__(self, parent=None):
+        super(SelectDialog, self).__init__(parent)
+        self.path = os.getcwd()
+        self.initUI()
+        self.setWindowTitle("选择")
+        self.resize(240, 100)
+
+    def initUI(self):
+        grid = QGridLayout()
+        grid.addWidget(QLabel("路径："), 0, 0)
+        self.pathLineEdit = QLineEdit()
+        self.pathLineEdit.setFixedWidth(200)
+        self.pathLineEdit.setText(self.path)
+
+        grid.addWidget(self.pathLineEdit, 0, 1)
+        button = QPushButton("更改")
+        button.clicked.connect(self.changePath)
+        grid.addWidget(button, 0, 2)
+        #grid.addWidget(QLabel("<font color='#ff0000'>包含Keywords.xml、Avatar,AvatarSet,Market.xls的路径</font>"), 1, 0, 1, 3)
+        buttonBox = QDialogButtonBox()
+        buttonBox.setOrientation(Qt.Horizontal)  # 设置为水平方向
+        buttonBox.setStandardButtons(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
+
+        buttonBox.button(QDialogButtonBox.Ok).setText('选择')
+        buttonBox.button(QDialogButtonBox.Cancel).setText('取消')
+
+        buttonBox.accepted.connect(self.accept)  # 确定
+        buttonBox.rejected.connect(self.reject)  # 取消
+        grid.addWidget(buttonBox, 2, 1)
+        self.setLayout(grid)
+
+    def changePath(self):
+        open = QFileDialog()
+        #self.path=open.getOpenFileName()
+        self.path=open.getOpenFileNames()
+        print(self.path)
+        #self.path = open.getExistingDirectory()
+        self.pathLineEdit.setText(self.path[0][0])
+
+
 if __name__ == '__main__':
-    app = QApplication([])
-    dlg = QDialog()
-    dlg.resize(400, 300)
-    dlg.setWindowTitle("自定义按钮测试")
-    dlgLayout = QVBoxLayout()
-    dlgLayout.setContentsMargins(40, 40, 40, 40)
-    btn=QPushButton('测试按钮')
-    dlgLayout.addWidget(btn)
-    dlgLayout.addStretch(40)
-    dlg.setLayout(dlgLayout)
-    dlg.show()
-
-
-    def chuli(s):
-        dlg.setWindowTitle(s)
-        btn.setText(s)
-    #创建线程
-    thread=Mythread()
-    #注册信号处理函数
-    thread._signal.connect(chuli)
-    #启动线程
-    thread.start()
-    dlg.exec_()
-    app.exit()
+    app = QApplication(sys.argv)
+    dialog = SelectDialog()
+    if dialog.exec_():
+        pass
