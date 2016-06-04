@@ -16,6 +16,9 @@ class kl_zip(zipfile.ZipFile):
         folderpath=folderpath.replace('\\','/')
         if folderpath[len(folderpath)-1:]=='/':
             folderpath=folderpath[0:len(folderpath)-1]
+        if not os.path.exists(folderpath):
+            print('%s  is not exists!'%folderpath)
+            return False
         self.__zipfolder(folderpath)
 
     #判断文件是不是在过滤的列表中

@@ -46,7 +46,7 @@ class kl_smtp:
 if __name__ == '__main__':
     mailto_list=["735579768@qq.com","735579768@qq.com"]
     stp=kl_smtp(mail_host='ainiku.com',mail_user='service',mail_pass='adminrootkl',mail_postfix='ainiku.com')
-    if stp.sendmail(mailto_list,"这个是邮件主题","这里是邮件内容",'kl_reg.py'):
+    if stp.sendmail(mailto_list,"这个是邮件主题","这里是邮件内容",'kl_lib.py'):
         print ("发送成功")
     else:
         print ("发送失败")
