@@ -449,7 +449,7 @@ if __name__ == '__main__':
 # db=mysql({
 #     'host':'localhost',
 #     'user':'root',
-#     'passwd':'adminrootkl',
+#     'passwd':'*********',
 #     'db':'test',
 #     'prefix':'kl_',
 #     'charset':'utf8'

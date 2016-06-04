@@ -1,6 +1,6 @@
-import xlrd,xlwt
+import xlrd,xlwt,os,sys
+from kl_lib import *
 from datetime import date,datetime
-
 from xlwt.examples.zoom_magnification import book
 
 
@@ -18,6 +18,10 @@ class kl_excel(object):
         self.__initsheet(filepath)
 
     def __initsheet(self,filepath):
+        #assert  os.path.exists(filepath)
+        if filepath and not os.path.exists(filepath):
+            print_red('%s is not exists!'%filepath)
+            return False
         #初始化表格
         self.sheets = xlrd.open_workbook(filepath)
         #当前操作的表格
@@ -163,5 +167,5 @@ if __name__ == '__main__':
             'pic':'图片'
         }
     ]
-    excel.writeexcel('./save.xls',data)
-    input()
+    excel.writeexcel('./data/save.xls',data)
+    input('')

@@ -72,9 +72,9 @@ class kl_zip(zipfile.ZipFile):
 
 if __name__ == '__main__':
     #压缩
-    zip=kl_zip('E:/0yuanwang.com.zip')
+    zip=kl_zip('E:/zhaokeli.com.zip')
     zip.ignore=['.svn','Runtime']
-    zip.addfolder(r'E:\wwwroot\0yuanwang.com')
+    zip.addfolder(r'E:/wwwroot/zhaokeli.com')
     zip.complete()
 
     #解压
