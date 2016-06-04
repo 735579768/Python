@@ -243,7 +243,7 @@ class kl_http:
             return self.request
 
     #支持断点续传
-    def downfile(self,url,outdir='./',outfilename=''):
+    def downfile(self,url,outdir='./',outfilename='',callback=None):
         if not outfilename:
             outfilename=os.path.basename(url)
             filepath=outdir+'/'+outfilename
@@ -278,6 +278,9 @@ class kl_http:
                     binfile.write(s)
                     c += len(s)
                     print('Downloading %0.3f %%'%(100*c/totallen))
+
+                    if hasattr(callback,'__call__'):
+                        callback(c,totallen)
                 binfile.close()
                 if os.path.exists(filepath):
                     os.unlink(filepath)
@@ -322,5 +325,8 @@ Accept-Language: en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
         print(strr)
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
-    print(ht.downfile(url,outdir))
+
+    def showjinju(a,b):
+        print('callback Downloading %0.3f %%'%(100*a/b))
+    print(ht.downfile(url,outdir,None,showjinju))
     os.system("pause")
