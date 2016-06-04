@@ -2,7 +2,6 @@ import os,tempfile,time,subprocess
 from urllib.parse import urlparse
 from colorama import init,Fore, Back, Style
 import re
-from kl_print  import *
 
 init(autoreset=True)
 A=re.A
