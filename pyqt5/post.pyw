@@ -3,7 +3,7 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import sys,kl_http
+import sys,kl_http,chardet
 
 class LoginDlg(QDialog):
     def __init__(self, parent=None):
@@ -60,7 +60,8 @@ class LoginDlg(QDialog):
         dlgLayout.addWidget(cGroupbox)
         dlgLayout.setStretchFactor(cGroupbox,5)
 
-
+        #默认值
+        self.urlLineEdit.setText('http://user.zhaokeli.com')
         self.setLayout(dlgLayout)
         self.okBtn.clicked.connect(self.accept)
         self.setWindowTitle("取网页内容")
@@ -73,7 +74,7 @@ class LoginDlg(QDialog):
             metch=self.combox.currentText()
             param=self.paramEdit.toPlainText()
             header=self.headEdit.toPlainText()
-            if not header:
+            if header:
                 ht.setheaders(header)
             if not strr:
                 strr='http://www.baidu.com/'
@@ -84,8 +85,11 @@ class LoginDlg(QDialog):
                 r=ht.posturl(strr,param)
 
             if r:
-                self.htmlEdit.setPlainText(r.read().decode())
+                rr=r.read()
+                charset=chardet.detect(rr)
+                self.htmlEdit.setPlainText(rr.decode(charset['encoding']))
         except Exception as e:
+            self.htmlEdit.setPlainText('%s'%e)
             print(e)
 
 app = QApplication(sys.argv)
