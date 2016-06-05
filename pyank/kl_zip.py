@@ -9,9 +9,11 @@ class kl_zip(zipfile.ZipFile):
     def __del__(self):
         self.complete()
 
+    #添加文件到压缩包
     def addfile(self,filepath):
         self.write(filepath,os.path.basename(filepath))
 
+    #遍历文件夹到压缩包
     def addfolder(self,folderpath):
         folderpath=folderpath.replace('\\','/')
         if folderpath[len(folderpath)-1:]=='/':
@@ -29,6 +31,7 @@ class kl_zip(zipfile.ZipFile):
             if re.match(pathre,filepath,re.S|re.I) :
                 return True
 
+    #遍历文件夹
     def __zipfolder(self,folderpath):
         #三个参数：分别返回1.父目录 2.所有文件夹名字（不含路径） 3.所有文件名字(不含路径)
         for parent,dirnames,filenames in os.walk(folderpath):

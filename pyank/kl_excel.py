@@ -17,6 +17,7 @@ class kl_excel(object):
         self.cur_sheet=None
         self.__initsheet(filepath)
 
+    #初始化表格数据
     def __initsheet(self,filepath):
         #assert  os.path.exists(filepath)
         if filepath and not os.path.exists(filepath):
@@ -32,6 +33,7 @@ class kl_excel(object):
         else:
             self.field=[i for i in range(0,self.getcolnum())]
 
+    #读取表格
     def readexcel(self,filepath):
         self.__initsheet(filepath)
         return self.getalldata()
@@ -103,42 +105,69 @@ class kl_excel(object):
 
     #设置单元格的值
     def settellvalue(self,row,col,ctype,value,xf=0):
-        self.cur_sheet.put_cell(row, col, ctype, value, xf)
+        try:
+            self.cur_sheet.put_cell(row, col, ctype, value, xf)
+        excel Exception as e:
+            print(e)
 
     #取单元格的值
     def gettellvalue(self,row,col):
-        tellvalue=self.cur_sheet.cell(row,col)
-        if tellvalue.ctype==0:#empty
-            tellvalue=''
-        elif tellvalue.ctype==1:#string
-            tellvalue=tellvalue.value
-        elif tellvalue.ctype==2:#number
-            tellvalue=tellvalue.value
-        elif tellvalue.ctype==3:#date
-            tellvalue=tellvalue.value
-            date_value = xlrd.xldate_as_tuple(tellvalue,book.datemode)
-            date_tmp = date(*date_value[:3]).strftime('%Y/%m/%d')
-        elif tellvalue.ctype==4:#boolean
-            tellvalue=tellvalue.value
-        elif tellvalue.ctype==5:#error
-            tellvalue=''
-        return tellvalue
+        try:
+            tellvalue=self.cur_sheet.cell(row,col)
+            if tellvalue.ctype==0:#empty
+                tellvalue=''
+            elif tellvalue.ctype==1:#string
+                tellvalue=tellvalue.value
+            elif tellvalue.ctype==2:#number
+                tellvalue=tellvalue.value
+            elif tellvalue.ctype==3:#date
+                tellvalue=tellvalue.value
+                date_value = xlrd.xldate_as_tuple(tellvalue,book.datemode)
+                date_tmp = date(*date_value[:3]).strftime('%Y/%m/%d')
+            elif tellvalue.ctype==4:#boolean
+                tellvalue=tellvalue.value
+            elif tellvalue.ctype==5:#error
+                tellvalue=''
+            return tellvalue
+        excel Exception as e:
+            print(e)
+            return ''
 
     def getrownum(self):
-        return  self.cur_sheet.nrows
+        try:
+            return  self.cur_sheet.nrows
+        excel Exception as e:
+            print(e)
+            return 0
 
     def getcolnum(self):
-        return  self.cur_sheet.ncols
+        try:
+            return  self.cur_sheet.ncols
+        excel Exception as e:
+            print(e)
+            return 0
 
     def setsheet(self,index=0):
-        self.cur_sheet=self.sheets.sheets()[index]
-        return self
+        try:
+            self.cur_sheet=self.sheets.sheets()[index]
+            return self
+        excel Exception as e:
+            print(e)
+            return None
 
     def getrow(self,index=0):
-        return  self.cur_sheet.row_values(index)
+        try:
+            return  self.cur_sheet.row_values(index)
+        excel Exception as e:
+            print(e)
+            return ''
 
     def getcol(self,index=0):
-        return  self.cur_sheet.col_values(index)
+        try:
+            return  self.cur_sheet.col_values(index)
+        excel Exception as e:
+            print(e)
+            return ''
 
 if __name__ == '__main__':
     excel=kl_excel('./test.xlsx',False)
