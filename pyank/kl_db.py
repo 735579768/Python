@@ -17,7 +17,7 @@
 import pymysql,sqlite3,os
 
 
-class mysql(object):
+class AnkDb(object):
 
     def __init__(self, arg):
         self.is_sqllite=False
@@ -446,7 +446,7 @@ class mysql(object):
 
 #使用示例
 if __name__ == '__main__':
-# db=mysql({
+# db=AnkDb({
 #     'host':'localhost',
 #     'user':'root',
 #     'passwd':'*********',
@@ -537,7 +537,7 @@ if __name__ == '__main__':
 
 #sqllite数据库测试
 
-    db=mysql({
+    db=AnkDb({
         'dbtype':'sqllite',
         'db':'test.db',
         'prefix':'',
