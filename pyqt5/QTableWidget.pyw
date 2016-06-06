@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
 class myDialog(QDialog):
@@ -8,6 +9,7 @@ class myDialog(QDialog):
     def __init__(self, arg=None):
         super(myDialog, self).__init__(arg)
         self.setWindowTitle("first window")
+        self.setWindowFlags(Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint|Qt.WindowCloseButtonHint)
         self.resize(500,300);
         btn1=QPushButton('添加')
         btn2=QPushButton('清空')
