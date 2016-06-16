@@ -34,19 +34,22 @@ class Access(object):
             sys.exit(0)
 
     def __getcur(self):
+        if not self.sql:
+            self.__zuhesqu()
+        if not self.sql:
+            sys.exit('error code:sql is null')
         self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
-        #self.cur.Open(self.sql, self.conn,1, 3)
-        self.__zuhesqu()
-        self.cur.Open('select * from content', self.conn,1, 3)
+        self.cur.Open(self.sql, self.conn,1, 1)
         return self.cur
 
     def __execute(self):
+        if not self.sql:
+            self.__zuhesqu()
         self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
         self.cur.Open(self.sql, self.conn,1, 3)
         return self.cur
 
-
-
+    #取当前记录集的数量
     def getRsNum(self):
         return self.cur.RecordCount
 ##################################################3
@@ -62,10 +65,13 @@ class Access(object):
         field=self.sqlconf['field']
         temsql=''
         if action=='':
+            sys.exit('error code:sql action is null')
             return None
         if table=='' and join=='':
+            sys.exit('error code:sql table is null')
             return None
         if field=='' and join=='':
+            sys.exit('error code:sql field is null')
             return None
 
         if action=='insert into':
@@ -85,7 +91,7 @@ class Access(object):
             temsql='update %s set %s %s %s'%(table, val, where,limit)
 
         elif action=='select':
-            temsql='select %s from %s %s %s %s %s'%(field,table,join,where,order,limit)
+            temsql='select %s %s from %s %s %s %s '%(limit,field,table,join,where,order)
         elif action=='delete':
             temsql='delete from %s %s'%(table,where)
         elif action=='select count(*)':
@@ -202,14 +208,11 @@ class Access(object):
         self.sqlconf['field']=field
         return self
 
-    def limit(self,start=0,end=0):
-        if start!=0 and end!=0:
-            data='limit %d,%d'%(start,end)
-        elif start!=0 and end==0:
-            data='limit 0,%d'%(start)
-        elif start==0 and end==0:
-            data=''
-        self.sqlconf['limit']=data
+    def limit(self,top=0):
+        if top!=0:
+            self.sqlconf['limit']='top %d '%top
+        else:
+            self.sqlconf['limit']=''
         return self
 
     def query(self,data):
@@ -217,8 +220,6 @@ class Access(object):
         self.sql=data
         return self.__execute()
 
-    def delete(self):
-        self.conn.Execute(self.sql)
 
     def save(self,data):
         self.lasterror=None
@@ -245,8 +246,6 @@ class Access(object):
     def add(self,data):
         self.lasterror=None
         self.sql=''
-        self.data=data
-        # self.sqlconf['action']='insert into'
         try:
             self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
             self.cur.Open('['+self.sqlconf['table']+']', self.conn,1, 3)
@@ -266,14 +265,14 @@ class Access(object):
     def getFields(self):
         return [self.cur(x).Name for x in range(self.cur.Fields.Count-1)]
 
-    # def delete(self,id=''):
-    #     self.__setprimary()
-    #     self.lasterror=None
-    #     self.sql=''
-    #     self.sqlconf['action']='delete'
-    #     if self.primary and id:
-    #         self.sqlconf['where']='%s=%s'%(self.primary,id)
-    #     return self.__execute()
+    def delete(self,id=''):
+        # self.__setprimary()
+        self.lasterror=None
+        self.sql=''
+        self.sqlconf['action']='delete'
+        if self.primary and id:
+            self.sqlconf['where']='%s=%s'%(self.primary,id)
+        return self.conn.Execute(self.sql)
 
     # def find(self,id=''):
     #     self.__setprimary()
@@ -300,19 +299,11 @@ class Access(object):
         self.sqlconf['action']='select'
         return self.__getcur()
 
-    # def add(self,data={}):
-    #     self.cur.AddNew()
-    #     self.cur.Fields.Item(1).Value = 'data'
-    #     self.cur.Update()
-
-    # def save(self,data={}):
-    #     self.cur.Update()
-
 
 if __name__ == '__main__':
     try:
         db=Access('db1.mdb')
-        rs=db.select()
+        rs=db.table('content').order('id desc').limit(2).select()
 
         #print(db.getFields())
         #print(rs.Fields.Count)
@@ -320,8 +311,8 @@ if __name__ == '__main__':
         # #第一个字段名
         # print(rs(0).Name)
         # rs.close()
-        db.table('content').where({'id':3}).save({'content':'这是个更新数据'})
-        db.table('content').add({'content':'这是一个新增的数据'})
+        # db.table('content').where({'id':3}).save({'content':'这是个更新数据'})
+        # db.table('content').add({'content':'这是一个新增的数据'})
         # #第一个字段值
         # print(rs('id'))
 
