@@ -268,7 +268,7 @@ class Access(object):
 
 if __name__ == '__main__':
     try:
-        db=Access('D:/db1.mdb')
+        db=Access('db1.mdb')
         rs=db.select()
         print(rs.Fields.Count)
 
