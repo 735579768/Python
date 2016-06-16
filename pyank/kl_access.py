@@ -36,6 +36,7 @@ class Access(object):
     def __getcur(self):
         self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
         #self.cur.Open(self.sql, self.conn,1, 3)
+        self.__zuhesqu()
         self.cur.Open('select * from content', self.conn,1, 3)
         return self.cur
 
@@ -132,7 +133,10 @@ class Access(object):
                     te0=self.__tjzh(field,temf)
                     temdata+=' and %s'%(te0)
             else:
-                temdata+=" and (%s='%s')"%(field,temf)
+                if isinstance(temf,int):
+                    temdata+=" and (%s=%s)"%(field,temf)
+                else:
+                    temdata+=" and (%s='%s')"%(field,temf)
         temdata=temdata.replace('1=1 and','')
         return temdata
 
@@ -213,19 +217,54 @@ class Access(object):
         self.sql=data
         return self.__execute()
 
+    def delete(self):
+        self.conn.Execute(self.sql)
+
     def save(self,data):
         self.lasterror=None
         self.sql=''
         self.data=data
-        self.sqlconf['action']='update'
-        return self.__execute()
+        self.sqlconf['action']='select'
+        self.__zuhesqu()
+        try:
+            self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
+            self.cur.Open('select * from content', self.conn,1, 3)
+            if not self.cur.EOF and not self.cur.BOF:
+                fieldlist=self.getFields()
+                for a in data:
+                    if a in fieldlist:
+                        self.cur.Fields.Item(a).Value = data[a]
+                self.cur.Update()
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
+            return False
 
     def add(self,data):
         self.lasterror=None
         self.sql=''
         self.data=data
-        self.sqlconf['action']='insert into'
-        return self.__execute()
+        # self.sqlconf['action']='insert into'
+        try:
+            self.cur=win32com.client.Dispatch(r'ADODB.Recordset')
+            self.cur.Open('['+self.sqlconf['table']+']', self.conn,1, 3)
+            self.cur.AddNew()
+            fieldlist=self.getFields()
+            for a in data:
+                if a in fieldlist:
+                    self.cur.Fields.Item(a).Value = data[a]
+            self.cur.Update()
+
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    #取当前表字段列表
+    def getFields(self):
+        return [self.cur(x).Name for x in range(self.cur.Fields.Count-1)]
 
     # def delete(self,id=''):
     #     self.__setprimary()
@@ -246,10 +285,14 @@ class Access(object):
 
     def getarr(self):
         record=self.select()
-        if record:
-            return record.fetchall()
-        else:
-            return []
+        relist=[]
+        while not self.cur.EOF:
+            tem={}
+            for a in range(self.cur.Fields.Count):
+                tem[self.cur(a).Name]=self.cur(a).Value
+            relist.append(tem)
+            self.cur.MoveNext()
+        return relist
 
     def select(self):
         self.lasterror=None
@@ -270,19 +313,23 @@ if __name__ == '__main__':
     try:
         db=Access('db1.mdb')
         rs=db.select()
-        print(rs.Fields.Count)
 
-        #第一个字段名
-        print(rs(0).Name)
+        #print(db.getFields())
+        #print(rs.Fields.Count)
+        print(db.getarr())
+        # #第一个字段名
+        # print(rs(0).Name)
+        # rs.close()
+        db.table('content').where({'id':3}).save({'content':'这是个更新数据'})
+        db.table('content').add({'content':'这是一个新增的数据'})
+        # #第一个字段值
+        # print(rs('id'))
 
-        #第一个字段值
-        print(rs('id'))
-
-        print(rs.Fields.Item(1))
-        print(rs.Fields.Item(1).Value)
-        print(db.getRsNum())
-        while not rs.EOF:
-            rs.MoveNext()
+        # print(rs.Fields.Item(1))
+        # print(rs.Fields.Item(1).Value)
+        # print(db.getRsNum())
+        # while not rs.EOF:
+        #     rs.MoveNext()
 
         # rs.close()
 
