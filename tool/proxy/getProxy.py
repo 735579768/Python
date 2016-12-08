@@ -16,7 +16,7 @@ db=kl_db.mysql({
             'host':'localhost',
             'user':'root',
             'passwd':'adminrootkl',
-            'db':'mydata',
+            'db':'spiders_db',
             'prefix':'kl_',
             'charset':'utf8'
         })
