@@ -326,7 +326,7 @@ Accept-Language: en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2
     url='http://dlsw.baidu.com/sw-search-sp/soft/e7/10520/KanKan_V2.7.8.2126_setup.1416995191.exe'
     outdir="./downs"
 
-    def showjinju(a,b):
+    def showjindu(a,b):
         print('callback Downloading %0.3f %%'%(100*a/b))
-    print(ht.downfile(url,outdir,None,showjinju))
+    print(ht.downfile(url,outdir,None,showjindu))
     os.system("pause")

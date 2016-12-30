@@ -3,7 +3,7 @@ import urllib.parse
 import http.cookiejar
 import codecs
 #请求头
-headers = { 
+headers = {
 	'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36',
 	'Referer':'http://user.zhaokeli.com/'#,
         #'X-Requested-With':'XMLHttpRequest'
@@ -29,8 +29,8 @@ def geturl(url,data={}):
             if params=='' :
                    req=urllib.request.Request(url)
             else:
-                   req=urllib.request.Request(url+'?%s'%(params)) 
-            
+                   req=urllib.request.Request(url+'?%s'%(params))
+
             #设置headers
             for i in headers:
                 req.add_header(i,headers[i])
@@ -40,7 +40,7 @@ def geturl(url,data={}):
         except urllib.error.HTTPError as e:
             print(e.code)
             print(e.read().decode("utf8"))
-	
+
 #get取网页数据
 def posturl(url,data={}):
     try:
@@ -50,19 +50,19 @@ def posturl(url,data={}):
         req=urllib.request.Request(url,params,headers)
         r=opener.open(req)
         ckjar.save(ignore_discard=True, ignore_expires=True)
-        return r  
+        return r
     except urllib.error.HTTPError as e:
         print(e.code)
         print(e.read().decode("utf8"))
 
-da={'username':'admin','password':'adminrootkl'}
-loginurl='http://user.zhaokeli.com/index.php?m=Admin&c=Public&a=login'
+da={'username':'','password':''}
+loginurl=''
 r=geturl(loginurl,{})
 s1="%s"%r.read().decode()
 #下面特征说明登陆成功
 islogin=s1.find('登录成功')
 islogin=s1.find('修改密码')
-if islogin==-1 :    
+if islogin==-1 :
         #下载验证码
         f2 = open( r'./verify.png', 'wb' )
         urlSuning='http://user.zhaokeli.com/index.php'
@@ -85,7 +85,7 @@ while islogin==-1 :
     f2.close()
     print('验证码错误!')
     da['verify']=input('请输入验证码:')
-    
+
     r=posturl(loginurl,da)
     s1="%s"%r.read().decode()
     #print(s1)
