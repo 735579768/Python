@@ -54,13 +54,18 @@ class Proxy(object):
         #self.destnation.connect(('121.69.36.122',8118))
 
         #循环使用代理连接
+        #最多重试次数
+        reconnect=0
         while True:
+            if reconnect>3:
+                break;
+            reconnect=reconnect+1
             ipport=[]
             if self.proxy_ip=='':
                 ipport=self.get_proxy()
             self.proxy_ip=ipport[0]
             self.proxy_port=ipport[1]
-            print('正在连接代理服务器:%s:%s'%(self.proxy_ip,self.proxy_port))
+            print('正在连接代理服务器:%s:%s,times:%d'%(self.proxy_ip,self.proxy_port,reconnect))
             try:
                 self.destnation.connect((self.proxy_ip,self.proxy_port))
                 print('连接成功.\r\n')
@@ -73,6 +78,7 @@ class Proxy(object):
 
         print ("请求目标主机 %s:%d\r\n"%(ip,port))
         print ("请求协议头:\n%s\r\n请求头信息:\n%s\r\n"%(data,self.request))
+        # print(self.request.port)
 
     #把页面转发给原来的请求
     def renderto(self):
@@ -116,7 +122,7 @@ class Server(object):
     def start(self):
         print('listening %s:%s'%(self.host,self.port))
         while True:
-            time.sleep(0.1)
+            time.sleep(1)
             try:
                 #接收请求
                 conn,addr=self.server.accept()
